@@ -1,0 +1,655 @@
+/* =========================================================
+   MODERN SIDEBAR — Absensi Sekolah
+   Gradient: 135deg, #2ec4b6 → #4361ee
+   ========================================================= */
+
+/* Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* ── Variables ───────────────────────────────────────────── */
+:root {
+  --sb-width: 260px;
+  --sb-collapsed-width: 68px;
+  --sb-grad-start: #2ec4b6;
+  --sb-grad-end: #4361ee;
+  --sb-gradient: linear-gradient(135deg, var(--sb-grad-start), var(--sb-grad-end));
+  --sb-text: #e8f0fe;
+  --sb-text-muted: rgba(255,255,255,0.50);
+  --sb-active-bg: rgba(255,255,255,0.18);
+  --sb-hover-bg: rgba(255,255,255,0.10);
+  --sb-border: rgba(255,255,255,0.12);
+  --sb-transition: 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Reset for sidebar scope ─────────────────────────────── */
+.app-sidebar *, .app-sidebar *::before, .app-sidebar *::after {
+  box-sizing: border-box;
+  margin: 0; padding: 0;
+  list-style: none;
+  text-decoration: none;
+}
+
+/* ── Sidebar Shell ───────────────────────────────────────── */
+.app-sidebar {
+  position: fixed;
+  left: 0; top: 0; bottom: 0;
+  width: var(--sb-width);
+  background: var(--sb-gradient);
+  display: flex;
+  flex-direction: column;
+  z-index: 1050;
+  overflow: hidden;
+  transition: width var(--sb-transition);
+  font-family: 'Inter', sans-serif;
+  box-shadow: 4px 0 24px rgba(67, 97, 238, 0.25);
+}
+
+.app-sidebar.collapsed {
+  width: var(--sb-collapsed-width);
+}
+
+/* ── Header / Brand ──────────────────────────────────────── */
+.sb-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 14px 16px;
+  border-bottom: 1px solid var(--sb-border);
+  flex-shrink: 0;
+  min-height: 68px;
+}
+
+.sb-brand-icon {
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.20);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  font-size: 20px;
+  color: #fff;
+}
+
+.sb-brand-text {
+  overflow: hidden;
+  transition: opacity var(--sb-transition), width var(--sb-transition);
+  white-space: nowrap;
+}
+
+.sb-brand-text .sb-role {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  color: var(--sb-text-muted);
+  text-transform: uppercase;
+}
+
+.sb-brand-text .sb-school {
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.3;
+  margin-top: 2px;
+}
+
+.app-sidebar.collapsed .sb-brand-text {
+  opacity: 0;
+  width: 0;
+  pointer-events: none;
+}
+
+/* When collapsed: center the toggle, hide brand icon to avoid overflow */
+.app-sidebar.collapsed .sb-header {
+  justify-content: center;
+  padding: 18px 8px 16px;
+  gap: 0;
+}
+
+.app-sidebar.collapsed .sb-brand-icon {
+  display: none;
+}
+
+/* ── Collapse Toggle ─────────────────────────────────────── */
+.sb-toggle {
+  margin-left: auto;
+  flex-shrink: 0;
+  background: rgba(255,255,255,0.14);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+  transition: background var(--sb-transition), transform var(--sb-transition);
+}
+
+.sb-toggle:hover { background: rgba(255,255,255,0.24); }
+.sb-toggle .material-icons { font-size: 20px; transition: transform var(--sb-transition); }
+.app-sidebar.collapsed .sb-toggle .material-icons { transform: rotate(180deg); }
+
+/* ── Search Bar ──────────────────────────────────────────── */
+.sb-search-wrap {
+  padding: 12px 12px 8px;
+  flex-shrink: 0;
+  transition: opacity var(--sb-transition);
+}
+
+.sb-search-inner {
+  display: flex;
+  align-items: center;
+  background: rgba(255,255,255,0.12);
+  border-radius: 10px;
+  padding: 6px 10px;
+  gap: 8px;
+  border: 1px solid var(--sb-border);
+  transition: background var(--sb-transition);
+}
+
+.sb-search-inner:focus-within {
+  background: rgba(255,255,255,0.20);
+  border-color: rgba(255,255,255,0.35);
+}
+
+.sb-search-inner .material-icons { font-size: 17px; color: var(--sb-text-muted); flex-shrink: 0; }
+
+#sidebarSearch {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-size: 13px;
+  width: 100%;
+  font-family: inherit;
+}
+
+#sidebarSearch::placeholder { color: var(--sb-text-muted); }
+
+.app-sidebar.collapsed .sb-search-wrap { opacity: 0; pointer-events: none; height: 0; padding: 0; overflow: hidden; }
+
+/* ── Scrollable Nav Area ─────────────────────────────────── */
+.sb-nav {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 4px 0 16px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.20) transparent;
+}
+
+.sb-nav::-webkit-scrollbar { width: 4px; }
+.sb-nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.20); border-radius: 4px; }
+
+/* ── Section Labels ──────────────────────────────────────── */
+.sb-section-label {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--sb-text-muted);
+  padding: 14px 18px 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  transition: opacity var(--sb-transition);
+}
+
+.app-sidebar.collapsed .sb-section-label { opacity: 0; height: 0; padding: 0; }
+
+/* ── Menu Items (leaf — no children) ─────────────────────── */
+.sb-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px 9px 14px;
+  margin: 2px 8px;
+  border-radius: 10px;
+  color: var(--sb-text);
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  transition: background var(--sb-transition), color var(--sb-transition);
+  position: relative;
+}
+
+.sb-item:hover { background: var(--sb-hover-bg); }
+
+.sb-item.active {
+  background: var(--sb-active-bg);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+
+.sb-item .material-icons {
+  font-size: 20px;
+  flex-shrink: 0;
+  color: rgba(255,255,255,0.85);
+  transition: color var(--sb-transition);
+}
+
+.sb-item.active .material-icons { color: #fff; }
+
+.sb-item-label {
+  font-size: 13.5px;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: opacity var(--sb-transition);
+  line-height: 1;
+}
+
+.app-sidebar.collapsed .sb-item-label { opacity: 0; width: 0; pointer-events: none; }
+
+/* ── Accordion Parent ────────────────────────────────────── */
+
+.sb-group-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px 9px 14px;
+  margin: 2px 8px;
+  border-radius: 10px;
+  color: var(--sb-text);
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  transition: background var(--sb-transition);
+  user-select: none;
+}
+
+.sb-group-header:hover { background: var(--sb-hover-bg); }
+.sb-group-header.open { background: var(--sb-hover-bg); }
+
+.sb-group-header .material-icons {
+  font-size: 20px;
+  flex-shrink: 0;
+  color: rgba(255,255,255,0.85);
+}
+
+.sb-group-title {
+  font-size: 13.5px;
+  font-weight: 500;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: opacity var(--sb-transition);
+}
+
+.app-sidebar.collapsed .sb-group-title { opacity: 0; width: 0; }
+
+.sb-chevron {
+  font-size: 18px !important;
+  margin-left: auto;
+  flex-shrink: 0;
+  transition: transform var(--sb-transition), opacity var(--sb-transition);
+  opacity: 0.6;
+}
+
+.sb-group-header.open .sb-chevron { transform: rotate(180deg); }
+.app-sidebar.collapsed .sb-chevron { opacity: 0; width: 0; overflow: hidden; }
+
+/* ── Accordion Children ──────────────────────────────────── */
+.sb-children {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sb-children.open { max-height: 500px; }
+
+.sb-child-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 12px 7px 46px;
+  margin: 1px 8px;
+  border-radius: 8px;
+  color: rgba(255,255,255,0.75);
+  font-size: 13px;
+  font-weight: 400;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  transition: background var(--sb-transition), color var(--sb-transition);
+}
+
+.sb-child-item:hover { background: var(--sb-hover-bg); color: #fff; }
+
+.sb-child-item.active {
+  background: var(--sb-active-bg);
+  color: #fff;
+  font-weight: 600;
+}
+
+.sb-child-item .material-icons { font-size: 16px; flex-shrink: 0; }
+
+.sb-child-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: opacity var(--sb-transition);
+}
+
+.app-sidebar.collapsed .sb-child-item { justify-content: center; padding: 7px 0; }
+.app-sidebar.collapsed .sb-child-label { opacity: 0; width: 0; pointer-events: none; }
+.app-sidebar.collapsed .sb-children.open { max-height: 0; }
+
+/* ── Tooltip (icon-only mode) ────────────────────────────── */
+.sb-item, .sb-group-header {
+  position: relative;
+}
+
+.app-sidebar.collapsed .sb-item::after,
+.app-sidebar.collapsed .sb-group-header::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: calc(var(--sb-collapsed-width) - 4px);
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(30, 30, 60, 0.95);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 5px 10px;
+  border-radius: 7px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.18s;
+  z-index: 9999;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+.app-sidebar.collapsed .sb-item:hover::after,
+.app-sidebar.collapsed .sb-group-header:hover::after {
+  opacity: 1;
+}
+
+/* ── Footer (user profile) ───────────────────────────────── */
+.sb-footer {
+  padding: 12px 10px;
+  border-top: 1px solid var(--sb-border);
+  flex-shrink: 0;
+}
+
+.sb-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 6px;
+  border-radius: 10px;
+  transition: background var(--sb-transition);
+  position: relative;
+}
+
+.sb-user:hover { background: var(--sb-hover-bg); }
+
+/* ── Hover Logout Button ─────────────────────────────────── */
+.sb-user-action {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(244, 67, 54, 0.15);
+  color: #ff5252;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s, background 0.2s;
+  z-index: 2;
+}
+
+.sb-user-action .material-icons {
+  font-size: 18px;
+}
+
+.sb-user:hover .sb-user-action,
+.sb-user-action:hover {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.sb-user-action:hover {
+  background: rgba(244, 67, 54, 0.35);
+}
+
+.app-sidebar.collapsed .sb-user-action { display: none !important; }
+
+/* On mobile, show logout action always as there is no hover */
+@media (max-width: 991px) {
+  .sb-user-action {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+}
+
+.sb-avatar {
+  width: 34px; height: 34px;
+  border-radius: 9px;
+  background: rgba(255,255,255,0.22);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  font-size: 18px;
+  color: #fff;
+}
+
+.sb-user-info {
+  overflow: hidden;
+  transition: opacity var(--sb-transition);
+}
+
+.sb-user-info .sb-uname {
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sb-user-info .sb-urole {
+  font-size: 11px;
+  color: var(--sb-text-muted);
+  white-space: nowrap;
+}
+
+.app-sidebar.collapsed .sb-user-info { opacity: 0; width: 0; pointer-events: none; }
+
+/* ── Search hidden items ─────────────────────────────────── */
+.sb-hidden { display: none !important; }
+
+/* ═══════════════════════════════════════════════════════════
+   MAIN PANEL — adjust to sidebar width
+   ═══════════════════════════════════════════════════════════ */
+.app-wrapper {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Override Material Dashboard's .main-panel */
+.app-wrapper .main-panel {
+  margin-left: var(--sb-width) !important;
+  width: calc(100% - var(--sb-width)) !important;
+  float: none !important;
+  transition: margin-left var(--sb-transition), width var(--sb-transition);
+  flex: 1;
+}
+
+.app-wrapper.sb-collapsed .main-panel {
+  margin-left: var(--sb-collapsed-width) !important;
+  width: calc(100% - var(--sb-collapsed-width)) !important;
+}
+
+/* Fix navbar inside main-panel so it aligns properly */
+.app-wrapper .navbar.fixed-top {
+  left: var(--sb-width);
+  width: calc(100% - var(--sb-width));
+  transition: left var(--sb-transition), width var(--sb-transition);
+}
+.app-wrapper.sb-collapsed .navbar.fixed-top {
+  left: var(--sb-collapsed-width);
+  width: calc(100% - var(--sb-collapsed-width));
+}
+
+/* ── Sidebar Overlay (mobile backdrop) ───────────────────── */
+#sidebarOverlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1040;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+#sidebarOverlay.active { display: block; }
+
+/* Navbar stays above overlay so account info is always accessible */
+.navbar.fixed-top,
+.navbar.navbar-absolute.fixed-top {
+  z-index: 1045;
+}
+
+/* ── Mobile hamburger for sidebar (inside navbar) ─────────── */
+.sb-mobile-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  width: 38px; height: 38px;
+  border-radius: 8px;
+  margin-right: 6px;
+  transition: background 0.2s;
+}
+
+.sb-mobile-btn:hover { background: rgba(255,255,255,0.15); }
+.sb-mobile-btn .material-icons { font-size: 24px; }
+
+/* ── Responsive (mobile) ─────────────────────────────────── */
+@media (max-width: 991px) {
+  /* Sidebar hidden by default, slides in */
+  .app-sidebar {
+    transform: translateX(-100%);
+    width: var(--sb-width) !important;
+    transition: transform var(--sb-transition);
+  }
+
+  /* Open state */
+  .app-sidebar.mobile-open {
+    transform: translateX(0);
+  }
+
+  /* Collapsed state irrelevant on mobile — always full-width when open */
+  .app-sidebar.collapsed {
+    width: var(--sb-width) !important;
+  }
+
+  /* Restore header to normal (not centered) on mobile */
+  .app-sidebar.collapsed .sb-header {
+    justify-content: flex-start;
+    padding: 18px 14px 16px;
+    gap: 10px;
+  }
+
+  /* Show brand icon on mobile even if desktop-collapsed */
+  .app-sidebar.collapsed .sb-brand-icon { display: flex; }
+
+  /* Show brand text on mobile */
+  .app-sidebar.collapsed .sb-brand-text {
+    opacity: 1;
+    width: auto;
+    pointer-events: auto;
+  }
+
+  /* Show search on mobile */
+  .app-sidebar.collapsed .sb-search-wrap {
+    opacity: 1;
+    pointer-events: auto;
+    height: auto;
+    padding: 12px 12px 8px;
+    overflow: visible;
+  }
+
+  /* Show item labels on mobile */
+  .app-sidebar.collapsed .sb-item-label,
+  .app-sidebar.collapsed .sb-group-title,
+  .app-sidebar.collapsed .sb-child-label { opacity: 1; width: auto; pointer-events: auto; }
+
+  /* Show section labels on mobile */
+  .app-sidebar.collapsed .sb-section-label { opacity: 1; height: auto; padding: 14px 18px 4px; }
+
+  /* Show chevrons on mobile */
+  .app-sidebar.collapsed .sb-chevron { opacity: 0.6; width: auto; overflow: visible; }
+
+  /* Re-enable accordion children on mobile */
+  .app-sidebar.collapsed .sb-children.open { max-height: 500px; }
+
+  /* Child item padding normal on mobile */
+  .app-sidebar.collapsed .sb-child-item { justify-content: flex-start; padding: 7px 12px 7px 46px; }
+
+  /* User info visible on mobile */
+  .app-sidebar.collapsed .sb-user-info { opacity: 1; width: auto; pointer-events: auto; }
+
+  /* No tooltip on mobile */
+  .app-sidebar.collapsed .sb-item::after,
+  .app-sidebar.collapsed .sb-group-header::after { display: none; }
+
+  /* Main panel full width on mobile */
+  .app-wrapper .main-panel {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+
+  /* Navbar left edge at 0 on mobile */
+  .app-wrapper .navbar.fixed-top { left: 0 !important; }
+
+  /* Show hamburger button */
+  .sb-mobile-btn { display: flex; }
+
+  /* Hide Material Dashboard's original navbar toggler (we have our own) */
+  .navbar-toggler { display: none !important; }
+}
+
+/* ── Always show navbar right-side (account info) ──────────
+   Bootstrap collapse hides .navbar-collapse on mobile.
+   Since we replaced the toggler, force it always visible.  */
+.navbar .navbar-collapse {
+  display: flex !important;
+  flex-basis: auto !important;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+/* Ensure navbar-wrapper and title are pinned to the left */
+.navbar .navbar-wrapper {
+  justify-content: flex-start !important;
+  flex: 1; /* Allow it to take space but stay left aligned */
+}
+
+.navbar .navbar-brand {
+  margin: 0 auto 0 0 !important; /* overrides left/right auto and sets top/bottom to 0 */
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  line-height: normal !important;
+  display: flex;
+  align-items: center;
+}
+
+/* Push to the very top in desktop */
+.app-wrapper .navbar.fixed-top {
+  padding-top: 5px !important;
+  padding-bottom: 5px !important;
+}
+
+@media (max-width: 991px) {
+  .app-wrapper .navbar.fixed-top {
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+  }
+}
+
