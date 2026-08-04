@@ -36,17 +36,17 @@
                 <div class="row align-items-end">
                     <div class="col-md-3">
                         <label style="font-size: 0.75rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Dari Tanggal</label>
-                        <input type="date" wire:model="tanggalMulai" class="form-control" style="border: none; border-bottom: 2px solid #f1f5f9; border-radius: 0; padding: 10px 0; background: transparent; font-weight: 600; color: #334155;">
+                        <input type="date" wire:model.live="tanggalMulai" class="form-control" style="border: none; border-bottom: 2px solid #f1f5f9; border-radius: 0; padding: 10px 0; background: transparent; font-weight: 600; color: #334155;">
                     </div>
                     
                     <div class="col-md-3">
                         <label style="font-size: 0.75rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Sampai Tanggal</label>
-                        <input type="date" wire:model="tanggalAkhir" class="form-control" style="border: none; border-bottom: 2px solid #f1f5f9; border-radius: 0; padding: 10px 0; background: transparent; font-weight: 600; color: #334155;">
+                        <input type="date" wire:model.live="tanggalAkhir" class="form-control" style="border: none; border-bottom: 2px solid #f1f5f9; border-radius: 0; padding: 10px 0; background: transparent; font-weight: 600; color: #334155;">
                     </div>
                     
                     <div class="col-md-4">
                         <label style="font-size: 0.75rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Filter Kelas</label>
-                        <select wire:model="kelas" class="form-control custom-select" style="border: none; border-bottom: 2px solid #f1f5f9; border-radius: 0; padding: 10px 0; background: transparent; font-weight: 600; color: #334155; cursor: pointer;">
+                        <select wire:model.live="kelas" class="form-control custom-select" style="border: none; border-bottom: 2px solid #f1f5f9; border-radius: 0; padding: 10px 0; background: transparent; font-weight: 600; color: #334155; cursor: pointer;">
                             <option value="">Semua Kelas</option>
                             @foreach ($kelasList as $k)
                                 <option value="{{ $k->id_kelas }}">{{ $k->tingkat }} {{ $k->index_kelas }} ({{ $k->total_siswa }} Siswa)</option>
@@ -59,6 +59,68 @@
                             <i class="material-icons" style="font-size: 20px; margin-right: 8px;">table_view</i> Export Excel
                         </button>
                     </div>
+                </div>
+
+                <!-- Preview Table Siswa -->
+                <div class="mt-4 pt-4" style="border-top: 1px solid #f1f5f9;">
+                    <h5 style="font-weight: 700; color: #334155; margin-bottom: 15px; font-size: 1rem;">Preview Data Kehadiran</h5>
+                    @if ($presensiSiswa->isEmpty())
+                        <div class="text-center py-4" style="color: #94a3b8; font-size: 0.9rem;">
+                            <i class="material-icons" style="font-size: 40px; display: block; margin-bottom: 8px; color: #cbd5e1;">find_in_page</i>
+                            Tidak ada data kehadiran siswa pada periode dan filter kelas yang dipilih.
+                        </div>
+                    @else
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle" style="margin-bottom: 0;">
+                                <thead style="background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
+                                    <tr>
+                                        <th style="font-size: 0.75rem; font-weight: 800; color: #64748b; border: none; padding: 12px 15px;">TANGGAL</th>
+                                        <th style="font-size: 0.75rem; font-weight: 800; color: #64748b; border: none; padding: 12px 15px;">NAMA SANTRI</th>
+                                        <th style="font-size: 0.75rem; font-weight: 800; color: #64748b; border: none; padding: 12px 15px;">KELAS</th>
+                                        <th style="font-size: 0.75rem; font-weight: 800; color: #64748b; border: none; padding: 12px 15px;">STATUS</th>
+                                        <th style="font-size: 0.75rem; font-weight: 800; color: #64748b; border: none; padding: 12px 15px;">JAM ABSEN</th>
+                                        <th style="font-size: 0.75rem; font-weight: 800; color: #64748b; border: none; padding: 12px 15px;">KETERANGAN</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($presensiSiswa as $p)
+                                        <tr style="border-bottom: 1px solid #f1f5f9;">
+                                            <td style="padding: 12px 15px; font-weight: 600; color: #475569; border: none;">{{ date('d-m-Y', strtotime($p->tanggal)) }}</td>
+                                            <td style="padding: 12px 15px; font-weight: 700; color: #1e293b; border: none;">{{ $p->siswa->nama_siswa ?? '-' }}</td>
+                                            <td style="padding: 12px 15px; border: none;">
+                                                <span class="badge" style="background: #eff6ff; color: #1d4ed8; font-weight: 700; border-radius: 6px; padding: 5px 8px;">
+                                                    {{ $p->kelas->tingkat ?? '-' }} {{ $p->kelas->index_kelas ?? '' }}
+                                                </span>
+                                            </td>
+                                            <td style="padding: 12px 15px; border: none;">
+                                                @php
+                                                    $badgeColor = match($p->id_kehadiran) {
+                                                        1 => 'background: #ecfdf5; color: #047857;',
+                                                        2 => 'background: #fffbeb; color: #b45309;',
+                                                        3 => 'background: #eff6ff; color: #1d4ed8;',
+                                                        4 => 'background: #fef2f2; color: #b91c1c;',
+                                                        default => 'background: #f1f5f9; color: #475569;'
+                                                    };
+                                                @endphp
+                                                <span class="badge" style="{{ $badgeColor }} font-weight: 700; border-radius: 6px; padding: 5px 10px; text-transform: uppercase;">
+                                                    {{ $p->kehadiran->kehadiran ?? '-' }}
+                                                </span>
+                                            </td>
+                                            <td style="padding: 12px 15px; color: #64748b; border: none;">
+                                                {{ $p->jam_masuk ? substr($p->jam_masuk, 0, 5) : '-' }}
+                                            </td>
+                                            <td style="padding: 12px 15px; color: #64748b; border: none; font-style: italic;">
+                                                {{ $p->keterangan ? $p->keterangan : '-' }}
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="mt-3">
+                            {{ $presensiSiswa->links() }}
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -74,12 +136,12 @@
                 <div class="row align-items-end">
                     <div class="col-md-3">
                         <label style="font-size: 0.75rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Dari Tanggal</label>
-                        <input type="date" wire:model="tanggalMulaiGuru" class="form-control" style="border: none; border-bottom: 2px solid #f1f5f9; border-radius: 0; padding: 10px 0; background: transparent; font-weight: 600; color: #334155;">
+                        <input type="date" wire:model.live="tanggalMulaiGuru" class="form-control" style="border: none; border-bottom: 2px solid #f1f5f9; border-radius: 0; padding: 10px 0; background: transparent; font-weight: 600; color: #334155;">
                     </div>
                     
                     <div class="col-md-3">
                         <label style="font-size: 0.75rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Sampai Tanggal</label>
-                        <input type="date" wire:model="tanggalAkhirGuru" class="form-control" style="border: none; border-bottom: 2px solid #f1f5f9; border-radius: 0; padding: 10px 0; background: transparent; font-weight: 600; color: #334155;">
+                        <input type="date" wire:model.live="tanggalAkhirGuru" class="form-control" style="border: none; border-bottom: 2px solid #f1f5f9; border-radius: 0; padding: 10px 0; background: transparent; font-weight: 600; color: #334155;">
                     </div>
                     
                     <div class="col-md-4">
@@ -93,6 +155,62 @@
                             <i class="material-icons" style="font-size: 20px; margin-right: 8px;">table_view</i> Export Excel
                         </button>
                     </div>
+                </div>
+
+                <!-- Preview Table Guru -->
+                <div class="mt-4 pt-4" style="border-top: 1px solid #f1f5f9;">
+                    <h5 style="font-weight: 700; color: #334155; margin-bottom: 15px; font-size: 1rem;">Preview Data Kehadiran</h5>
+                    @if ($presensiGuru->isEmpty())
+                        <div class="text-center py-4" style="color: #94a3b8; font-size: 0.9rem;">
+                            <i class="material-icons" style="font-size: 40px; display: block; margin-bottom: 8px; color: #cbd5e1;">find_in_page</i>
+                            Tidak ada data kehadiran guru pada periode yang dipilih.
+                        </div>
+                    @else
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle" style="margin-bottom: 0;">
+                                <thead style="background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
+                                    <tr>
+                                        <th style="font-size: 0.75rem; font-weight: 800; color: #64748b; border: none; padding: 12px 15px;">TANGGAL</th>
+                                        <th style="font-size: 0.75rem; font-weight: 800; color: #64748b; border: none; padding: 12px 15px;">NAMA GURU</th>
+                                        <th style="font-size: 0.75rem; font-weight: 800; color: #64748b; border: none; padding: 12px 15px;">STATUS</th>
+                                        <th style="font-size: 0.75rem; font-weight: 800; color: #64748b; border: none; padding: 12px 15px;">JAM ABSEN</th>
+                                        <th style="font-size: 0.75rem; font-weight: 800; color: #64748b; border: none; padding: 12px 15px;">KETERANGAN</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($presensiGuru as $p)
+                                        <tr style="border-bottom: 1px solid #f1f5f9;">
+                                            <td style="padding: 12px 15px; font-weight: 600; color: #475569; border: none;">{{ date('d-m-Y', strtotime($p->tanggal)) }}</td>
+                                            <td style="padding: 12px 15px; font-weight: 700; color: #1e293b; border: none;">{{ $p->guru->nama_guru ?? '-' }}</td>
+                                            <td style="padding: 12px 15px; border: none;">
+                                                @php
+                                                    $badgeColor = match($p->id_kehadiran) {
+                                                        1 => 'background: #ecfdf5; color: #047857;',
+                                                        2 => 'background: #fffbeb; color: #b45309;',
+                                                        3 => 'background: #eff6ff; color: #1d4ed8;',
+                                                        4 => 'background: #fef2f2; color: #b91c1c;',
+                                                        default => 'background: #f1f5f9; color: #475569;'
+                                                    };
+                                                @endphp
+                                                <span class="badge" style="{{ $badgeColor }} font-weight: 700; border-radius: 6px; padding: 5px 10px; text-transform: uppercase;">
+                                                    {{ $p->kehadiran->kehadiran ?? '-' }}
+                                                </span>
+                                            </td>
+                                            <td style="padding: 12px 15px; color: #64748b; border: none;">
+                                                {{ $p->jam_masuk ? substr($p->jam_masuk, 0, 5) : '-' }}
+                                            </td>
+                                            <td style="padding: 12px 15px; color: #64748b; border: none; font-style: italic;">
+                                                {{ $p->keterangan ? $p->keterangan : '-' }}
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="mt-3">
+                            {{ $presensiGuru->links() }}
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>

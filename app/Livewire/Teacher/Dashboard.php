@@ -59,11 +59,9 @@ class Dashboard extends Component
             $jadwalKelasHariIni = JadwalPelajaran::with(['mapel', 'guru'])
                 ->where('id_kelas', $kelas->id_kelas)
                 ->where('hari', $hariIni)
-                ->orderBy('jam_mulai', 'asc')
+                ->orderBy('id_jadwal', 'asc')
                 ->get();
         }
-
-        $seragam = \App\Models\Seragam::where('hari', $hariIni)->get();
 
         return view('livewire.teacher.dashboard', [
             'isTeacher' => true,
@@ -72,7 +70,6 @@ class Dashboard extends Component
             'kelas' => $kelas,
             'summary' => $summary,
             'jadwalKelasHariIni' => $jadwalKelasHariIni,
-            'seragam' => $seragam,
             'dateNow' => Carbon::now()->translatedFormat('d F Y')
         ])->layout('layouts.admin', ['title' => 'Dashboard Wali Kelas', 'context' => 'dashboard']);
     }

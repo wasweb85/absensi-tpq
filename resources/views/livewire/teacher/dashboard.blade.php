@@ -169,7 +169,6 @@
                             <table class="t-table">
                                 <thead>
                                     <tr>
-                                        <th>Jam</th>
                                         <th>Mata Pelajaran</th>
                                         <th>Guru</th>
                                     </tr>
@@ -177,12 +176,6 @@
                                 <tbody>
                                     @foreach($jadwalKelasHariIni as $j)
                                         <tr>
-                                            <td>
-                                                <span class="t-badge purple">
-                                                    <i class="material-icons" style="font-size: 0.85rem;">schedule</i>
-                                                    {{ substr($j->jam_mulai, 0, 5) }} - {{ substr($j->jam_selesai, 0, 5) }}
-                                                </span>
-                                            </td>
                                             <td style="font-weight: 600;">{{ $j->mapel->nama_mapel ?? '-' }}</td>
                                             <td>
                                                 <div style="display: flex; align-items: center; gap: 0.5rem;">
@@ -201,60 +194,6 @@
                 </div>
             @endif
 
-            {{-- KETENTUAN SERAGAM --}}
-            <div class="t-card">
-                <div class="t-card-header">
-                    <div class="t-card-header-icon teal">
-                        <i class="material-icons">checkroom</i>
-                    </div>
-                    <div>
-                        <div class="t-card-title">Ketentuan Seragam</div>
-                        <div class="t-card-subtitle">Pakaian wajib untuk hari ini</div>
-                    </div>
-                </div>
-
-                @if($seragam->isEmpty())
-                    <div class="t-empty">
-                        <i class="material-icons">styler</i>
-                        <p>Belum ada ketentuan seragam hari ini.</p>
-                    </div>
-                @else
-                    <div style="overflow-x: auto;">
-                        <table class="t-table">
-                            <thead>
-                                <tr>
-                                    <th>Nama Seragam</th>
-                                    <th>Deskripsi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($seragam as $s)
-                                    <tr>
-                                        <td>
-                                            <span class="t-badge teal">{{ $s->nama_seragam }}</span>
-                                        </td>
-                                        <td>
-                                            {{ $s->deskripsi ?? '-' }}
-                                            @if($s->keterangan)
-                                                <div style="font-size: 0.75rem; color: var(--t-on-surface-subtle); margin-top: 0.25rem;">{{ $s->keterangan }}</div>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                @endif
-            </div>
         </div>
-
     @endif
-
-    <style>
-    @media (min-width: 1024px) {
-        .t-page > div:last-of-type {
-            grid-template-columns: 1fr 1fr !important;
-        }
-    }
-    </style>
 </div>

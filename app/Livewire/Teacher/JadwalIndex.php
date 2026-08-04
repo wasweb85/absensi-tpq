@@ -37,7 +37,7 @@ class JadwalIndex extends Component
         }
 
         $jadwalRaw = $query->orderByRaw('FIELD(hari, "Senin","Selasa","Rabu","Kamis","Jumat","Sabtu")')
-                           ->orderBy('jam_mulai', 'asc')
+                           ->orderBy('id_jadwal', 'asc')
                            ->get();
 
         $hariUrut = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];

@@ -4,7 +4,6 @@ namespace App\Livewire\Siswa;
 
 use Livewire\Component;
 use App\Models\JadwalPelajaran;
-use App\Models\Seragam;
 use Illuminate\Support\Facades\Auth;
 
 class JadwalIndex extends Component
@@ -19,7 +18,7 @@ class JadwalIndex extends Component
         $jadwalMingguan = JadwalPelajaran::with(['mapel', 'guru'])
             ->where('id_kelas', $idKelas)
             ->orderByRaw('FIELD(hari, "Senin","Selasa","Rabu","Kamis","Jumat","Sabtu")')
-            ->orderBy('jam_mulai', 'asc')
+            ->orderBy('id_jadwal', 'asc')
             ->get()
             ->groupBy('hari')
             ->toArray();
@@ -27,11 +26,6 @@ class JadwalIndex extends Component
         // Ensure all days exist in the array
         $hariUrut = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
         $jadwalMingguan = array_merge(array_fill_keys($hariUrut, []), $jadwalMingguan);
-
-        $seragamMap = Seragam::orderByRaw('FIELD(hari, "Senin","Selasa","Rabu","Kamis","Jumat","Sabtu")')
-            ->get()
-            ->keyBy('hari')
-            ->toArray();
 
         $kelasInfo = null;
         if ($siswa->kelas) {
@@ -44,7 +38,6 @@ class JadwalIndex extends Component
 
         return view('livewire.siswa.jadwal-index', [
             'jadwalMingguan' => $jadwalMingguan,
-            'seragam' => $seragamMap,
             'kelasInfo' => $kelasInfo,
             'tahun_ajaran' => $settings->school_year ?? '-',
             'semester' => $settings->semester ?? '-'

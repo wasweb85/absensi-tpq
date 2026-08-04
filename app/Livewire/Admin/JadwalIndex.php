@@ -22,8 +22,6 @@ class JadwalIndex extends Component
     public $id_mapel;
     public $id_guru;
     public $hari;
-    public $jam_mulai;
-    public $jam_selesai;
     public $keterangan;
 
     public $isEdit = false;
@@ -45,7 +43,7 @@ class JadwalIndex extends Component
         }
 
         $jadwalRaw = $query->orderByRaw('FIELD(hari, "Senin","Selasa","Rabu","Kamis","Jumat","Sabtu")')
-                           ->orderBy('jam_mulai', 'asc')
+                           ->orderBy('id_jadwal', 'asc')
                            ->get();
 
         $hariUrut = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
@@ -72,8 +70,6 @@ class JadwalIndex extends Component
             'id_mapel' => 'required|exists:tb_mapel,id_mapel',
             'id_guru' => 'required|exists:tb_guru,id_guru',
             'hari' => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu',
-            'jam_mulai' => 'required|date_format:H:i',
-            'jam_selesai' => 'required|date_format:H:i|after:jam_mulai',
             'keterangan' => 'nullable|string'
         ]);
 
@@ -82,8 +78,6 @@ class JadwalIndex extends Component
             'id_mapel' => $this->id_mapel,
             'id_guru' => $this->id_guru,
             'hari' => $this->hari,
-            'jam_mulai' => $this->jam_mulai,
-            'jam_selesai' => $this->jam_selesai,
             'keterangan' => $this->keterangan,
         ]);
 
@@ -91,8 +85,9 @@ class JadwalIndex extends Component
         session()->flash('success', 'Tambah jadwal berhasil');
     }
 
-    public function edit($id)
+    public function edit($id = null)
     {
+        if (!$id) return;
         $this->resetFields();
         $jadwal = JadwalPelajaran::findOrFail($id);
         
@@ -101,9 +96,6 @@ class JadwalIndex extends Component
         $this->id_mapel = $jadwal->id_mapel;
         $this->id_guru = $jadwal->id_guru;
         $this->hari = $jadwal->hari;
-        // format to H:i
-        $this->jam_mulai = date('H:i', strtotime($jadwal->jam_mulai));
-        $this->jam_selesai = date('H:i', strtotime($jadwal->jam_selesai));
         $this->keterangan = $jadwal->keterangan;
 
         $this->isEdit = true;
@@ -117,8 +109,6 @@ class JadwalIndex extends Component
             'id_mapel' => 'required|exists:tb_mapel,id_mapel',
             'id_guru' => 'required|exists:tb_guru,id_guru',
             'hari' => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu',
-            'jam_mulai' => 'required|date_format:H:i',
-            'jam_selesai' => 'required|date_format:H:i|after:jam_mulai',
             'keterangan' => 'nullable|string'
         ]);
 
@@ -128,8 +118,6 @@ class JadwalIndex extends Component
             'id_mapel' => $this->id_mapel,
             'id_guru' => $this->id_guru,
             'hari' => $this->hari,
-            'jam_mulai' => $this->jam_mulai,
-            'jam_selesai' => $this->jam_selesai,
             'keterangan' => $this->keterangan,
         ]);
 
@@ -137,8 +125,9 @@ class JadwalIndex extends Component
         session()->flash('success', 'Edit jadwal berhasil');
     }
 
-    public function deleteId($id)
+    public function deleteId($id = null)
     {
+        if (!$id) return;
         $this->id_jadwal = $id;
         $this->dispatch('show-delete-modal');
     }
@@ -159,8 +148,6 @@ class JadwalIndex extends Component
         $this->id_mapel = '';
         $this->id_guru = '';
         $this->hari = '';
-        $this->jam_mulai = '';
-        $this->jam_selesai = '';
         $this->keterangan = '';
     }
 }

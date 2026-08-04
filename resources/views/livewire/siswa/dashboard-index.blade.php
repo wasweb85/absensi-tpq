@@ -4,7 +4,7 @@
         $currentDay = $days[date('w')];
         if ($currentDay == 'Minggu') $currentDay = 'Senin'; // Fallback
         
-        $jadwalHariIni = \App\Models\JadwalPelajaran::with('mapel')->where('id_kelas', session('id_kelas'))->where('hari', $currentDay)->orderBy('jam_mulai', 'asc')->get();
+        $jadwalHariIni = \App\Models\JadwalPelajaran::with('mapel')->where('id_kelas', session('id_kelas'))->where('hari', $currentDay)->orderBy('id_jadwal', 'asc')->get();
     @endphp
 
     <!-- Splash Area -->
@@ -81,10 +81,6 @@
                     <div class="schedule-card">
                         <div class="schedule-info">
                             <h4 style="margin: 0; font-size: 14px; font-weight: 600; color: #1e293b;">{{ $j->mapel->nama_mapel ?? '-' }}</h4>
-                            <div class="schedule-time">
-                                <i class="material-icons" style="font-size: 14px;">schedule</i>
-                                <span>{{ substr($j->jam_mulai, 0, 5) }} - {{ substr($j->jam_selesai, 0, 5) }}</span>
-                            </div>
                         </div>
                         <div class="schedule-icon">
                             <i class="material-icons">menu_book</i>

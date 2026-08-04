@@ -70,7 +70,6 @@
                                             <table class="table table-hover">
                                                 <thead class="text-primary">
                                                     <tr>
-                                                        <th><b>Waktu</b></th>
                                                         <th><b>Kelas</b></th>
                                                         <th><b>Mata Pelajaran</b></th>
                                                         <th><b>Guru</b></th>
@@ -81,7 +80,6 @@
                                                 <tbody>
                                                     @forelse($jadwalList[$h] as $item)
                                                         <tr>
-                                                            <td>{{ date('H:i', strtotime($item->jam_mulai)) }} - {{ date('H:i', strtotime($item->jam_selesai)) }}</td>
                                                             <td>
                                                                 @if($item->kelas)
                                                                     {{ $item->kelas->tingkat }} {{ $item->kelas->index_kelas }}
@@ -93,17 +91,17 @@
                                                             <td>{{ $item->guru->nama_guru ?? '-' }}</td>
                                                             <td>{{ $item->keterangan }}</td>
                                                             <td>
-                                                                <button wire:click="edit({{ $item->id_jadwal_pelajaran }})" class="btn btn-primary p-2">
+                                                                <button wire:click="edit({{ $item->id_jadwal }})" class="btn btn-primary p-2">
                                                                     <i class="material-icons">edit</i>
                                                                 </button>
-                                                                <button wire:click="deleteId({{ $item->id_jadwal_pelajaran }})" class="btn btn-danger p-2">
+                                                                <button wire:click="deleteId({{ $item->id_jadwal }})" class="btn btn-danger p-2">
                                                                     <i class="material-icons">delete_forever</i>
                                                                 </button>
                                                             </td>
                                                         </tr>
                                                     @empty
                                                         <tr>
-                                                            <td colspan="6" class="text-center">Belum ada jadwal hari ini</td>
+                                                            <td colspan="5" class="text-center">Belum ada jadwal hari ini</td>
                                                         </tr>
                                                     @endforelse
                                                 </tbody>
@@ -176,16 +174,6 @@
                                     <option value="Sabtu">Sabtu</option>
                                 </select>
                                 @error('hari') <span class="text-danger">{{ $message }}</span> @enderror
-                            </div>
-                            <div class="col-md-6 form-group">
-                                <label>Jam Mulai <span class="text-danger">*</span></label>
-                                <input type="time" wire:model="jam_mulai" class="form-control" required>
-                                @error('jam_mulai') <span class="text-danger">{{ $message }}</span> @enderror
-                            </div>
-                            <div class="col-md-6 form-group">
-                                <label>Jam Selesai <span class="text-danger">*</span></label>
-                                <input type="time" wire:model="jam_selesai" class="form-control" required>
-                                @error('jam_selesai') <span class="text-danger">{{ $message }}</span> @enderror
                             </div>
                             <div class="col-md-12 form-group">
                                 <label>Keterangan (Opsional)</label>

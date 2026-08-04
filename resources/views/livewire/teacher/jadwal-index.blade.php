@@ -46,7 +46,6 @@
                                 <table class="t-table">
                                     <thead>
                                         <tr>
-                                            <th>Jam</th>
                                             <th>Kelas</th>
                                             <th>Mata Pelajaran</th>
                                             <th>Guru / Ustadz</th>
@@ -56,12 +55,6 @@
                                     <tbody>
                                         @foreach($jadwals as $j)
                                             <tr>
-                                                <td>
-                                                    <span class="t-badge purple">
-                                                        <i class="material-icons" style="font-size: 0.85rem;">schedule</i>
-                                                        {{ substr($j->jam_mulai, 0, 5) }} - {{ substr($j->jam_selesai, 0, 5) }}
-                                                    </span>
-                                                </td>
                                                 <td>
                                                     <span class="t-badge blue">{{ $j->kelas->tingkat ?? '' }} {{ $j->kelas->index_kelas ?? '' }}</span>
                                                 </td>

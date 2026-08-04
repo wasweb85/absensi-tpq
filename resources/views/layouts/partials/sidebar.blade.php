@@ -125,7 +125,7 @@ $roleLabel = $user ? match($user->is_superadmin) {
       </div>
 
       <!-- Data Master group -->
-      @php $mGrp = sbOpen($context, ['siswa', 'guru', 'kelas', 'mapel', 'jadwal-pelajaran', 'seragam', 'petugas']); @endphp
+      @php $mGrp = sbOpen($context, ['siswa', 'guru', 'kelas', 'mapel', 'jadwal-pelajaran', 'petugas']); @endphp
       <div class="sb-section-label">Data Master</div>
       <div class="sb-group">
          <div class="sb-group-header {{ $mGrp }}" data-tooltip="Data Master">
@@ -155,10 +155,6 @@ $roleLabel = $user ? match($user->is_superadmin) {
             <a wire:navigate.hover class="sb-child-item {{ sbActive($context, 'jadwal-pelajaran') }}" href="{{ url('admin/jadwal-pelajaran') }}">
                <i class="material-icons">menu_book</i>
                <span class="sb-child-label">Jadwal Pelajaran</span>
-            </a>
-            <a wire:navigate.hover class="sb-child-item {{ sbActive($context, 'seragam') }}" href="{{ url('admin/seragam') }}">
-               <i class="material-icons">checkroom</i>
-               <span class="sb-child-label">Ketentuan Seragam</span>
             </a>
             @if ($isSuperadmin)
             <a wire:navigate.hover class="sb-child-item {{ sbActive($context, 'petugas') }}" href="{{ url('admin/petugas') }}">

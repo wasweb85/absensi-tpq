@@ -37,7 +37,6 @@ Route::middleware([
         Route::get('kelas', \App\Livewire\Admin\KelasIndex::class);
         Route::get('mapel', \App\Livewire\Admin\MapelIndex::class);
         Route::get('jadwal-pelajaran', \App\Livewire\Admin\JadwalIndex::class);
-        Route::get('seragam', \App\Livewire\Admin\SeragamIndex::class);
         Route::get('absen-guru', \App\Livewire\Admin\AbsenGuruIndex::class);
         Route::get('absen-siswa', \App\Livewire\Admin\AbsenSiswaIndex::class);
         Route::get('petugas', \App\Livewire\Admin\PetugasIndex::class);
