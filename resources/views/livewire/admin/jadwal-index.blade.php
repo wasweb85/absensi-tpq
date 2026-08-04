@@ -39,6 +39,12 @@
                         color: #1e293b;
                         margin: 0;
                     }
+                    .modern-table-subtitle {
+                        font-size: 0.85rem;
+                        color: #94a3b8;
+                        margin-top: 3px;
+                        margin-bottom: 0;
+                    }
                     .modern-table-actions .btn {
                         margin: 0 0 0 10px;
                         border-radius: 8px;
@@ -168,7 +174,10 @@
                     <div class="col-12">
                         <div class="modern-table-card">
                             <div class="modern-table-header">
-                                <h4 class="modern-table-title">Direktori Jadwal Pelajaran</h4>
+                                <div>
+                                    <h4 class="modern-table-title">Jadwal Pelajaran</h4>
+                                    <p class="modern-table-subtitle">Manajemen Jadwal Pelajaran TPQ</p>
+                                </div>
                                 <div class="modern-table-actions">
                                     <button wire:click="$refresh" class="btn btn-refresh">
                                         <i class="material-icons" style="font-size: 18px; vertical-align: middle;">refresh</i>
@@ -259,53 +268,61 @@
         </div>
     </div>
 
-    <!-- Form Modal (Add / Edit) -->
+    <!-- Form Modal (Add / Edit Jadwal) -->
     @if($showModal)
-    <div class="modal fade show" style="display: block; background: rgba(0,0,0,0.5);" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
+    <div class="modal fade show" style="display: block; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 1050; overflow-y: auto;" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content" style="border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); overflow: hidden; background: #fff;">
                 <form wire:submit.prevent="{{ $isEdit ? 'update' : 'store' }}">
-                    <div class="modal-header">
-                        <h5 class="modal-title">{{ $isEdit ? 'Edit Jadwal' : 'Tambah Jadwal' }}</h5>
-                        <button type="button" class="close" wire:click="$set('showModal', false)">
-                            <span aria-hidden="true">&times;</span>
+                    <div class="modal-header" style="padding: 20px 24px; border-bottom: 1px solid #f1f5f9; background: #fafafa; display: flex; align-items: center; justify-content: space-between;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 40px; height: 40px; border-radius: 10px; background: #dcfce7; color: #16a34a; display: flex; align-items: center; justify-content: center;">
+                                <i class="material-icons" style="font-size: 22px;">{{ $isEdit ? 'edit_calendar' : 'edit_calendar' }}</i>
+                            </div>
+                            <div>
+                                <h5 class="modal-title" style="font-size: 1.1rem; font-weight: 700; color: #0f172a; margin: 0;">{{ $isEdit ? 'Edit Jadwal' : 'Tambah Jadwal' }}</h5>
+                                <p style="font-size: 0.78rem; color: #64748b; margin: 2px 0 0 0;">Atur jadwal mata pelajaran, pengajar, dan hari pelaksanaan</p>
+                            </div>
+                        </div>
+                        <button type="button" wire:click="$set('showModal', false)" style="background: transparent; border: none; font-size: 20px; color: #94a3b8; cursor: pointer; padding: 4px;">
+                            &times;
                         </button>
                     </div>
-                    <div class="modal-body">
+                    <div class="modal-body" style="padding: 24px; background: #fff;">
                         <div class="row">
-                            <div class="col-md-6 form-group">
-                                <label>Kelas <span class="text-danger">*</span></label>
-                                <select wire:model="id_kelas" class="form-control" required>
+                            <div class="col-md-6 form-group mb-3">
+                                <label style="font-size: 0.82rem; font-weight: 600; color: #334155; margin-bottom: 6px; display: block;">Kelas <span class="text-danger">*</span></label>
+                                <select wire:model="id_kelas" class="form-control" style="border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.9rem; background: #fff;" required>
                                     <option value="">-- Pilih Kelas --</option>
                                     @foreach($kelasList as $k)
                                         <option value="{{ $k->id_kelas }}">{{ $k->tingkat }} {{ $k->index_kelas }}</option>
                                     @endforeach
                                 </select>
-                                @error('id_kelas') <span class="text-danger">{{ $message }}</span> @enderror
+                                @error('id_kelas') <span class="text-danger" style="font-size: 0.78rem;">{{ $message }}</span> @enderror
                             </div>
-                            <div class="col-md-6 form-group">
-                                <label>Mata Pelajaran <span class="text-danger">*</span></label>
-                                <select wire:model="id_mapel" class="form-control" required>
+                            <div class="col-md-6 form-group mb-3">
+                                <label style="font-size: 0.82rem; font-weight: 600; color: #334155; margin-bottom: 6px; display: block;">Mata Pelajaran <span class="text-danger">*</span></label>
+                                <select wire:model="id_mapel" class="form-control" style="border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.9rem; background: #fff;" required>
                                     <option value="">-- Pilih Mata Pelajaran --</option>
                                     @foreach($mapelList as $m)
                                         <option value="{{ $m->id_mapel }}">{{ $m->nama_mapel }}</option>
                                     @endforeach
                                 </select>
-                                @error('id_mapel') <span class="text-danger">{{ $message }}</span> @enderror
+                                @error('id_mapel') <span class="text-danger" style="font-size: 0.78rem;">{{ $message }}</span> @enderror
                             </div>
-                            <div class="col-md-6 form-group">
-                                <label>Guru / Ustadz <span class="text-danger">*</span></label>
-                                <select wire:model="id_guru" class="form-control" required>
+                            <div class="col-md-6 form-group mb-3">
+                                <label style="font-size: 0.82rem; font-weight: 600; color: #334155; margin-bottom: 6px; display: block;">Guru / Ustadz <span class="text-danger">*</span></label>
+                                <select wire:model="id_guru" class="form-control" style="border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.9rem; background: #fff;" required>
                                     <option value="">-- Pilih Guru --</option>
                                     @foreach($guruList as $g)
                                         <option value="{{ $g->id_guru }}">{{ $g->nama_guru }}</option>
                                     @endforeach
                                 </select>
-                                @error('id_guru') <span class="text-danger">{{ $message }}</span> @enderror
+                                @error('id_guru') <span class="text-danger" style="font-size: 0.78rem;">{{ $message }}</span> @enderror
                             </div>
-                            <div class="col-md-6 form-group">
-                                <label>Hari <span class="text-danger">*</span></label>
-                                <select wire:model="hari" class="form-control" required>
+                            <div class="col-md-6 form-group mb-3">
+                                <label style="font-size: 0.82rem; font-weight: 600; color: #334155; margin-bottom: 6px; display: block;">Hari <span class="text-danger">*</span></label>
+                                <select wire:model="hari" class="form-control" style="border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.9rem; background: #fff;" required>
                                     <option value="">-- Pilih Hari --</option>
                                     <option value="Senin">Senin</option>
                                     <option value="Selasa">Selasa</option>
@@ -314,18 +331,20 @@
                                     <option value="Jumat">Jumat</option>
                                     <option value="Sabtu">Sabtu</option>
                                 </select>
-                                @error('hari') <span class="text-danger">{{ $message }}</span> @enderror
+                                @error('hari') <span class="text-danger" style="font-size: 0.78rem;">{{ $message }}</span> @enderror
                             </div>
-                            <div class="col-md-12 form-group">
-                                <label>Keterangan (Opsional)</label>
-                                <textarea wire:model="keterangan" class="form-control" rows="2"></textarea>
-                                @error('keterangan') <span class="text-danger">{{ $message }}</span> @enderror
+                            <div class="col-md-12 form-group mb-2">
+                                <label style="font-size: 0.82rem; font-weight: 600; color: #334155; margin-bottom: 6px; display: block;">Keterangan (Opsional)</label>
+                                <textarea wire:model="keterangan" class="form-control" style="border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.9rem;" rows="2" placeholder="Catatan tambahan mengenai jadwal"></textarea>
+                                @error('keterangan') <span class="text-danger" style="font-size: 0.78rem;">{{ $message }}</span> @enderror
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" wire:click="$set('showModal', false)">Batal</button>
-                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    <div class="modal-footer" style="padding: 16px 24px; background: #f8fafc; border-top: 1px solid #f1f5f9; display: flex; justify-content: flex-end; gap: 10px;">
+                        <button type="button" class="btn" style="background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 18px; font-weight: 600; font-size: 0.85rem;" wire:click="$set('showModal', false)">Batal</button>
+                        <button type="submit" class="btn" style="background: #16a34a; color: #ffffff; border: none; border-radius: 8px; padding: 8px 22px; font-weight: 700; font-size: 0.85rem; box-shadow: 0 4px 6px -1px rgba(22, 163, 74, 0.2);">
+                            <i class="material-icons" style="font-size: 18px; vertical-align: middle; margin-right: 4px;">save</i> Simpan
+                        </button>
                     </div>
                 </form>
             </div>

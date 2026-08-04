@@ -1,304 +1,281 @@
-<div class="main-panel" style="width: 100%;">
-    <div class="content pt-2 px-0 px-sm-1 px-md-2">
-        <div class="container-fluid px-0 px-md-2">
-            <div class="row mx-auto">
-                <div class="col-lg-6 col-xxl-5 order-1 order-lg-2">
-                    <div class="card">
-                        <div class="col-10 mx-auto card-header card-header-primary">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <h4 class="card-title"><b>Absen <span style="text-transform: capitalize;">{{ $waktu }}</span></b></h4>
-                                </div>
-                                <div class="col-md-6 text-right">
-                                    <button wire:click="setWaktu('{{ $waktu == 'masuk' ? 'pulang' : 'masuk' }}')" class="btn btn-sm btn-{{ $waktu == 'masuk' ? 'warning' : 'success' }}">
-                                        Ganti ke Absen {{ $waktu == 'masuk' ? 'Pulang' : 'Masuk' }}
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+<div class="scan-page-wrapper" style="min-height: 100vh; background: #f8fafc; font-family: 'Inter', system-ui, sans-serif; color: #0f172a; padding: 20px 24px;">
+    
+    {{-- TOP NAVBAR --}}
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
+        {{-- Left: Back Button & Live Date/Time --}}
+        <div style="display: flex; align-items: center; gap: 16px;">
+            @php
+                $dashUrl = url('/');
+                if (auth()->check()) {
+                    $dashUrl = !empty(auth()->user()->id_guru) ? url('/teacher/dashboard') : url('/dashboard');
+                }
+            @endphp
+            <a href="{{ $dashUrl }}" onclick="if(window.history.length > 1){ window.history.back(); return false; }" style="width: 40px; height: 40px; border-radius: 12px; background: #ffffff; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; color: #334155; text-decoration: none; box-shadow: 0 1px 3px rgba(0,0,0,0.05); transition: all 0.2s;" title="Kembali">
+                <i class="material-icons" style="font-size: 22px;">arrow_back</i>
+            </a>
 
-                        <div class="card-body">
-                            <div class="row" style="margin-top: 10px;">
-                                <div class="col-12 px-0 px-sm-3">
-                                    <div class="d-flex flex-column align-items-center form-group" style="padding-bottom: 5px;">
-                                        <div class="d-flex align-items-center mb-1 w-100 px-3 px-sm-0">
-                                            <div class="togglebutton d-inline-block m-0 h-100 align-items-center">
-                                                <label class="m-0 text-dark">
-                                                    <input type="checkbox" id="toggleKamera">
-                                                    <span class="toggle"></span>
-                                                    Gunakan Kamera (Scan QR)
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="col-12 mt-2" id="cameraSection" style="display: none;" wire:ignore>
-                                    <div class="form-group w-100 px-3 px-sm-0 mt-0">
-                                        <label for="pilihKamera">Pilih Kamera:</label>
-                                        <select class="form-control" id="pilihKamera" style="width: 100%;">
-                                            <option value="">Memuat kamera...</option>
-                                        </select>
-                                    </div>
-                                    <div class="previewParent d-flex align-items-center justify-content-center">
-                                        <video id="previewKamera" class="w-100"></video>
-                                    </div>
-                                </div>
+            <div>
+                <div id="liveDate" style="font-weight: 700; font-size: 0.95rem; color: #1e293b;">
+                    {{ \Carbon\Carbon::now()->locale('id')->translatedFormat('l, j F Y') }}
+                </div>
+                <div id="liveTime" style="font-size: 0.78rem; font-weight: 600; color: #94a3b8; letter-spacing: 0.5px;">
+                    {{ \Carbon\Carbon::now()->format('H.i.s') }} WIB
+                </div>
+            </div>
+        </div>
 
-                                <div class="col-12 mt-3 px-3">
-                                    <div class="d-flex flex-column align-items-center form-group">
-                                        <div class="d-flex align-items-center mb-2 w-100">
-                                            <div class="togglebutton d-inline-block m-0 h-100 align-items-center">
-                                                <label class="m-0 text-dark">
-                                                    <input type="checkbox" id="toggleRFID" checked>
-                                                    <span class="toggle"></span>
-                                                    Gunakan RFID / Barcode Scanner (USB)
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <span id="statusBadge" class="badge badge-success p-2 w-100 mb-2">
-                                            <span id="statusText" style="font-size: 14px;">RFID Reader: Siap</span>
-                                        </span>
-                                        <div class="w-100 position-relative">
-                                            <input type="text" id="rfidInput" class="form-control px-2" placeholder="Scan kartu/QR disini..." 
-                                                autocomplete="off" style="border: 2px solid #4caf50; border-radius: 5px; height: 45px; background: rgba(0,0,0,0.02);"
-                                                wire:model.live.debounce.300ms="unique_code">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Scan Result Output -->
-                    <div id="hasilScan" class="mt-3">
-                        @if($scanResult)
-                            <div class="card mt-0">
-                                <div class="card-body">
-                                    @if($scanSuccess)
-                                        <div class="alert alert-success">
-                                            <h4 class="alert-heading"><i class="material-icons">check_circle</i> Berhasil!</h4>
-                                            <p>{{ $scanMessage }}</p>
-                                        </div>
-                                        <div class="table-responsive">
-                                            <table class="table table-bordered">
-                                                <tr>
-                                                    <td width="30%"><strong>Tipe</strong></td>
-                                                    <td>{{ ucfirst($scanResult['type']) }}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td><strong>Nama</strong></td>
-                                                    <td>{{ $scanResult['type'] == 'guru' ? $scanResult['user']->nama_guru : $scanResult['user']->nama_siswa }}</td>
-                                                </tr>
-                                                @if($scanResult['type'] == 'siswa')
-                                                    <tr>
-                                                        <td><strong>NIS</strong></td>
-                                                        <td>{{ $scanResult['user']->nis }}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td><strong>Kelas</strong></td>
-                                                        <td>{{ $scanResult['user']->kelas->tingkat ?? '' }} {{ $scanResult['user']->kelas->index_kelas ?? '' }}</td>
-                                                    </tr>
-                                                @else
-                                                    <tr>
-                                                        <td><strong>NUPTK</strong></td>
-                                                        <td>{{ $scanResult['user']->nuptk }}</td>
-                                                    </tr>
-                                                @endif
-                                                <tr>
-                                                    <td><strong>Jam Masuk</strong></td>
-                                                    <td>{{ $scanResult['presensi']->jam_masuk ?? '-' }}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td><strong>Jam Keluar</strong></td>
-                                                    <td>{{ $scanResult['presensi']->jam_keluar ?? '-' }}</td>
-                                                </tr>
-                                            </table>
-                                        </div>
-                                    @else
-                                        <div class="alert alert-danger">
-                                            <h4 class="alert-heading"><i class="material-icons">error</i> Gagal!</h4>
-                                            <p>{{ $scanMessage }}</p>
-                                        </div>
-                                        @if(isset($scanResult['user']))
-                                            <div class="table-responsive">
-                                                <table class="table table-bordered">
-                                                    <tr>
-                                                        <td width="30%"><strong>Tipe</strong></td>
-                                                        <td>{{ ucfirst($scanResult['type']) }}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td><strong>Nama</strong></td>
-                                                        <td>{{ $scanResult['type'] == 'guru' ? $scanResult['user']->nama_guru : $scanResult['user']->nama_siswa }}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td><strong>Jam Masuk</strong></td>
-                                                        <td>{{ $scanResult['presensi']->jam_masuk ?? '-' }}</td>
-                                                    </tr>
-                                                </table>
-                                            </div>
-                                        @endif
-                                    @endif
-                                </div>
-                            </div>
-                        @endif
-                    </div>
-                </div>
-
-                <div class="col-lg-3 col-xxl-3 order-first order-lg-1">
-                    <div class="card" id="info-card">
-                        <div class="card-body">
-                            <h3 class="mt-2"><b>Informasi</b></h3>
-                            <ul class="pl-3">
-                                <li>Pastikan koneksi internet stabil</li>
-                                <li>Jika menggunakan kamera/webcam, pastikan izin akses kamera diberikan</li>
-                                <li>Posisikan qr code tidak terlalu jauh maupun terlalu dekat</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-xxl-4 order-last">
-                    <div class="card" id="usage-card">
-                        <div class="card-body">
-                            <h3 class="mt-2"><b>Penggunaan</b></h3>
-                            <ul class="pl-3">
-                                <li>Jika berhasil scan maka akan muncul data siswa/guru dibawah form scan</li>
-                                <li>Klik tombol <b><span class="text-success">Ganti ke Absen Masuk</span> / <span class="text-warning">Ganti ke Absen Pulang</span></b> untuk mengubah waktu absensi</li>
-                                <li>Untuk melihat data absensi, klik tombol <span class="text-primary"><i class="material-icons" style="font-size: 16px;">dashboard</i> Dashboard</span></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
+        {{-- Right: Mode Badges --}}
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="display: flex; align-items: center; gap: 6px; padding: 6px 14px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 20px; font-weight: 700; font-size: 0.8rem; color: #0ea5e9; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+                <i class="material-icons" style="font-size: 18px;">qr_code_scanner</i>
+                <span>QR CODE</span>
             </div>
         </div>
     </div>
 
+    {{-- CENTER SECTION --}}
+    <div style="max-width: 600px; margin: 0 auto; text-align: center;">
+        
+        {{-- Tabs --}}
+        <div style="display: inline-flex; background: #e2e8f0; padding: 4px; border-radius: 20px; margin-bottom: 20px; gap: 4px;">
+            <button type="button" style="padding: 6px 18px; border-radius: 16px; border: none; background: #ffffff; color: #0284c7; font-weight: 700; font-size: 0.82rem; display: flex; align-items: center; gap: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.08);">
+                <i class="material-icons" style="font-size: 16px;">photo_camera</i> Kamera
+            </button>
+            <button type="button" style="padding: 6px 18px; border-radius: 16px; border: none; background: transparent; color: #64748b; font-weight: 600; font-size: 0.82rem; display: flex; align-items: center; gap: 6px;">
+                <i class="material-icons" style="font-size: 16px;">scanner</i> Alat Scanner
+            </button>
+        </div>
+
+        {{-- Camera Active Indicator & Titles --}}
+        <div style="margin-bottom: 16px;">
+            <div style="display: inline-flex; align-items: center; gap: 6px; color: #0284c7; font-size: 0.72rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px;">
+                <i class="material-icons" style="font-size: 14px;">photo_camera</i> KAMERA AKTIF
+            </div>
+            <h2 style="font-size: 1.5rem; font-weight: 800; color: #0f172a; margin: 0 0 6px 0;">Arahkan QR Code Ke Kamera</h2>
+            <p style="font-size: 0.85rem; color: #64748b; margin: 0; max-width: 420px; margin: 0 auto;">Posisikan QR Code di dalam kotak pemindaian tengah kamera</p>
+        </div>
+
+        {{-- VIEWFINDER SCANNER BOX (Inside wire:ignore) --}}
+        <div id="cameraSection" wire:ignore style="max-width: 420px; margin: 0 auto; position: relative;">
+            {{-- Camera Select Dropdown --}}
+            <div style="margin-bottom: 12px;">
+                <select id="pilihKamera" class="form-control" style="width: 100%; border-radius: 10px; border: 1px solid #cbd5e1; padding: 7px 12px; font-size: 0.82rem; background: #ffffff; color: #334155; font-weight: 600;">
+                    <option value="">Memuat kamera...</option>
+                </select>
+            </div>
+
+            <div style="width: 100%; height: 380px; background: #000000; border-radius: 24px; position: relative; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);">
+                {{-- Video Element --}}
+                <video id="previewKamera" autoplay muted playsinline style="width: 100%; height: 100%; object-fit: cover; background: #000; display: block;"></video>
+
+                {{-- Corner Guides --}}
+                <div style="position: absolute; top: 24px; left: 24px; width: 36px; height: 36px; border-top: 4px solid #ffffff; border-left: 4px solid #ffffff; border-top-left-radius: 10px; pointer-events: none; z-index: 5;"></div>
+                <div style="position: absolute; top: 24px; right: 24px; width: 36px; height: 36px; border-top: 4px solid #ffffff; border-right: 4px solid #ffffff; border-top-right-radius: 10px; pointer-events: none; z-index: 5;"></div>
+                <div style="position: absolute; bottom: 24px; left: 24px; width: 36px; height: 36px; border-bottom: 4px solid #ffffff; border-left: 4px solid #ffffff; border-bottom-left-radius: 10px; pointer-events: none; z-index: 5;"></div>
+                <div style="position: absolute; bottom: 24px; right: 24px; width: 36px; height: 36px; border-bottom: 4px solid #ffffff; border-right: 4px solid #ffffff; border-bottom-right-radius: 10px; pointer-events: none; z-index: 5;"></div>
+
+                {{-- Laser Scan Animation Line --}}
+                <div class="scan-laser-line"></div>
+            </div>
+        </div>
+
+        {{-- SCAN RESULT OUTPUT --}}
+        <div id="hasilScan" style="max-width: 420px; margin: 20px auto 0 auto;">
+            @if($scanResult)
+                <div style="border-radius: 16px; border: 1px solid {{ $scanSuccess ? '#bbf7d0' : '#fecaca' }}; background: {{ $scanSuccess ? '#f0fdf4' : '#fef2f2' }}; padding: 18px; text-align: left; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                        <i class="material-icons" style="font-size: 24px; color: {{ $scanSuccess ? '#16a34a' : '#dc2626' }};">{{ $scanSuccess ? 'check_circle' : 'error' }}</i>
+                        <span style="font-weight: 800; font-size: 0.95rem; color: {{ $scanSuccess ? '#15803d' : '#991b1b' }};">{{ $scanMessage }}</span>
+                    </div>
+
+                    @if(isset($scanResult['user']))
+                        <div style="background: #ffffff; border-radius: 12px; padding: 12px 14px; border: 1px solid {{ $scanSuccess ? '#dcfce7' : '#fee2e2' }};">
+                            <div style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">{{ ucfirst($scanResult['type']) }}</div>
+                            <div style="font-size: 1.1rem; font-weight: 800; color: #0f172a; margin-top: 2px;">
+                                {{ $scanResult['type'] == 'guru' ? $scanResult['user']->nama_guru : $scanResult['user']->nama_siswa }}
+                            </div>
+                            
+                            <div style="display: flex; gap: 16px; margin-top: 8px; font-size: 0.82rem; color: #475569;">
+                                @if($scanResult['type'] == 'siswa')
+                                    <div>NIS: <b>{{ $scanResult['user']->nis }}</b></div>
+                                    <div>Kelas: <b>{{ $scanResult['user']->kelas->tingkat ?? '' }} {{ $scanResult['user']->kelas->index_kelas ?? '' }}</b></div>
+                                @else
+                                    <div>NUPTK: <b>{{ $scanResult['user']->nuptk ?? '-' }}</b></div>
+                                @endif
+                                <div>Jam: <b>{{ $scanResult['presensi']->jam_masuk ?? '-' }}</b></div>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+            @endif
+        </div>
+
+    </div>
+
+    {{-- Audio element fallback --}}
+    <audio id="audioBeep" src="/assets/audio/beep.mp3" preload="auto"></audio>
+
+    {{-- Laser Animation Style --}}
+    <style>
+        @keyframes laserScanAnimation {
+            0% { top: 12%; opacity: 0.7; }
+            50% { top: 82%; opacity: 1; }
+            100% { top: 12%; opacity: 0.7; }
+        }
+        .scan-laser-line {
+            position: absolute;
+            left: 10%;
+            right: 10%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #22c55e, #4ade80, #22c55e, transparent);
+            box-shadow: 0 0 15px #22c55e, 0 0 8px #4ade80;
+            border-radius: 2px;
+            animation: laserScanAnimation 2.2s infinite ease-in-out;
+            z-index: 10;
+            pointer-events: none;
+        }
+    </style>
+
     @script
     <script>
-        let selectedDeviceId = null;
-        let audioSuccess = new Audio("{{ asset('assets/audio/beep.mp3') }}");
-        let audioError = new Audio("{{ asset('assets/audio/beep.mp3') }}"); // optional: different sound
-        const codeReader = new ZXing.BrowserMultiFormatReader();
-        const sourceSelect = $('#pilihKamera');
-
-        // Play beep sound triggered from Livewire
-        $wire.on('play-beep', (event) => {
-            if (event[0].success) {
-                audioSuccess.play();
-            } else {
-                audioError.play();
+        // Live Clock Ticking Script
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const timeEl = document.getElementById('liveTime');
+            if (timeEl) {
+                timeEl.innerText = `${hours}.${minutes}.${seconds} WIB`;
             }
-            
-            // Auto focus back to input after scan
-            setTimeout(() => {
-                $('#rfidInput').val('');
-                if ($('#toggleRFID').is(':checked')) {
-                    $('#rfidInput').focus();
+        }
+        setInterval(updateClock, 1000);
+
+        let codeReader = null;
+        let selectedDeviceId = null;
+        let isProcessingScan = false;
+
+        function getCodeReader() {
+            if (!codeReader && typeof ZXing !== 'undefined') {
+                codeReader = new ZXing.BrowserMultiFormatReader();
+            }
+            return codeReader;
+        }
+
+        function playBeepSound(isSuccess) {
+            try {
+                let audio = document.getElementById('audioBeep');
+                if (audio) {
+                    audio.currentTime = 0;
+                    audio.play().catch(e => console.log("Audio play prevented:", e));
                 }
-            }, 1000);
+            } catch(e) {}
+
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (AudioCtx) {
+                    const ctx = new AudioCtx();
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = isSuccess ? 'sine' : 'sawtooth';
+                    osc.frequency.setValueAtTime(isSuccess ? 880 : 220, ctx.currentTime);
+                    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + (isSuccess ? 0.25 : 0.4));
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start();
+                    osc.stop(ctx.currentTime + (isSuccess ? 0.25 : 0.4));
+                }
+            } catch(e) {}
+        }
+
+        $wire.on('play-beep', (event) => {
+            let isSuccess = true;
+            if (Array.isArray(event) && event.length > 0) {
+                isSuccess = event[0].success !== false;
+            } else if (event && typeof event.success !== 'undefined') {
+                isSuccess = event.success !== false;
+            }
+            playBeepSound(isSuccess);
         });
 
-        // Initialize Camera Scanner
         function initScanner() {
-            codeReader.getVideoInputDevices()
+            const reader = getCodeReader();
+            if (!reader) {
+                setTimeout(initScanner, 300);
+                return;
+            }
+
+            const $select = $('#pilihKamera');
+            reader.getVideoInputDevices()
                 .then((videoInputDevices) => {
-                    sourceSelect.empty();
-                    
+                    $select.empty();
                     if (videoInputDevices.length > 0) {
-                        videoInputDevices.forEach((element) => {
-                            const sourceOption = document.createElement('option')
-                            sourceOption.text = element.label
-                            sourceOption.value = element.deviceId
-                            sourceSelect.append(sourceOption)
+                        videoInputDevices.forEach((element, index) => {
+                            const opt = document.createElement('option');
+                            opt.text = element.label || `Kamera ${index + 1}`;
+                            opt.value = element.deviceId;
+                            $select.append(opt);
                         });
 
-                        selectedDeviceId = videoInputDevices[0].deviceId;
+                        let backCam = videoInputDevices.find(d => d.label.toLowerCase().includes('back') || d.label.toLowerCase().includes('environment'));
+                        selectedDeviceId = backCam ? backCam.deviceId : videoInputDevices[0].deviceId;
+                        $select.val(selectedDeviceId);
                         
-                        codeReader.decodeFromVideoDevice(selectedDeviceId, 'previewKamera', (result, err) => {
-                            if (result) {
-                                // Result found! Send to livewire
-                                console.log("QR Code Scanned:", result.text);
-                                @this.set('unique_code', result.text);
-                                @this.processScan();
-                            }
-                            if (err && !(err instanceof ZXing.NotFoundException)) {
-                                console.error(err)
-                            }
-                        });
+                        startDecoding();
                     } else {
-                        sourceSelect.html('<option value="">Tidak ada kamera terdeteksi</option>');
+                        $select.html('<option value="">Tidak ada kamera terdeteksi</option>');
                     }
                 })
                 .catch((err) => {
-                    console.error(err)
-                    alert('Tidak dapat mengakses kamera. Pastikan browser memberikan izin.');
+                    console.error("Camera error:", err);
+                    $select.html('<option value="">Gagal mengakses kamera</option>');
                 });
+        }
+
+        function startDecoding() {
+            const reader = getCodeReader();
+            if (!reader || !selectedDeviceId) return;
+
+            try {
+                reader.reset();
+            } catch(e) {}
+
+            reader.decodeFromVideoDevice(selectedDeviceId, 'previewKamera', (result, err) => {
+                if (result && !isProcessingScan) {
+                    let text = '';
+                    if (typeof result.getText === 'function') {
+                        text = result.getText().trim();
+                    } else if (result.text) {
+                        text = result.text.trim();
+                    }
+
+                    if (text.length > 0) {
+                        isProcessingScan = true;
+                        console.log("QR Code Scanned:", text);
+                        
+                        $wire.processScan(text).then(() => {
+                            setTimeout(() => {
+                                isProcessingScan = false;
+                            }, 2500);
+                        }).catch(e => {
+                            console.error("Process scan error:", e);
+                            setTimeout(() => {
+                                isProcessingScan = false;
+                            }, 1000);
+                        });
+                    }
+                }
+            });
         }
 
         $(document).on('change', '#pilihKamera', function () {
             selectedDeviceId = $(this).val();
-            if (codeReader && $('#toggleKamera').is(':checked')) {
-                codeReader.reset();
-                codeReader.decodeFromVideoDevice(selectedDeviceId, 'previewKamera', (result, err) => {
-                    if (result) {
-                        @this.set('unique_code', result.text);
-                        @this.processScan();
-                    }
-                });
-            }
+            startDecoding();
         });
 
-        $(document).on('change', '#toggleKamera', function () {
-            if (this.checked) {
-                $('#cameraSection').slideDown();
-                initScanner();
-            } else {
-                codeReader.reset();
-                $('#cameraSection').slideUp();
-            }
-        });
-
-        // RFID Input Handling
-        const rfidInput = $('#rfidInput');
-        const statusBadge = $('#statusBadge');
-        const statusText = $('#statusText');
-
-        function updateStatus(focused) {
-            if (focused) {
-                statusBadge.removeClass('badge-secondary').addClass('badge-success');
-                statusText.text('RFID Reader: Siap');
-                rfidInput.css('border-color', '#4caf50');
-            } else {
-                statusBadge.removeClass('badge-success').addClass('badge-secondary');
-                statusText.text('RFID Reader: Tidak Fokus (Klik Disini)');
-                rfidInput.css('border-color', '#f44336');
-            }
-        }
-
-        if ($('#toggleRFID').is(':checked')) {
-            rfidInput.focus();
-            updateStatus(true);
-        } else {
-            updateStatus(false);
-        }
-
-        rfidInput.on('focus', function () {
-            updateStatus(true);
-        });
-
-        rfidInput.on('blur', function () {
-            updateStatus(false);
-            setTimeout(() => {
-                if ($('#toggleRFID').is(':checked') && !$('#pilihKamera').is(':focus')) {
-                    rfidInput.focus();
-                }
-            }, 3000);
-        });
-
-        $(document).on('click', function (e) {
-            if ($('#toggleRFID').is(':checked') && !$(e.target).closest('#pilihKamera, #toggleKamera, #toggleRFID').length) {
-                rfidInput.focus();
-            }
+        $(document).ready(function() {
+            initScanner();
         });
     </script>
     @endscript

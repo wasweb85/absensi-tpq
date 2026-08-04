@@ -8,9 +8,16 @@ use Livewire\Component;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
 
+use Livewire\WithPagination;
+
 class PetugasIndex extends Component
 {
-    public $petugasList;
+    use WithPagination;
+    protected $paginationTheme = 'bootstrap';
+
+    public $search = '';
+    public $perPage = 10;
+
     public $guruList;
 
     public $id_petugas;
@@ -28,11 +35,32 @@ class PetugasIndex extends Component
         $this->guruList = Guru::orderBy('nama_guru')->get();
     }
 
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingPerPage()
+    {
+        $this->resetPage();
+    }
+
     public function render()
     {
-        $this->petugasList = User::with('guru')->orderBy('name')->get();
+        $petugasList = User::with('guru')
+            ->when($this->search, function ($query) {
+                $query->where('name', 'like', '%' . $this->search . '%')
+                      ->orWhere('email', 'like', '%' . $this->search . '%')
+                      ->orWhereHas('guru', function ($q) {
+                          $q->where('nama_guru', 'like', '%' . $this->search . '%');
+                      });
+            })
+            ->orderBy('name')
+            ->paginate($this->perPage);
 
-        return view('livewire.admin.petugas-index')->layout('layouts.admin', ['title' => 'Data Petugas', 'context' => 'petugas']);
+        return view('livewire.admin.petugas-index', [
+            'petugasList' => $petugasList
+        ])->layout('layouts.admin', ['title' => 'Data Petugas', 'context' => 'petugas']);
     }
 
     public function create()

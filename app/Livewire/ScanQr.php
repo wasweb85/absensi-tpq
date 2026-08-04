@@ -8,7 +8,6 @@ use App\Models\Guru;
 use App\Models\PresensiSiswa;
 use App\Models\PresensiGuru;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Http;
 use Livewire\Attributes\On;
 
 class ScanQr extends Component
@@ -35,24 +34,65 @@ class ScanQr extends Component
     {
         $this->resetResult();
 
+        $code = trim((string) $uniqueCode);
+        if (empty($code)) {
+            $this->scanStatus = 'error';
+            $this->scanResult = [
+                'message' => 'Gagal Membaca Kode',
+                'info' => 'Kode QR Code tidak terbaca.'
+            ];
+            $this->dispatch('playAudio', 'error');
+            return;
+        }
+
         $date = Carbon::today()->toDateString();
-        $time = Carbon::now()->toTimeString();
+        $time = Carbon::now()->format('H:i:s');
         $isGuru = false;
         $personData = null;
 
-        // Cek Siswa
-        $siswa = Siswa::where('rfid', $uniqueCode)
-            ->orWhere('qr_code', $uniqueCode)
+        // Extract numeric ID if code starts with 'Siswa-' or 'Guru-'
+        $siswaIdFromPrefix = null;
+        if (preg_match('/^Siswa-(\d+)$/i', $code, $m)) {
+            $siswaIdFromPrefix = (int) $m[1];
+        }
+
+        $guruIdFromPrefix = null;
+        if (preg_match('/^Guru-(\d+)$/i', $code, $m)) {
+            $guruIdFromPrefix = (int) $m[1];
+        }
+
+        // 1. Cek Siswa
+        $siswa = Siswa::with('kelas')
+            ->where(function ($q) use ($code, $siswaIdFromPrefix) {
+                $q->where('nis', $code)
+                  ->orWhere('rfid_code', $code)
+                  ->orWhere('unique_code', $code);
+
+                if ($siswaIdFromPrefix) {
+                    $q->orWhere('id_siswa', $siswaIdFromPrefix);
+                } elseif (is_numeric($code)) {
+                    $q->orWhere('id_siswa', (int) $code);
+                }
+            })
             ->first();
 
         if ($siswa) {
             $personData = $siswa;
         } else {
-            // Cek Guru
-            $guru = Guru::where('rfid', $uniqueCode)
-                ->orWhere('qr_code', $uniqueCode)
-                ->first();
-            
+            // 2. Cek Guru
+            $guru = Guru::where(function ($q) use ($code, $guruIdFromPrefix) {
+                $q->where('nuptk', $code)
+                  ->orWhere('rfid_code', $code)
+                  ->orWhere('unique_code', $code);
+
+                if ($guruIdFromPrefix) {
+                    $q->orWhere('id_guru', $guruIdFromPrefix);
+                } elseif (is_numeric($code)) {
+                    $q->orWhere('id_guru', (int) $code);
+                }
+            })
+            ->first();
+
             if ($guru) {
                 $isGuru = true;
                 $personData = $guru;
@@ -62,7 +102,8 @@ class ScanQr extends Component
         if (!$personData) {
             $this->scanStatus = 'error';
             $this->scanResult = [
-                'message' => 'Data tidak ditemukan! Pastikan QR Code atau RFID valid.'
+                'message' => 'Data Tidak Ditemukan!',
+                'info' => 'Kode "' . $code . '" tidak terdaftar pada database Siswa maupun Guru.'
             ];
             $this->dispatch('playAudio', 'error');
             return;
@@ -86,9 +127,10 @@ class ScanQr extends Component
             if ($sudahAbsen) {
                 $this->scanStatus = 'error';
                 $this->scanResult = [
-                    'message' => 'Anda sudah absen hari ini.',
+                    'message' => 'Sudah Absen Masuk Hari Ini',
                     'nama' => $personData->nama_guru,
-                    'info' => 'Waktu absen: ' . $sudahAbsen->jam_masuk
+                    'role' => 'Guru / Ustadz',
+                    'info' => 'Tercatat masuk pukul ' . $sudahAbsen->jam_masuk
                 ];
                 $this->dispatch('playAudio', 'error');
                 return;
@@ -97,17 +139,18 @@ class ScanQr extends Component
             PresensiGuru::create([
                 'id_guru' => $personData->id_guru,
                 'tanggal' => $date,
-                'id_kehadiran' => 1,
+                'id_kehadiran' => 1, // Hadir
                 'jam_masuk' => $time,
                 'jam_keluar' => null,
-                'keterangan' => ''
+                'keterangan' => 'Hadir via Scan QR Code'
             ]);
 
             $this->scanStatus = 'success';
             $this->scanResult = [
-                'message' => 'Berhasil absen masuk!',
+                'message' => 'Berhasil Absen Masuk!',
                 'nama' => $personData->nama_guru,
-                'info' => 'Waktu: ' . $time
+                'role' => 'Guru / Ustadz',
+                'info' => 'Waktu Masuk: ' . $time
             ];
 
         } else {
@@ -119,9 +162,11 @@ class ScanQr extends Component
             if ($sudahAbsen) {
                 $this->scanStatus = 'error';
                 $this->scanResult = [
-                    'message' => 'Anda sudah absen hari ini.',
+                    'message' => 'Sudah Absen Masuk Hari Ini',
                     'nama' => $personData->nama_siswa,
-                    'info' => 'Waktu absen: ' . $sudahAbsen->jam_masuk
+                    'role' => 'Siswa',
+                    'kelas' => $personData->kelas ? $personData->kelas->tingkat . ' ' . $personData->kelas->index_kelas : '-',
+                    'info' => 'Tercatat masuk pukul ' . $sudahAbsen->jam_masuk
                 ];
                 $this->dispatch('playAudio', 'error');
                 return;
@@ -131,22 +176,23 @@ class ScanQr extends Component
                 'id_siswa' => $personData->id_siswa,
                 'id_kelas' => $personData->id_kelas,
                 'tanggal' => $date,
-                'id_kehadiran' => 1,
+                'id_kehadiran' => 1, // Hadir
                 'jam_masuk' => $time,
                 'jam_keluar' => null,
-                'keterangan' => ''
+                'keterangan' => 'Hadir via Scan QR Code'
             ]);
 
             $this->scanStatus = 'success';
             $this->scanResult = [
-                'message' => 'Berhasil absen masuk!',
+                'message' => 'Berhasil Absen Masuk!',
                 'nama' => $personData->nama_siswa,
-                'info' => 'Waktu: ' . $time
+                'role' => 'Siswa',
+                'kelas' => $personData->kelas ? $personData->kelas->tingkat . ' ' . $personData->kelas->index_kelas : '-',
+                'info' => 'Waktu Masuk: ' . $time
             ];
         }
 
         $this->dispatch('playAudio', 'success');
-        // Notifikasi WA dapat ditambahkan di sini
     }
 
     private function handleAbsenPulang($isGuru, $personData, $date, $time)
@@ -159,8 +205,22 @@ class ScanQr extends Component
             if (!$sudahAbsen) {
                 $this->scanStatus = 'error';
                 $this->scanResult = [
-                    'message' => 'Anda belum absen masuk hari ini.',
-                    'nama' => $personData->nama_guru
+                    'message' => 'Belum Absen Masuk Hari Ini',
+                    'nama' => $personData->nama_guru,
+                    'role' => 'Guru / Ustadz',
+                    'info' => 'Silakan melakukan absen masuk terlebih dahulu.'
+                ];
+                $this->dispatch('playAudio', 'error');
+                return;
+            }
+
+            if ($sudahAbsen->jam_keluar) {
+                $this->scanStatus = 'error';
+                $this->scanResult = [
+                    'message' => 'Sudah Absen Pulang Hari Ini',
+                    'nama' => $personData->nama_guru,
+                    'role' => 'Guru / Ustadz',
+                    'info' => 'Tercatat pulang pukul ' . $sudahAbsen->jam_keluar
                 ];
                 $this->dispatch('playAudio', 'error');
                 return;
@@ -170,9 +230,10 @@ class ScanQr extends Component
 
             $this->scanStatus = 'success';
             $this->scanResult = [
-                'message' => 'Berhasil absen pulang!',
+                'message' => 'Berhasil Absen Pulang!',
                 'nama' => $personData->nama_guru,
-                'info' => 'Waktu keluar: ' . $time
+                'role' => 'Guru / Ustadz',
+                'info' => 'Waktu Pulang: ' . $time
             ];
 
         } else {
@@ -184,8 +245,24 @@ class ScanQr extends Component
             if (!$sudahAbsen) {
                 $this->scanStatus = 'error';
                 $this->scanResult = [
-                    'message' => 'Anda belum absen masuk hari ini.',
-                    'nama' => $personData->nama_siswa
+                    'message' => 'Belum Absen Masuk Hari Ini',
+                    'nama' => $personData->nama_siswa,
+                    'role' => 'Siswa',
+                    'kelas' => $personData->kelas ? $personData->kelas->tingkat . ' ' . $personData->kelas->index_kelas : '-',
+                    'info' => 'Silakan melakukan absen masuk terlebih dahulu.'
+                ];
+                $this->dispatch('playAudio', 'error');
+                return;
+            }
+
+            if ($sudahAbsen->jam_keluar) {
+                $this->scanStatus = 'error';
+                $this->scanResult = [
+                    'message' => 'Sudah Absen Pulang Hari Ini',
+                    'nama' => $personData->nama_siswa,
+                    'role' => 'Siswa',
+                    'kelas' => $personData->kelas ? $personData->kelas->tingkat . ' ' . $personData->kelas->index_kelas : '-',
+                    'info' => 'Tercatat pulang pukul ' . $sudahAbsen->jam_keluar
                 ];
                 $this->dispatch('playAudio', 'error');
                 return;
@@ -195,9 +272,11 @@ class ScanQr extends Component
 
             $this->scanStatus = 'success';
             $this->scanResult = [
-                'message' => 'Berhasil absen pulang!',
+                'message' => 'Berhasil Absen Pulang!',
                 'nama' => $personData->nama_siswa,
-                'info' => 'Waktu keluar: ' . $time
+                'role' => 'Siswa',
+                'kelas' => $personData->kelas ? $personData->kelas->tingkat . ' ' . $personData->kelas->index_kelas : '-',
+                'info' => 'Waktu Pulang: ' . $time
             ];
         }
 
@@ -209,3 +288,4 @@ class ScanQr extends Component
         return view('livewire.scan-qr')->layout('layouts.guest'); // Use guest layout (no sidebar)
     }
 }
+

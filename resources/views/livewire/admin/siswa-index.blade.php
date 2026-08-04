@@ -282,64 +282,74 @@
         </div>
     </div>
 
-    <!-- Form Modal (Add / Edit) -->
+    <!-- Form Modal (Add / Edit Siswa) -->
     @if($showModal)
-    <div class="modal fade show" style="display: block; background: rgba(0,0,0,0.5);" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
+    <div class="modal fade show" style="display: block; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 1050; overflow-y: auto;" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content" style="border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); overflow: hidden; background: #fff;">
                 <form wire:submit.prevent="{{ $isEdit ? 'update' : 'store' }}">
-                    <div class="modal-header">
-                        <h5 class="modal-title">{{ $isEdit ? 'Edit Data Siswa' : 'Tambah Data Siswa' }}</h5>
-                        <button type="button" class="close" wire:click="$set('showModal', false)">
-                            <span aria-hidden="true">&times;</span>
+                    <div class="modal-header" style="padding: 20px 24px; border-bottom: 1px solid #f1f5f9; background: #fafafa; display: flex; align-items: center; justify-content: space-between;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 40px; height: 40px; border-radius: 10px; background: #dcfce7; color: #16a34a; display: flex; align-items: center; justify-content: center;">
+                                <i class="material-icons" style="font-size: 22px;">{{ $isEdit ? 'edit_note' : 'person_add' }}</i>
+                            </div>
+                            <div>
+                                <h5 class="modal-title" style="font-size: 1.1rem; font-weight: 700; color: #0f172a; margin: 0;">{{ $isEdit ? 'Edit Data Siswa' : 'Tambah Data Siswa' }}</h5>
+                                <p style="font-size: 0.78rem; color: #64748b; margin: 2px 0 0 0;">Isi formulir di bawah ini dengan data santri yang valid</p>
+                            </div>
+                        </div>
+                        <button type="button" wire:click="$set('showModal', false)" style="background: transparent; border: none; font-size: 20px; color: #94a3b8; cursor: pointer; padding: 4px;">
+                            &times;
                         </button>
                     </div>
-                    <div class="modal-body">
+                    <div class="modal-body" style="padding: 24px; background: #fff;">
                         <div class="row">
-                            <div class="col-md-6 form-group">
-                                <label>NIS <span class="text-danger">*</span></label>
-                                <input type="number" wire:model="nis" class="form-control" required>
-                                @error('nis') <span class="text-danger">{{ $message }}</span> @enderror
+                            <div class="col-md-6 form-group mb-3">
+                                <label style="font-size: 0.82rem; font-weight: 600; color: #334155; margin-bottom: 6px; display: block;">NIS <span class="text-danger">*</span></label>
+                                <input type="number" wire:model="nis" class="form-control" style="border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.9rem;" required placeholder="Masukkan NIS">
+                                @error('nis') <span class="text-danger" style="font-size: 0.78rem;">{{ $message }}</span> @enderror
                             </div>
-                            <div class="col-md-6 form-group">
-                                <label>Nama Lengkap <span class="text-danger">*</span></label>
-                                <input type="text" wire:model="nama_siswa" class="form-control" required minlength="3">
-                                @error('nama_siswa') <span class="text-danger">{{ $message }}</span> @enderror
+                            <div class="col-md-6 form-group mb-3">
+                                <label style="font-size: 0.82rem; font-weight: 600; color: #334155; margin-bottom: 6px; display: block;">Nama Lengkap <span class="text-danger">*</span></label>
+                                <input type="text" wire:model="nama_siswa" class="form-control" style="border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.9rem;" required minlength="3" placeholder="Masukkan Nama Lengkap">
+                                @error('nama_siswa') <span class="text-danger" style="font-size: 0.78rem;">{{ $message }}</span> @enderror
                             </div>
-                            <div class="col-md-6 form-group">
-                                <label>Kelas <span class="text-danger">*</span></label>
-                                <select wire:model="id_kelas" class="form-control" required>
+                            <div class="col-md-6 form-group mb-3">
+                                <label style="font-size: 0.82rem; font-weight: 600; color: #334155; margin-bottom: 6px; display: block;">Kelas <span class="text-danger">*</span></label>
+                                <select wire:model="id_kelas" class="form-control" style="border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.9rem; background: #fff;" required>
                                     <option value="">-- Pilih Kelas --</option>
                                     @foreach($kelasList as $k)
                                         <option value="{{ $k->id_kelas }}">{{ $k->tingkat }} {{ $k->index_kelas }}</option>
                                     @endforeach
                                 </select>
-                                @error('id_kelas') <span class="text-danger">{{ $message }}</span> @enderror
+                                @error('id_kelas') <span class="text-danger" style="font-size: 0.78rem;">{{ $message }}</span> @enderror
                             </div>
-                            <div class="col-md-6 form-group">
-                                <label>Jenis Kelamin <span class="text-danger">*</span></label>
-                                <select wire:model="jenis_kelamin" class="form-control" required>
-                                    <option value="">-- Pilih --</option>
+                            <div class="col-md-6 form-group mb-3">
+                                <label style="font-size: 0.82rem; font-weight: 600; color: #334155; margin-bottom: 6px; display: block;">Jenis Kelamin <span class="text-danger">*</span></label>
+                                <select wire:model="jenis_kelamin" class="form-control" style="border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.9rem; background: #fff;" required>
+                                    <option value="">-- Pilih Jenis Kelamin --</option>
                                     <option value="Laki-laki">Laki-Laki</option>
                                     <option value="Perempuan">Perempuan</option>
                                 </select>
-                                @error('jenis_kelamin') <span class="text-danger">{{ $message }}</span> @enderror
+                                @error('jenis_kelamin') <span class="text-danger" style="font-size: 0.78rem;">{{ $message }}</span> @enderror
                             </div>
-                            <div class="col-md-6 form-group">
-                                <label>Nomor HP / WA Ortu</label>
-                                <input type="text" wire:model="no_hp" class="form-control">
-                                @error('no_hp') <span class="text-danger">{{ $message }}</span> @enderror
+                            <div class="col-md-6 form-group mb-3">
+                                <label style="font-size: 0.82rem; font-weight: 600; color: #334155; margin-bottom: 6px; display: block;">Nomor HP / WA Ortu</label>
+                                <input type="text" wire:model="no_hp" class="form-control" style="border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.9rem;" placeholder="08xxxxxxxxxx">
+                                @error('no_hp') <span class="text-danger" style="font-size: 0.78rem;">{{ $message }}</span> @enderror
                             </div>
-                            <div class="col-md-6 form-group">
-                                <label>Kode RFID (Opsional)</label>
-                                <input type="text" wire:model="rfid_code" class="form-control">
-                                @error('rfid_code') <span class="text-danger">{{ $message }}</span> @enderror
+                            <div class="col-md-6 form-group mb-3">
+                                <label style="font-size: 0.82rem; font-weight: 600; color: #334155; margin-bottom: 6px; display: block;">Kode RFID (Opsional)</label>
+                                <input type="text" wire:model="rfid_code" class="form-control" style="border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.9rem;" placeholder="Tempelkan kartu RFID">
+                                @error('rfid_code') <span class="text-danger" style="font-size: 0.78rem;">{{ $message }}</span> @enderror
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" wire:click="$set('showModal', false)">Batal</button>
-                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    <div class="modal-footer" style="padding: 16px 24px; background: #f8fafc; border-top: 1px solid #f1f5f9; display: flex; justify-content: flex-end; gap: 10px;">
+                        <button type="button" class="btn" style="background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 18px; font-weight: 600; font-size: 0.85rem;" wire:click="$set('showModal', false)">Batal</button>
+                        <button type="submit" class="btn" style="background: #16a34a; color: #ffffff; border: none; border-radius: 8px; padding: 8px 22px; font-weight: 700; font-size: 0.85rem; box-shadow: 0 4px 6px -1px rgba(22, 163, 74, 0.2);">
+                            <i class="material-icons" style="font-size: 18px; vertical-align: middle; margin-right: 4px;">save</i> Simpan
+                        </button>
                     </div>
                 </form>
             </div>

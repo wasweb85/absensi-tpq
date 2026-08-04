@@ -12,7 +12,6 @@ use Carbon\Carbon;
 
 class ScanIndex extends Component
 {
-    public $waktu = 'masuk'; // masuk or pulang
     public $unique_code = '';
     
     // Result
@@ -20,7 +19,6 @@ class ScanIndex extends Component
     public $scanMessage = '';
     public $scanSuccess = false;
 
-    // We'll dispatch an event to play the beep sound in JS
     public function updatedUniqueCode($value)
     {
         if (strlen($value) > 0) {
@@ -28,50 +26,85 @@ class ScanIndex extends Component
         }
     }
 
-    public function processScan()
+    public function processScan($codeParam = null)
     {
-        $code = trim($this->unique_code);
+        $code = trim((string) ($codeParam ?: $this->unique_code));
         $this->unique_code = ''; // reset for next scan
 
         if (empty($code)) return;
 
-        // Try to find Siswa first
-        $siswa = Siswa::where('unique_code', $code)->orWhere('rfid_code', $code)->first();
-        $guru = null;
-        
-        $type = 'siswa';
-        $user = $siswa;
+        $date = Carbon::today()->toDateString();
+        $time = Carbon::now()->format('H:i:s');
+        $isGuru = false;
+        $personData = null;
 
-        if (!$siswa) {
-            $guru = Guru::where('unique_code', $code)->orWhere('rfid_code', $code)->first();
+        // Extract numeric ID if code starts with 'Siswa-' or 'Guru-'
+        $siswaIdFromPrefix = null;
+        if (preg_match('/^Siswa-(\d+)$/i', $code, $m)) {
+            $siswaIdFromPrefix = (int) $m[1];
+        }
+
+        $guruIdFromPrefix = null;
+        if (preg_match('/^Guru-(\d+)$/i', $code, $m)) {
+            $guruIdFromPrefix = (int) $m[1];
+        }
+
+        // 1. Cek Siswa
+        $siswa = Siswa::with('kelas')
+            ->where(function ($q) use ($code, $siswaIdFromPrefix) {
+                $q->where('nis', $code)
+                  ->orWhere('rfid_code', $code)
+                  ->orWhere('unique_code', $code);
+
+                if ($siswaIdFromPrefix) {
+                    $q->orWhere('id_siswa', $siswaIdFromPrefix);
+                } elseif (is_numeric($code)) {
+                    $q->orWhere('id_siswa', (int) $code);
+                }
+            })
+            ->first();
+
+        if ($siswa) {
+            $personData = $siswa;
+        } else {
+            // 2. Cek Guru
+            $guru = Guru::where(function ($q) use ($code, $guruIdFromPrefix) {
+                $q->where('nuptk', $code)
+                  ->orWhere('rfid_code', $code)
+                  ->orWhere('unique_code', $code);
+
+                if ($guruIdFromPrefix) {
+                    $q->orWhere('id_guru', $guruIdFromPrefix);
+                } elseif (is_numeric($code)) {
+                    $q->orWhere('id_guru', (int) $code);
+                }
+            })
+            ->first();
+
             if ($guru) {
-                $type = 'guru';
-                $user = $guru;
+                $isGuru = true;
+                $personData = $guru;
             }
         }
 
-        if (!$user) {
+        if (!$personData) {
             $this->scanSuccess = false;
-            $this->scanMessage = 'Data tidak ditemukan (QR/RFID tidak terdaftar)';
+            $this->scanMessage = 'Data tidak ditemukan! Pastikan QR Code valid.';
             $this->scanResult = null;
             $this->dispatch('play-beep', ['success' => false]);
             return;
         }
 
-        if ($this->waktu === 'masuk') {
-            $this->processAbsenMasuk($type, $user);
-        } else {
-            $this->processAbsenPulang($type, $user);
-        }
+        $type = $isGuru ? 'guru' : 'siswa';
+        $user = $personData;
+
+        $this->processAbsenMasuk($type, $user);
     }
 
     private function processAbsenMasuk($type, $user)
     {
         $date = Carbon::today()->toDateString();
-        $time = Carbon::now()->toTimeString();
-        $messageString = " sudah absen masuk pada tanggal $date jam $time";
-
-        $presensiResult = null;
+        $time = Carbon::now()->format('H:i:s');
 
         if ($type === 'guru') {
             $idGuru = $user->id_guru;
@@ -79,7 +112,7 @@ class ScanIndex extends Component
 
             if ($sudahAbsen) {
                 $this->scanSuccess = false;
-                $this->scanMessage = 'Anda sudah absen masuk hari ini.';
+                $this->scanMessage = 'Sudah Absen Hari Ini (' . $user->nama_guru . ' - jam ' . $sudahAbsen->jam_masuk . ')';
                 $this->scanResult = ['type' => $type, 'user' => $user, 'presensi' => $sudahAbsen];
                 $this->dispatch('play-beep', ['success' => false]);
                 return;
@@ -90,17 +123,17 @@ class ScanIndex extends Component
                 'tanggal' => $date,
                 'jam_masuk' => $time,
                 'id_kehadiran' => 1, // 1 = Hadir
-                'keterangan' => ''
+                'keterangan' => 'Hadir via Scan QR Code'
             ]);
 
-            $messageString = $user->nama_guru . ' dengan NIP ' . ($user->nuptk ?? '-') . $messageString;
+            $messageString = $user->nama_guru . ' dengan NIP ' . ($user->nuptk ?? '-') . " sudah absen pada tanggal $date jam $time";
         } else {
             $idSiswa = $user->id_siswa;
             $sudahAbsen = PresensiSiswa::where('id_siswa', $idSiswa)->where('tanggal', $date)->first();
 
             if ($sudahAbsen) {
                 $this->scanSuccess = false;
-                $this->scanMessage = 'Anda sudah absen masuk hari ini.';
+                $this->scanMessage = 'Sudah Absen Hari Ini (' . $user->nama_siswa . ' - jam ' . $sudahAbsen->jam_masuk . ')';
                 $this->scanResult = ['type' => $type, 'user' => $user, 'presensi' => $sudahAbsen];
                 $this->dispatch('play-beep', ['success' => false]);
                 return;
@@ -112,62 +145,15 @@ class ScanIndex extends Component
                 'tanggal' => $date,
                 'jam_masuk' => $time,
                 'id_kehadiran' => 1, // 1 = Hadir
-                'keterangan' => ''
+                'keterangan' => 'Hadir via Scan QR Code'
             ]);
 
-            $messageString = 'Siswa ' . $user->nama_siswa . ' dengan NIS ' . ($user->nis ?? '-') . $messageString;
+            $messageString = 'Siswa ' . $user->nama_siswa . ' dengan NIS ' . ($user->nis ?? '-') . " sudah absen pada tanggal $date jam $time";
         }
 
         $this->scanSuccess = true;
-        $this->scanMessage = 'Berhasil absen masuk.';
+        $this->scanMessage = 'Berhasil absen pada jam ' . $time;
         $this->scanResult = ['type' => $type, 'user' => $user, 'presensi' => $presensiResult];
-        $this->dispatch('play-beep', ['success' => true]);
-
-        $this->sendWhatsAppNotification($user->no_hp ?? '', $messageString);
-    }
-
-    private function processAbsenPulang($type, $user)
-    {
-        $date = Carbon::today()->toDateString();
-        $time = Carbon::now()->toTimeString();
-        $messageString = " sudah absen pulang pada tanggal $date jam $time";
-
-        if ($type === 'guru') {
-            $idGuru = $user->id_guru;
-            $sudahAbsen = PresensiGuru::where('id_guru', $idGuru)->where('tanggal', $date)->first();
-
-            if (!$sudahAbsen) {
-                $this->scanSuccess = false;
-                $this->scanMessage = 'Anda belum absen masuk hari ini.';
-                $this->scanResult = ['type' => $type, 'user' => $user];
-                $this->dispatch('play-beep', ['success' => false]);
-                return;
-            }
-
-            $sudahAbsen->update(['jam_keluar' => $time]);
-            $messageString = $user->nama_guru . ' dengan NIP ' . ($user->nuptk ?? '-') . $messageString;
-            
-            $this->scanResult = ['type' => $type, 'user' => $user, 'presensi' => clone $sudahAbsen];
-        } else {
-            $idSiswa = $user->id_siswa;
-            $sudahAbsen = PresensiSiswa::where('id_siswa', $idSiswa)->where('tanggal', $date)->first();
-
-            if (!$sudahAbsen) {
-                $this->scanSuccess = false;
-                $this->scanMessage = 'Anda belum absen masuk hari ini.';
-                $this->scanResult = ['type' => $type, 'user' => $user];
-                $this->dispatch('play-beep', ['success' => false]);
-                return;
-            }
-
-            $sudahAbsen->update(['jam_keluar' => $time]);
-            $messageString = 'Siswa ' . $user->nama_siswa . ' dengan NIS ' . ($user->nis ?? '-') . $messageString;
-
-            $this->scanResult = ['type' => $type, 'user' => $user, 'presensi' => clone $sudahAbsen];
-        }
-
-        $this->scanSuccess = true;
-        $this->scanMessage = 'Berhasil absen pulang.';
         $this->dispatch('play-beep', ['success' => true]);
 
         $this->sendWhatsAppNotification($user->no_hp ?? '', $messageString);
@@ -192,13 +178,6 @@ class ScanIndex extends Component
                 \Log::error('Fonnte Error: ' . $e->getMessage());
             }
         }
-    }
-
-    public function setWaktu($w)
-    {
-        $this->waktu = $w;
-        $this->scanResult = null;
-        $this->scanMessage = '';
     }
 
     public function render()

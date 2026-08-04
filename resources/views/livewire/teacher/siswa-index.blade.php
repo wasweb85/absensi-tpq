@@ -113,55 +113,65 @@
     @if($can_crud)
     {{-- Add / Edit Modal --}}
     @if($showModal)
-    <div class="t-modal-overlay">
-        <div class="t-modal">
-            <form wire:submit.prevent="{{ $isEdit ? 'update' : 'store' }}">
-                <div class="t-modal-header">
-                    <h3>{{ $isEdit ? 'Edit Data Siswa' : 'Tambah Data Siswa' }}</h3>
-                    <button type="button" class="t-btn t-btn-icon t-btn-ghost" wire:click="$set('showModal', false)">
-                        <i class="material-icons">close</i>
-                    </button>
-                </div>
-                <div class="t-modal-body">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                        <div>
-                            <label class="t-label">NIS <span style="color: var(--t-alpa);">*</span></label>
-                            <input type="number" wire:model="nis" class="t-input" required>
-                            @error('nis') <span class="t-error">{{ $message }}</span> @enderror
+    <div class="modal fade show" style="display: block; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 1050; overflow-y: auto;" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content" style="border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); overflow: hidden; background: #fff;">
+                <form wire:submit.prevent="{{ $isEdit ? 'update' : 'store' }}">
+                    <div class="modal-header" style="padding: 20px 24px; border-bottom: 1px solid #f1f5f9; background: #fafafa; display: flex; align-items: center; justify-content: space-between;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 40px; height: 40px; border-radius: 10px; background: #dcfce7; color: #16a34a; display: flex; align-items: center; justify-content: center;">
+                                <i class="material-icons" style="font-size: 22px;">{{ $isEdit ? 'edit_note' : 'person_add' }}</i>
+                            </div>
+                            <div>
+                                <h5 class="modal-title" style="font-size: 1.1rem; font-weight: 700; color: #0f172a; margin: 0;">{{ $isEdit ? 'Edit Data Siswa' : 'Tambah Data Siswa' }}</h5>
+                                <p style="font-size: 0.78rem; color: #64748b; margin: 2px 0 0 0;">Isi formulir data santri untuk kelas Anda</p>
+                            </div>
                         </div>
-                        <div>
-                            <label class="t-label">Nama Lengkap <span style="color: var(--t-alpa);">*</span></label>
-                            <input type="text" wire:model="nama_siswa" class="t-input" required minlength="3">
-                            @error('nama_siswa') <span class="t-error">{{ $message }}</span> @enderror
-                        </div>
-                        <div>
-                            <label class="t-label">Jenis Kelamin <span style="color: var(--t-alpa);">*</span></label>
-                            <select wire:model="jenis_kelamin" class="t-select" required>
-                                <option value="">-- Pilih --</option>
-                                <option value="Laki-laki">Laki-Laki</option>
-                                <option value="Perempuan">Perempuan</option>
-                            </select>
-                            @error('jenis_kelamin') <span class="t-error">{{ $message }}</span> @enderror
-                        </div>
-                        <div>
-                            <label class="t-label">Nomor HP / WA Ortu</label>
-                            <input type="text" wire:model="no_hp" class="t-input">
-                            @error('no_hp') <span class="t-error">{{ $message }}</span> @enderror
-                        </div>
-                        <div>
-                            <label class="t-label">Kode RFID (Opsional)</label>
-                            <input type="text" wire:model="rfid_code" class="t-input">
-                            @error('rfid_code') <span class="t-error">{{ $message }}</span> @enderror
+                        <button type="button" wire:click="$set('showModal', false)" style="background: transparent; border: none; font-size: 20px; color: #94a3b8; cursor: pointer; padding: 4px;">
+                            &times;
+                        </button>
+                    </div>
+                    <div class="modal-body" style="padding: 24px; background: #fff;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div>
+                                <label style="font-size: 0.82rem; font-weight: 600; color: #334155; margin-bottom: 6px; display: block;">NIS <span class="text-danger">*</span></label>
+                                <input type="number" wire:model="nis" class="t-input" style="border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.9rem;" required placeholder="Masukkan NIS">
+                                @error('nis') <span class="t-error">{{ $message }}</span> @enderror
+                            </div>
+                            <div>
+                                <label style="font-size: 0.82rem; font-weight: 600; color: #334155; margin-bottom: 6px; display: block;">Nama Lengkap <span class="text-danger">*</span></label>
+                                <input type="text" wire:model="nama_siswa" class="t-input" style="border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.9rem;" required minlength="3" placeholder="Masukkan Nama Lengkap">
+                                @error('nama_siswa') <span class="t-error">{{ $message }}</span> @enderror
+                            </div>
+                            <div>
+                                <label style="font-size: 0.82rem; font-weight: 600; color: #334155; margin-bottom: 6px; display: block;">Jenis Kelamin <span class="text-danger">*</span></label>
+                                <select wire:model="jenis_kelamin" class="t-select" style="border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.9rem; background: #fff;" required>
+                                    <option value="">-- Pilih --</option>
+                                    <option value="Laki-laki">Laki-Laki</option>
+                                    <option value="Perempuan">Perempuan</option>
+                                </select>
+                                @error('jenis_kelamin') <span class="t-error">{{ $message }}</span> @enderror
+                            </div>
+                            <div>
+                                <label style="font-size: 0.82rem; font-weight: 600; color: #334155; margin-bottom: 6px; display: block;">Nomor HP / WA Ortu</label>
+                                <input type="text" wire:model="no_hp" class="t-input" style="border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.9rem;" placeholder="08xxxxxxxxxx">
+                                @error('no_hp') <span class="t-error">{{ $message }}</span> @enderror
+                            </div>
+                            <div>
+                                <label style="font-size: 0.82rem; font-weight: 600; color: #334155; margin-bottom: 6px; display: block;">Kode RFID (Opsional)</label>
+                                <input type="text" wire:model="rfid_code" class="t-input" style="border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.9rem;" placeholder="Tempelkan kartu RFID">
+                                @error('rfid_code') <span class="t-error">{{ $message }}</span> @enderror
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="t-modal-footer">
-                    <button type="button" class="t-btn t-btn-outline" wire:click="$set('showModal', false)">Batal</button>
-                    <button type="submit" class="t-btn t-btn-primary">
-                        <i class="material-icons" style="font-size: 1.1rem;">save</i> Simpan
-                    </button>
-                </div>
-            </form>
+                    <div class="modal-footer" style="padding: 16px 24px; background: #f8fafc; border-top: 1px solid #f1f5f9; display: flex; justify-content: flex-end; gap: 10px;">
+                        <button type="button" class="t-btn t-btn-outline" style="border-radius: 8px; padding: 8px 18px;" wire:click="$set('showModal', false)">Batal</button>
+                        <button type="submit" class="t-btn" style="background: #16a34a; color: #ffffff; border: none; border-radius: 8px; padding: 8px 22px; font-weight: 700; font-size: 0.85rem; box-shadow: 0 4px 6px -1px rgba(22, 163, 74, 0.2);">
+                            <i class="material-icons" style="font-size: 1.1rem; vertical-align: middle; margin-right: 4px;">save</i> Simpan
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
     @endif
