@@ -5,9 +5,16 @@ use App\Models\Kelas;
 use App\Models\Guru;
 use Livewire\Component;
 
+use Livewire\WithPagination;
+
 class KelasIndex extends Component
 {
-    public $kelas;
+    use WithPagination;
+    protected $paginationTheme = 'bootstrap';
+
+    public $search = '';
+    public $perPage = 10;
+
     public $guruList;
     public $tingkat;
     public $index_kelas;
@@ -18,8 +25,7 @@ class KelasIndex extends Component
     public $showModal = false;
 
     protected $rules = [
-        'tingkat' => 'required|string|max:10',
-        'index_kelas' => 'required|string|max:5',
+        'tingkat' => 'required|string|max:50',
         'id_wali_kelas' => 'nullable|integer',
     ];
 
@@ -28,11 +34,30 @@ class KelasIndex extends Component
         $this->guruList = Guru::all();
     }
 
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingPerPage()
+    {
+        $this->resetPage();
+    }
+
     public function render()
     {
-        $this->kelas = Kelas::with(['guru'])->get();
+        $kelasList = Kelas::with(['guru'])
+            ->when($this->search, function ($query) {
+                $query->where('tingkat', 'like', '%' . $this->search . '%')
+                      ->orWhereHas('guru', function ($q) {
+                          $q->where('nama_guru', 'like', '%' . $this->search . '%');
+                      });
+            })
+            ->paginate($this->perPage);
 
-        return view('livewire.admin.kelas-index')->layout('layouts.admin', ['title' => 'Manajemen Kelas', 'context' => 'kelas']);
+        return view('livewire.admin.kelas-index', [
+            'kelasList' => $kelasList
+        ])->layout('layouts.admin', ['title' => 'Manajemen Kelas', 'context' => 'kelas']);
     }
 
     public function create()
@@ -48,7 +73,7 @@ class KelasIndex extends Component
 
         Kelas::create([
             'tingkat' => $this->tingkat,
-            'index_kelas' => $this->index_kelas,
+            'index_kelas' => $this->index_kelas ?? '',
             'id_wali_kelas' => $this->id_wali_kelas,
         ]);
 
@@ -77,7 +102,7 @@ class KelasIndex extends Component
         
         $kelas->update([
             'tingkat' => $this->tingkat,
-            'index_kelas' => $this->index_kelas,
+            'index_kelas' => $this->index_kelas ?? '',
             'id_wali_kelas' => $this->id_wali_kelas,
         ]);
 

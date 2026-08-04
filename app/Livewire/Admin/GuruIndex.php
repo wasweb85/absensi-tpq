@@ -6,10 +6,15 @@ use App\Models\Guru;
 use Livewire\Component;
 use Illuminate\Validation\Rule;
 
+use Livewire\WithPagination;
+
 class GuruIndex extends Component
 {
-    public $guruList;
+    use WithPagination;
+    protected $paginationTheme = 'bootstrap';
+
     public $search = '';
+    public $perPage = 10;
 
     public $id_guru;
     public $nuptk;
@@ -23,14 +28,26 @@ class GuruIndex extends Component
     public $isEdit = false;
     public $showModal = false;
 
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingPerPage()
+    {
+        $this->resetPage();
+    }
+
     public function render()
     {
-        $this->guruList = Guru::when($this->search, function ($query) {
+        $guruList = Guru::when($this->search, function ($query) {
             $query->where('nama_guru', 'like', '%' . $this->search . '%')
                   ->orWhere('nuptk', 'like', '%' . $this->search . '%');
-        })->get();
+        })->paginate($this->perPage);
 
-        return view('livewire.admin.guru-index')->layout('layouts.admin', ['title' => 'Data Guru', 'context' => 'guru']);
+        return view('livewire.admin.guru-index', [
+            'guruList' => $guruList
+        ])->layout('layouts.admin', ['title' => 'Data Guru', 'context' => 'guru']);
     }
 
     public function create()

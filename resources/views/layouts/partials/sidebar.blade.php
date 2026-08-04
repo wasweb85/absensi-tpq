@@ -103,6 +103,7 @@ $roleLabel = $user ? match($user->is_superadmin) {
          <span class="sb-item-label">Dashboard</span>
       </a>
 
+      @if (!$isSuperadmin)
       <!-- Absensi group -->
       @php $aGrp = sbOpen($context, ['absen-siswa', 'absen-guru']); @endphp
       <div class="sb-section-label">Absensi</div>
@@ -123,6 +124,7 @@ $roleLabel = $user ? match($user->is_superadmin) {
             </a>
          </div>
       </div>
+      @endif
 
       <!-- Data Master group -->
       @php $mGrp = sbOpen($context, ['siswa', 'guru', 'kelas', 'mapel', 'jadwal-pelajaran', 'petugas']); @endphp

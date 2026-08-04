@@ -6,9 +6,15 @@ use App\Models\Mapel;
 use Livewire\Component;
 use Illuminate\Validation\Rule;
 
+use Livewire\WithPagination;
+
 class MapelIndex extends Component
 {
-    public $mapelList;
+    use WithPagination;
+    protected $paginationTheme = 'bootstrap';
+
+    public $search = '';
+    public $perPage = 10;
 
     public $id_mapel;
     public $nama_mapel;
@@ -16,11 +22,25 @@ class MapelIndex extends Component
     public $isEdit = false;
     public $showModal = false;
 
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingPerPage()
+    {
+        $this->resetPage();
+    }
+
     public function render()
     {
-        $this->mapelList = Mapel::orderBy('nama_mapel')->get();
+        $mapelList = Mapel::when($this->search, function ($query) {
+            $query->where('nama_mapel', 'like', '%' . $this->search . '%');
+        })->orderBy('nama_mapel')->paginate($this->perPage);
 
-        return view('livewire.admin.mapel-index')->layout('layouts.admin', ['title' => 'Mata Pelajaran', 'context' => 'mapel']);
+        return view('livewire.admin.mapel-index', [
+            'mapelList' => $mapelList
+        ])->layout('layouts.admin', ['title' => 'Mata Pelajaran', 'context' => 'mapel']);
     }
 
     public function create()

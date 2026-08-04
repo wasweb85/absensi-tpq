@@ -20,39 +20,40 @@
                 @endif
 
                 <div class="card">
-                    <div class="card-header card-header-primary">
-                        <h4 class="card-title"><b>Absensi Siswa</b></h4>
-                        <p class="card-category">Manajemen Data Absensi Siswa TPQ</p>
+                    <div class="card-header">
+                        <h2>Absensi Siswa</h2>
+                        <p>Manajemen Data Absensi Siswa TPQ</p>
                     </div>
-                    <div class="card-body">
-                        <div class="row mb-4">
-                            <div class="col-md-6">
-                                <label class="bmd-label-floating text-dark">Tanggal</label>
-                                <input type="date" wire:model.live="filter_tanggal" class="form-control" style="border: 1px solid #ddd; padding: 5px 10px; border-radius: 5px; height: 38px;">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="bmd-label-floating text-dark">Pilih Kelas</label>
-                                <select wire:model.live="filter_kelas" class="form-control" style="border: 1px solid #ddd; padding: 5px 10px; border-radius: 5px; height: 38px;">
-                                    <option value="">-- Pilih Kelas --</option>
-                                    @foreach($kelasList as $k)
-                                        <option value="{{ $k->id_kelas }}">{{ $k->tingkat }} {{ $k->index_kelas }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
 
+                    <div class="filter-row">
+                        <div class="field">
+                            <label>Tanggal</label>
+                            <input type="date" wire:model.live="filter_tanggal">
+                        </div>
+                        <div class="field">
+                            <label>Pilih Kelas</label>
+                            <select wire:model.live="filter_kelas">
+                                <option value="">-- Pilih Kelas --</option>
+                                @foreach($kelasList as $k)
+                                    <option value="{{ $k->id_kelas }}">{{ $k->tingkat }} {{ $k->index_kelas }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="card-body p-0">
                         @if($filter_kelas)
                             @if($siswaList->count() > 0)
                                 <div class="table-responsive">
-                                    <table class="table table-hover">
-                                        <thead class="text-primary">
+                                    <table class="data-table">
+                                        <thead>
                                             <tr>
-                                                <th><b>No</b></th>
-                                                <th><b>Nama Siswa</b></th>
-                                                <th class="text-center"><b>Hadir</b></th>
-                                                <th class="text-center"><b>Sakit</b></th>
-                                                <th class="text-center"><b>Izin</b></th>
-                                                <th class="text-center"><b>Alfa</b></th>
+                                                <th>NO</th>
+                                                <th>NAMA SISWA</th>
+                                                <th style="text-align:center">HADIR</th>
+                                                <th style="text-align:center">SAKIT</th>
+                                                <th style="text-align:center">IZIN</th>
+                                                <th style="text-align:center">ALFA</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -60,37 +61,17 @@
                                                 <tr>
                                                     <td>{{ $index + 1 }}</td>
                                                     <td><b>{{ $siswa->nama_siswa }}</b></td>
-                                                    <td class="text-center">
-                                                        <div class="form-check form-check-radio form-check-inline">
-                                                            <label class="form-check-label text-success">
-                                                                <input class="form-check-input" type="radio" wire:model="kehadiran.{{ $siswa->id_siswa }}" value="1">
-                                                                <span class="circle"><span class="check"></span></span>
-                                                            </label>
-                                                        </div>
+                                                    <td style="text-align:center">
+                                                        <input type="radio" class="hadir" wire:model="kehadiran.{{ $siswa->id_siswa }}" name="absen_{{ $siswa->id_siswa }}" value="1">
                                                     </td>
-                                                    <td class="text-center">
-                                                        <div class="form-check form-check-radio form-check-inline">
-                                                            <label class="form-check-label text-warning">
-                                                                <input class="form-check-input" type="radio" wire:model="kehadiran.{{ $siswa->id_siswa }}" value="2">
-                                                                <span class="circle"><span class="check"></span></span>
-                                                            </label>
-                                                        </div>
+                                                    <td style="text-align:center">
+                                                        <input type="radio" class="sakit" wire:model="kehadiran.{{ $siswa->id_siswa }}" name="absen_{{ $siswa->id_siswa }}" value="2">
                                                     </td>
-                                                    <td class="text-center">
-                                                        <div class="form-check form-check-radio form-check-inline">
-                                                            <label class="form-check-label text-info">
-                                                                <input class="form-check-input" type="radio" wire:model="kehadiran.{{ $siswa->id_siswa }}" value="3">
-                                                                <span class="circle"><span class="check"></span></span>
-                                                            </label>
-                                                        </div>
+                                                    <td style="text-align:center">
+                                                        <input type="radio" class="izin" wire:model="kehadiran.{{ $siswa->id_siswa }}" name="absen_{{ $siswa->id_siswa }}" value="3">
                                                     </td>
-                                                    <td class="text-center">
-                                                        <div class="form-check form-check-radio form-check-inline">
-                                                            <label class="form-check-label text-danger">
-                                                                <input class="form-check-input" type="radio" wire:model="kehadiran.{{ $siswa->id_siswa }}" value="4">
-                                                                <span class="circle"><span class="check"></span></span>
-                                                            </label>
-                                                        </div>
+                                                    <td style="text-align:center">
+                                                        <input type="radio" class="alfa" wire:model="kehadiran.{{ $siswa->id_siswa }}" name="absen_{{ $siswa->id_siswa }}" value="4">
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -98,18 +79,18 @@
                                     </table>
                                 </div>
                                 
-                                <div class="mt-4 text-right">
-                                    <button wire:click="saveAttendance" class="btn btn-primary">
-                                        <i class="material-icons">save</i> Simpan Absensi
+                                <div class="card-footer">
+                                    <button wire:click="saveAttendance" class="btn-save">
+                                        <i class="ti ti-device-floppy"></i> Simpan Absensi
                                     </button>
                                 </div>
                             @else
-                                <div class="alert alert-warning text-center mt-4">
+                                <div class="alert alert-warning text-center m-4">
                                     Belum ada siswa di kelas ini.
                                 </div>
                             @endif
                         @else
-                            <div class="alert alert-info text-center mt-4">
+                            <div class="alert alert-info text-center m-4">
                                 Silakan pilih kelas terlebih dahulu untuk mengelola absensi.
                             </div>
                         @endif
@@ -119,3 +100,4 @@
         </div>
     </div>
 </div>
+

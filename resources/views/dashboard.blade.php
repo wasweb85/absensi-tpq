@@ -457,6 +457,7 @@
 
                     </div>
 
+                    @if (auth()->user() && auth()->user()->is_superadmin != 1)
                     <div class="card-footer">
 
                         <div class="stats">
@@ -466,6 +467,7 @@
                         </div>
 
                     </div>
+                    @endif
 
                 </div>
 
@@ -495,6 +497,7 @@
 
                     </div>
 
+                    @if (auth()->user() && auth()->user()->is_superadmin != 1)
                     <div class="card-footer">
 
                         <div class="stats">
@@ -504,6 +507,7 @@
                         </div>
 
                     </div>
+                    @endif
 
                 </div>
 
