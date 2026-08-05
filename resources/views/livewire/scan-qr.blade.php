@@ -191,9 +191,9 @@
                             const sourceSelect = document.getElementById('pilihKamera');
                             if(videoInputDevices.length >= 1) {
                                 sourceSelect.innerHTML = '';
-                                videoInputDevices.forEach((element) => {
+                                videoInputDevices.forEach((element, idx) => {
                                     const sourceOption = document.createElement('option');
-                                    sourceOption.text = element.label || `Kamera ${sourceSelect.length + 1}`;
+                                    sourceOption.text = element.label || `Kamera ${idx + 1}`;
                                     sourceOption.value = element.deviceId;
                                     sourceSelect.appendChild(sourceOption);
                                 });

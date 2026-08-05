@@ -1,28 +1,34 @@
 @extends('layouts.admin')
-@section('styles')
 
+@section('styles')
 <style>
+    .dashboard-wrapper {
+        padding: 10px 0;
+    }
 
     .chart-container {
         position: relative;
-        height: 300px;
+        height: 280px;
         width: 100%;
     }
 
-    /* Modern Stat Cards */
-    .modern-stat-card {
+    /* Stat Cards */
+    .stat-card {
         border: none !important;
-        border-radius: 12px !important;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
-        margin-top: 15px !important;
-        transition: transform 0.2s ease;
+        border-radius: 16px !important;
+        background: #ffffff !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+        transition: all 0.2s ease-in-out;
+        margin-bottom: 20px;
+        overflow: hidden;
     }
 
-    .modern-stat-card:hover {
-        transform: translateY(-2px);
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08) !important;
     }
 
-    .modern-stat-card .card-body {
+    .stat-card .card-body {
         padding: 20px !important;
     }
 
@@ -33,20 +39,20 @@
     }
 
     .stat-icon-box {
-        width: 48px;
-        height: 48px;
-        border-radius: 10px;
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-right: 15px;
+        margin-right: 16px;
         flex-shrink: 0;
-        box-shadow: 0 4px 20px 0 rgba(0,0,0,.14), 0 7px 10px -5px rgba(0,188,212,.4);
+        transition: transform 0.2s ease;
     }
 
     .stat-icon-box i {
-        font-size: 24px;
-        color: #fff;
+        font-size: 26px;
+        color: #ffffff;
     }
 
     .stat-info {
@@ -55,45 +61,97 @@
     }
 
     .stat-category {
-        color: #999;
-        font-size: 14px;
+        color: #64748b;
+        font-size: 0.8rem;
+        font-weight: 700;
         margin-bottom: 2px;
-        text-transform: capitalize;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
     .stat-title {
-        color: #3C4858;
+        color: #0f172a;
         margin: 0;
-        font-weight: 700;
-        font-size: 20px;
+        font-weight: 800;
+        font-size: 1.6rem;
+        line-height: 1.2;
     }
 
-    .card-primary .stat-icon-box { background: linear-gradient(60deg, #ab47bc, #8e24aa); box-shadow: 0 4px 20px 0 rgba(0,0,0,.14), 0 7px 10px -5px rgba(156, 39, 176, .4); }
-    .card-success .stat-icon-box { background: linear-gradient(60deg, #66bb6a, #43a047); box-shadow: 0 4px 20px 0 rgba(0,0,0,.14), 0 7px 10px -5px rgba(76, 175, 80, .4); }
-    .card-info .stat-icon-box { background: linear-gradient(60deg, #26c6da, #00acc1); box-shadow: 0 4px 20px 0 rgba(0,0,0,.14), 0 7px 10px -5px rgba(0, 188, 212, .4); }
-    .card-danger .stat-icon-box { background: linear-gradient(60deg, #ef5350, #e53935); box-shadow: 0 4px 20px 0 rgba(0,0,0,.14), 0 7px 10px -5px rgba(244, 67, 54, .4); }
+    /* Card Themes */
+    .card-purple .stat-icon-box { background: linear-gradient(135deg, #a855f7, #7e22ce); box-shadow: 0 4px 14px rgba(168, 85, 247, 0.35); }
+    .card-emerald .stat-icon-box { background: linear-gradient(135deg, #10b981, #047857); box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35); }
+    .card-sky .stat-icon-box { background: linear-gradient(135deg, #0284c7, #0369a1); box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35); }
+    .card-rose .stat-icon-box { background: linear-gradient(135deg, #f43f5e, #be123c); box-shadow: 0 4px 14px rgba(244, 63, 94, 0.35); }
 
-    .modern-stat-card .card-footer {
+    .stat-card .card-footer {
         padding: 10px 20px !important;
-        border-top: 1px solid #f0f0f0 !important;
-        background: transparent !important;
+        border-top: 1px solid #f1f5f9 !important;
+        background: #f8fafc !important;
+        font-size: 0.78rem;
+        color: #64748b;
+        font-weight: 600;
     }
 
-</style>
+    /* Section Cards */
+    .section-card {
+        border: none !important;
+        border-radius: 18px !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.04) !important;
+        background: #ffffff !important;
+        margin-bottom: 24px;
+        overflow: hidden;
+    }
 
+    .section-card .card-header-primary {
+        background: linear-gradient(135deg, #0284c7, #0369a1) !important;
+        border-radius: 18px 18px 0 0 !important;
+        padding: 18px 24px !important;
+        color: #ffffff;
+    }
+
+    .section-card .card-header-success {
+        background: linear-gradient(135deg, #059669, #047857) !important;
+        border-radius: 18px 18px 0 0 !important;
+        padding: 18px 24px !important;
+        color: #ffffff;
+    }
+
+    .section-card .card-title {
+        font-weight: 800;
+        font-size: 1.15rem;
+        margin: 0;
+        color: #ffffff;
+    }
+
+    .section-card .card-category {
+        font-size: 0.8rem;
+        opacity: 0.9;
+        margin: 2px 0 0 0;
+        color: #e0f2fe;
+    }
+
+    .custom-select-dashboard {
+        background-color: rgba(255, 255, 255, 0.95) !important;
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        border-radius: 10px !important;
+        padding: 6px 14px !important;
+        font-size: 0.82rem !important;
+        font-weight: 700 !important;
+        color: #0f172a !important;
+        outline: none !important;
+        cursor: pointer;
+    }
+</style>
 @endsection
 
 @section('content')
-
-<div class="content">
-
+<div class="content dashboard-wrapper">
     <div class="container-fluid">
 
-        <!-- REKAP JUMLAH DATA -->
-
-        <div class="row d-none d-sm-flex">
-            <div class="col-lg-3 col-md-6">
-                <div class="card modern-stat-card card-primary">
+        <!-- 1. KPI SUMMARY CARDS -->
+        <div class="row">
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="card stat-card card-purple">
                     <div class="card-body">
                         <div class="stat-flex">
                             <div class="stat-icon-box">
@@ -102,22 +160,22 @@
                                 </a>
                             </div>
                             <div class="stat-info">
-                                <p class="stat-category">Jumlah siswa</p>
-                                <h3 class="stat-title">{{ \App\Models\Siswa::count() }}</h3>
+                                <p class="stat-category">Total Siswa</p>
+                                <h3 class="stat-title">{{ number_format($totalSiswa) }}</h3>
                             </div>
                         </div>
                     </div>
                     <div class="card-footer">
                         <div class="stats">
-                            <i class="material-icons text-primary" style="font-size: 14px; vertical-align: middle;">check</i>
-                            Terdaftar
+                            <i class="material-icons text-purple-600 mr-1" style="font-size: 16px; vertical-align: middle; color: #a855f7;">check_circle</i>
+                            Terdaftar di Sistem
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-lg-3 col-md-6">
-                <div class="card modern-stat-card card-success">
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="card stat-card card-emerald">
                     <div class="card-body">
                         <div class="stat-flex">
                             <div class="stat-icon-box">
@@ -126,22 +184,22 @@
                                 </a>
                             </div>
                             <div class="stat-info">
-                                <p class="stat-category">Jumlah guru</p>
-                                <h3 class="stat-title">{{ \App\Models\Guru::count() }}</h3>
+                                <p class="stat-category">Total Guru / Ustadz</p>
+                                <h3 class="stat-title">{{ number_format($totalGuru) }}</h3>
                             </div>
                         </div>
                     </div>
                     <div class="card-footer">
                         <div class="stats">
-                            <i class="material-icons text-success" style="font-size: 14px; vertical-align: middle;">check</i>
-                            Terdaftar
+                            <i class="material-icons text-emerald-600 mr-1" style="font-size: 16px; vertical-align: middle; color: #10b981;">check_circle</i>
+                            Tenaga Pengajar
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-lg-3 col-md-6">
-                <div class="card modern-stat-card card-info">
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="card stat-card card-sky">
                     <div class="card-body">
                         <div class="stat-flex">
                             <div class="stat-icon-box">
@@ -150,22 +208,22 @@
                                 </a>
                             </div>
                             <div class="stat-info">
-                                <p class="stat-category">Jumlah Kelas</p>
-                                <h3 class="stat-title text-nowrap">{{ \App\Models\Kelas::count() }}</h3>
+                                <p class="stat-category">Total Kelas</p>
+                                <h3 class="stat-title">{{ number_format($totalKelas) }}</h3>
                             </div>
                         </div>
                     </div>
                     <div class="card-footer">
                         <div class="stats">
-                            <i class="material-icons" style="font-size: 14px; vertical-align: middle;">home</i>
-                            TPQ
+                            <i class="material-icons text-sky-600 mr-1" style="font-size: 16px; vertical-align: middle; color: #0284c7;">home</i>
+                            Kelas Belajar TPQ
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-lg-3 col-md-6">
-                <div class="card modern-stat-card card-danger">
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="card stat-card card-rose">
                     <div class="card-body">
                         <div class="stat-flex">
                             <div class="stat-icon-box">
@@ -174,732 +232,319 @@
                                 </a>
                             </div>
                             <div class="stat-info">
-                                <p class="stat-category">Jumlah petugas</p>
-                                <h3 class="stat-title">{{ \App\Models\User::count() }}</h3>
+                                <p class="stat-category">Petugas / Admin</p>
+                                <h3 class="stat-title">{{ number_format($totalPetugas) }}</h3>
                             </div>
                         </div>
                     </div>
                     <div class="card-footer">
                         <div class="stats">
-                            <i class="material-icons" style="font-size: 14px; vertical-align: middle;">person</i>
-                            Administrator
+                            <i class="material-icons text-rose-600 mr-1" style="font-size: 16px; vertical-align: middle; color: #f43f5e;">manage_accounts</i>
+                            Pengelola Sistem
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="row d-sm-none">
-            <div class="col-6 mb-2 px-2">
-                <div class="card modern-stat-card card-primary m-0 shadow-sm" style="min-height: auto;">
-                    <div class="card-body p-2">
-                        <div class="d-flex align-items-center">
-                            <div class="stat-icon-box m-0 mr-2" style="width: 32px; height: 32px; border-radius: 8px;">
-                                <a href="{{ url('admin/siswa') }}">
-                                    <i class="material-icons" style="font-size: 16px;">person</i>
-                                </a>
-                            </div>
-                            <div class="stat-info">
-                                <p class="stat-category m-0" style="font-size: 10px; line-height: 1.1;">Siswa</p>
-                                <h4 class="stat-title m-0" style="font-size: 14px;">{{ \App\Models\Siswa::count() }}</h4>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-6 mb-2 px-2">
-                <div class="card modern-stat-card card-success m-0 shadow-sm" style="min-height: auto;">
-                    <div class="card-body p-2">
-                        <div class="d-flex align-items-center">
-                            <div class="stat-icon-box m-0 mr-2" style="width: 32px; height: 32px; border-radius: 8px;">
-                                <a href="{{ url('admin/guru') }}">
-                                    <i class="material-icons" style="font-size: 16px;">person_4</i>
-                                </a>
-                            </div>
-                            <div class="stat-info">
-                                <p class="stat-category m-0" style="font-size: 10px; line-height: 1.1;">Guru</p>
-                                <h4 class="stat-title m-0" style="font-size: 14px;">{{ \App\Models\Guru::count() }}</h4>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-6 mb-2 px-2">
-                <div class="card modern-stat-card card-info m-0 shadow-sm" style="min-height: auto;">
-                    <div class="card-body p-2">
-                        <div class="d-flex align-items-center">
-                            <div class="stat-icon-box m-0 mr-2" style="width: 32px; height: 32px; border-radius: 8px;">
-                                <a href="{{ url('admin/kelas') }}">
-                                    <i class="material-icons" style="font-size: 14px;">grade</i>
-                                </a>
-                            </div>
-                            <div class="stat-info">
-                                <p class="stat-category m-0" style="font-size: 10px; line-height: 1.1;">Kelas</p>
-                                <h4 class="stat-title m-0" style="font-size: 13px;">{{ \App\Models\Kelas::count() }}</h4>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-6 mb-2 px-2">
-                <div class="card modern-stat-card card-danger m-0 shadow-sm" style="min-height: auto;">
-                    <div class="card-body p-2">
-                        <div class="d-flex align-items-center">
-                            <div class="stat-icon-box m-0 mr-2" style="width: 32px; height: 32px; border-radius: 8px;">
-                                <a href="{{ url('admin/petugas') }}">
-                                    <i class="material-icons" style="font-size: 16px;">settings</i>
-                                </a>
-                            </div>
-                            <div class="stat-info">
-                                <p class="stat-category m-0" style="font-size: 10px; line-height: 1.1;">Petugas</p>
-                                <h4 class="stat-title m-0" style="font-size: 14px;">{{ \App\Models\User::count() }}</h4>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-
+        <!-- 2. TODAY ATTENDANCE SECTION -->
         <div class="row">
-
-            <!-- STATS SISWA HARI INI -->
-
-            <div class="col-lg-6">
-
-                <div class="card">
-
+            <!-- ABSENSI SISWA HARI INI -->
+            <div class="col-lg-6 mb-4">
+                <div class="card section-card">
                     <div class="card-header card-header-primary">
-
                         <div class="d-flex flex-wrap align-items-center justify-content-between" style="gap: 12px;">
-
                             <div>
-
                                 <h4 class="card-title"><b id="titleSiswaStats">Absensi Siswa Hari Ini</b></h4>
-
-                                <p class="card-category">{{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}</p>
-
+                                <p class="card-category">{{ \Carbon\Carbon::now()->locale('id')->translatedFormat('l, d F Y') }}</p>
                             </div>
-
                             <!-- FILTER KELAS -->
-
-                            <div class="text-right">
-
-                                <div class="d-flex align-items-center justify-content-end">
-
-                                    <div id="filterLoader" style="display: none;">
-
-                                        <div class="spinner-border spinner-border-sm text-primary" role="status">
-
-                                            <span class="sr-only">Loading...</span>
-
-                                        </div>
-
+                            <div class="d-flex align-items-center gap-2">
+                                <div id="filterLoader" style="display: none;" class="mr-2">
+                                    <div class="spinner-border spinner-border-sm text-white" role="status">
+                                        <span class="sr-only">Loading...</span>
                                     </div>
-
-                                    <div>
-
-                                        <select name="id_kelas" id="filterKelas" class="custom-select">
-
-                                            <option value="">-- Semua Kelas ({{ count($siswa) }} siswa) --
-
-                                            </option>
-
-                                            @foreach(\App\Models\Kelas::all() as $k)
-
-                                                <option value="{{ $k->id_kelas }}" data-kelas="{{ $k->kelas }}">
-
-                                                    {{ $k->kelas }} (
-
-                                                    0 siswa)
-
-                                                </option>
-
-                                            @endforeach
-
-                                        </select>
-
-                                    </div>
-
                                 </div>
-
+                                <select name="id_kelas" id="filterKelas" class="custom-select-dashboard">
+                                    <option value="">Semua Kelas ({{ $totalSiswa }} siswa)</option>
+                                    @foreach($kelases as $k)
+                                        <option value="{{ $k->id_kelas }}" data-kelas="{{ $k->kelas }}">
+                                            {{ $k->kelas }} ({{ $k->siswa_count }} siswa)
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
-
                         </div>
-
                     </div>
-
-                    <div class="card-body" id="siswaStatsContainer">
-
+                    <div class="card-body p-0" id="siswaStatsContainer">
                         @include('admin._dashboard_siswa_stats', [
-
                             'hadir' => $jumlahKehadiranSiswa['hadir'],
-
                             'sakit' => $jumlahKehadiranSiswa['sakit'],
-
                             'izin' => $jumlahKehadiranSiswa['izin'],
-
                             'alfa' => $jumlahKehadiranSiswa['alfa'],
-
                             'totalSiswa' => $totalSiswa
-
                         ])
-
                     </div>
-
                 </div>
-
             </div>
 
-            <!-- STATS GURU HARI INI -->
-
-            <div class="col-lg-6">
-
-                <div class="card">
-
+            <!-- ABSENSI GURU HARI INI -->
+            <div class="col-lg-6 mb-4">
+                <div class="card section-card">
                     <div class="card-header card-header-success">
-
-                        <h4 class="card-title"><b>Absensi Guru Hari Ini</b></h4>
-
-                        <p class="card-category">{{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}</p>
-
+                        <h4 class="card-title"><b>Absensi Guru / Ustadz Hari Ini</b></h4>
+                        <p class="card-category">{{ \Carbon\Carbon::now()->locale('id')->translatedFormat('l, d F Y') }}</p>
                     </div>
-
-                    <div class="card-body">
-
-                        <div class="row text-center flex-nowrap">
-
-                            <div class="col-2">
-
-                                <h5 class="text-success text-nowrap"><b>Hadir</b></h5>
-
-                                <h4 class="text-nowrap">0</h4>
-
+                    <div class="card-body p-0">
+                        <div class="px-3 pt-3 pb-2">
+                            <div class="row text-center m-0 flex-nowrap align-items-center">
+                                <div class="col-3 px-1">
+                                    <h5 class="text-nowrap m-0 pb-1" style="color: #16a34a; font-size: 10px; font-weight: 800; letter-spacing: 1px;">HADIR</h5>
+                                    <h4 class="text-dark font-weight-bold m-0" style="font-size: 20px; line-height: 1;">{{ $jumlahKehadiranGuru['hadir'] }}</h4>
+                                </div>
+                                <div class="col-3 px-1">
+                                    <h5 class="text-nowrap m-0 pb-1" style="color: #9333ea; font-size: 10px; font-weight: 800; letter-spacing: 1px;">SAKIT</h5>
+                                    <h4 class="text-dark font-weight-bold m-0" style="font-size: 20px; line-height: 1;">{{ $jumlahKehadiranGuru['sakit'] }}</h4>
+                                </div>
+                                <div class="col-3 px-1">
+                                    <h5 class="text-nowrap m-0 pb-1" style="color: #2563eb; font-size: 10px; font-weight: 800; letter-spacing: 1px;">IZIN</h5>
+                                    <h4 class="text-dark font-weight-bold m-0" style="font-size: 20px; line-height: 1;">{{ $jumlahKehadiranGuru['izin'] }}</h4>
+                                </div>
+                                <div class="col-3 px-1">
+                                    <h5 class="text-nowrap m-0 pb-1" style="color: #dc2626; font-size: 10px; font-weight: 800; letter-spacing: 1px;">ALFA</h5>
+                                    <h4 class="text-dark font-weight-bold m-0" style="font-size: 20px; line-height: 1;">{{ $jumlahKehadiranGuru['alfa'] }}</h4>
+                                </div>
                             </div>
-
-                            <div class="col-2">
-
-                                <h5 class="text-warning text-nowrap"><b>Sakit</b></h5>
-
-                                <h4 class="text-nowrap">0</h4>
-
-                            </div>
-
-                            <div class="col-2">
-
-                                <h5 class="text-info text-nowrap"><b>Izin</b></h5>
-
-                                <h4 class="text-nowrap">0</h4>
-
-                            </div>
-
-                            <div class="col-2">
-
-                                <h5 class="text-danger text-nowrap"><b>Alfa</b></h5>
-
-                                <h4 class="text-nowrap">0</h4>
-
-                            </div>
-
-                            <div class="col-1">
-
-                                <div class="border-right mx-auto h-100" style="width: 0;"></div>
-
-                            </div>
-
-                            <div class="col-2 col-sm-3">
-
-                                <h5 class="text-primary text-nowrap"><b>Total</b></h5>
-
-                                <h4 class="text-nowrap">{{ \App\Models\Guru::count() }}</h4>
-
-                            </div>
-
                         </div>
-
+                        <div class="bg-transparent py-2 px-3 d-flex justify-content-between align-items-center" style="border-top: 1px solid #f1f5f9 !important;">
+                            <span class="text-muted font-weight-bold m-0" style="font-size: 10px; letter-spacing: 1px; text-transform: uppercase;">TOTAL TENAGA PENGAJAR</span>
+                            <span class="text-dark font-weight-bold m-0" style="font-size: 12px; line-height: 1;">{{ $totalGuru }} Guru</span>
+                        </div>
                     </div>
-
                 </div>
-
             </div>
-
         </div>
 
-
-
+        <!-- 3. ATTENDANCE TREND CHARTS -->
         <div class="row">
-
             <!-- CHART SISWA -->
-
-            <div class="col-lg-6">
-
-                <div class="card">
-
+            <div class="col-lg-6 mb-4">
+                <div class="card section-card">
                     <div class="card-header card-header-primary">
-
-                        <h4 class="card-title" id="titleSiswaChart">Tingkat Kehadiran Siswa</h4>
-
-                        <p class="card-category">Statistik kehadiran 7 hari terakhir | {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}</p>
-
+                        <h4 class="card-title" id="titleSiswaChart">Tingkat Kehadiran Siswa (7 Hari Terakhir)</h4>
+                        <p class="card-category">Grafik rekapitulasi presensi siswa</p>
                     </div>
-
-                    <div class="card-body">
-
+                    <div class="card-body p-3">
                         <div class="chart-container">
-
                             <canvas id="kehadiranSiswa"></canvas>
-
                         </div>
-
                     </div>
-
                     @if (auth()->user() && auth()->user()->is_superadmin != 1)
-                    <div class="card-footer">
-
-                        <div class="stats">
-
-                            <i class="material-icons text-primary">checklist</i> <a class="text-primary" href="{{ url('admin/absen-siswa') }}">Lihat data</a>
-
-                        </div>
-
+                    <div class="card-footer bg-light px-3 py-2">
+                        <a class="text-primary font-weight-bold text-sm" href="{{ url('admin/absen-siswa') }}">
+                            <i class="material-icons text-primary mr-1" style="font-size: 16px; vertical-align: middle;">checklist</i>
+                            Lihat Data Detail Presensi Siswa &rarr;
+                        </a>
                     </div>
                     @endif
-
                 </div>
-
             </div>
 
             <!-- CHART GURU -->
-
-            <div class="col-lg-6">
-
-                <div class="card">
-
+            <div class="col-lg-6 mb-4">
+                <div class="card section-card">
                     <div class="card-header card-header-success">
-
-                        <h4 class="card-title">Tingkat Kehadiran Guru</h4>
-
-                        <p class="card-category">Statistik kehadiran 7 hari terakhir | {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}</p>
-
+                        <h4 class="card-title">Tingkat Kehadiran Guru (7 Hari Terakhir)</h4>
+                        <p class="card-category">Grafik rekapitulasi presensi guru & ustadz</p>
                     </div>
-
-                    <div class="card-body">
-
+                    <div class="card-body p-3">
                         <div class="chart-container">
-
                             <canvas id="kehadiranGuru"></canvas>
-
                         </div>
-
                     </div>
-
                     @if (auth()->user() && auth()->user()->is_superadmin != 1)
-                    <div class="card-footer">
-
-                        <div class="stats">
-
-                            <i class="material-icons text-success">checklist</i> <a class="text-success" href="{{ url('admin/absen-guru') }}">Lihat data</a>
-
-                        </div>
-
+                    <div class="card-footer bg-light px-3 py-2">
+                        <a class="text-emerald-700 font-weight-bold text-sm" style="color: #047857;" href="{{ url('admin/absen-guru') }}">
+                            <i class="material-icons text-success mr-1" style="font-size: 16px; vertical-align: middle;">checklist</i>
+                            Lihat Data Detail Presensi Guru &rarr;
+                        </a>
                     </div>
                     @endif
-
                 </div>
-
             </div>
-
         </div>
 
     </div>
-
 </div>
-
 @endsection
-
-
 
 @section('scripts')
-
-<!-- Chart.js CDN -->
-
 <script src="{{ url('assets/js/plugins/chartjs/chart.umd.min.js') }}"></script>
-
 <script>
+    let kehadiranSiswaChart = null;
+    let kehadiranGuruChart = null;
 
-    let kehadiranSiswaChart;
-
-    let kehadiranGuruChart;
-
-
-
-    const chartLabels = [];
-
-
+    const chartLabels = @json($chartLabels);
+    const initialChartSiswa = @json($chartSiswa);
+    const initialChartGuru = @json($chartGuru);
 
     const chartColors = {
-
-        hadir: { border: '#4caf50', bg: 'rgba(76, 175, 80, 1)' },
-
-        sakit: { border: '#ff9800', bg: 'rgba(255, 152, 0, 1)' },
-
-        izin: { border: '#00bcd4', bg: 'rgba(0, 188, 212, 1)' },
-
-        alfa: { border: '#f44336', bg: 'rgba(244, 67, 54, 1)' }
-
+        hadir: { border: '#16a34a', bg: 'rgba(22, 163, 74, 0.85)' },
+        sakit: { border: '#9333ea', bg: 'rgba(147, 51, 234, 0.85)' },
+        izin:  { border: '#2563eb', bg: 'rgba(37, 99, 235, 0.85)' },
+        alfa:  { border: '#dc2626', bg: 'rgba(220, 38, 38, 0.85)' }
     };
 
-
-
-    function createChartConfig(data) {
-
+    function createChartConfig(labels, data) {
         return {
-
             type: 'bar',
-
             data: {
-
-                labels: chartLabels,
-
+                labels: labels,
                 datasets: [
-
                     {
-
                         label: 'Hadir',
-
                         data: data.hadir,
-
                         borderColor: chartColors.hadir.border,
-
                         backgroundColor: chartColors.hadir.bg,
-
-                        tension: 0.3,
-
-                        fill: false,
-
-                        pointRadius: 4,
-
-                        pointHoverRadius: 6
-
+                        borderRadius: 6,
                     },
-
                     {
-
                         label: 'Sakit',
-
                         data: data.sakit,
-
                         borderColor: chartColors.sakit.border,
-
                         backgroundColor: chartColors.sakit.bg,
-
-                        tension: 0.3,
-
-                        fill: false,
-
-                        pointRadius: 4,
-
-                        pointHoverRadius: 6
-
+                        borderRadius: 6,
                     },
-
                     {
-
                         label: 'Izin',
-
                         data: data.izin,
-
                         borderColor: chartColors.izin.border,
-
                         backgroundColor: chartColors.izin.bg,
-
-                        tension: 0.3,
-
-                        fill: false,
-
-                        pointRadius: 4,
-
-                        pointHoverRadius: 6
-
+                        borderRadius: 6,
                     },
-
                     {
-
                         label: 'Alfa',
-
                         data: data.alfa,
-
                         borderColor: chartColors.alfa.border,
-
                         backgroundColor: chartColors.alfa.bg,
-
-                        tension: 0.3,
-
-                        fill: false,
-
-                        pointRadius: 4,
-
-                        pointHoverRadius: 6
-
+                        borderRadius: 6,
                     }
-
                 ]
-
             },
-
             options: {
-
                 responsive: true,
-
                 maintainAspectRatio: false,
-
                 interaction: {
-
                     mode: 'index',
-
                     intersect: false
-
                 },
-
                 plugins: {
-
                     legend: {
-
                         display: true,
-
                         position: 'bottom',
-
                         labels: {
-
                             usePointStyle: true,
-
-                            padding: 20
-
+                            padding: 16,
+                            font: { size: 12, weight: 'bold' }
                         }
-
                     },
-
                     tooltip: {
-
-                        enabled: true,
-
-                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-
-                        titleFont: { size: 14 },
-
-                        bodyFont: { size: 13 },
-
+                        backgroundColor: 'rgba(15, 23, 42, 0.9)',
                         padding: 12,
-
-                        cornerRadius: 8,
-
+                        cornerRadius: 10,
                         callbacks: {
-
-                            label: function (context) {
-
+                            label: function(context) {
                                 return context.dataset.label + ': ' + context.parsed.y + ' orang';
-
                             }
-
                         }
-
                     }
-
                 },
-
                 scales: {
-
                     y: {
-
-                        stacked: false,
-
                         beginAtZero: true,
-
                         ticks: {
-
                             stepSize: 1,
-
-                            callback: function (value) {
-
+                            precision: 0,
+                            callback: function(value) {
                                 if (Number.isInteger(value)) return value;
-
                             }
-
                         },
-
-                        grid: { color: 'rgba(0, 0, 0, 0.05)' }
-
+                        grid: { color: 'rgba(241, 245, 249, 1)' }
                     },
-
                     x: {
-
-                        stacked: false,
-
                         grid: { display: false }
-
                     }
-
                 }
-
             }
-
         };
-
     }
-
-
 
     function updateSiswaChart(newData) {
-
-        if (kehadiranSiswaChart) {
-
-            kehadiranSiswaChart.data.datasets[0].data = newData.hadir;
-
-            kehadiranSiswaChart.data.datasets[1].data = newData.sakit;
-
-            kehadiranSiswaChart.data.datasets[2].data = newData.izin;
-
-            kehadiranSiswaChart.data.datasets[3].data = newData.alfa;
-
-            kehadiranSiswaChart.update('active');
-
+        if (kehadiranSiswaChart && newData) {
+            kehadiranSiswaChart.data.datasets[0].data = newData.hadir || [];
+            kehadiranSiswaChart.data.datasets[1].data = newData.sakit || [];
+            kehadiranSiswaChart.data.datasets[2].data = newData.izin || [];
+            kehadiranSiswaChart.data.datasets[3].data = newData.alfa || [];
+            kehadiranSiswaChart.update();
         }
-
     }
 
-
-
-    function initDashboardPageCharts() {
-
-        const siswaCtx = document.getElementById('kehadiranSiswa');
-
-        if (siswaCtx) {
-
-            const dataSiswa = {
-
-                hadir: [],
-
-                sakit: [],
-
-                izin: [],
-
-                alfa: []
-
-            };
-
-            kehadiranSiswaChart = new Chart(siswaCtx, createChartConfig(dataSiswa));
-
+    function initDashboardCharts() {
+        const siswaCanvas = document.getElementById('kehadiranSiswa');
+        if (siswaCanvas) {
+            kehadiranSiswaChart = new Chart(siswaCanvas, createChartConfig(chartLabels, initialChartSiswa));
         }
 
-
-
-        const guruCtx = document.getElementById('kehadiranGuru');
-
-        if (guruCtx) {
-
-            const dataGuru = {
-
-                hadir: [],
-
-                sakit: [],
-
-                izin: [],
-
-                alfa: []
-
-            };
-
-            kehadiranGuruChart = new Chart(guruCtx, createChartConfig(dataGuru));
-
+        const guruCanvas = document.getElementById('kehadiranGuru');
+        if (guruCanvas) {
+            kehadiranGuruChart = new Chart(guruCanvas, createChartConfig(chartLabels, initialChartGuru));
         }
-
     }
 
+    $(document).ready(function() {
+        initDashboardCharts();
 
-
-    $(document).ready(function () {
-
-        initDashboardPageCharts();
-
-
-
-        $('#filterKelas').on('change', function () {
-
+        $('#filterKelas').on('change', function() {
             const idKelas = $(this).val();
-
             const loader = $('#filterLoader');
-
-
-
             loader.show();
 
-
-
             $.ajax({
-
-                url: '{{ url('admin/dashboard/filter-data') }}',
-
+                url: '{{ route("admin.dashboard.filter-data") }}',
                 type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: {
+                    id_kelas: idKelas,
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    const data = (typeof response === 'string') ? JSON.parse(response) : response;
+                    if (data.result === 1) {
+                        $('#siswaStatsContainer').html(data.htmlContent);
+                        if (data.chartData) {
+                            updateSiswaChart(data.chartData);
+                        }
 
-                data: setAjaxData({ id_kelas: idKelas }),
-
-                success: function (response) {
-
-                    const obj = JSON.parse(response);
-
-                    if (obj.result == 1) {
-
-                        $('#siswaStatsContainer').html(obj.htmlContent);
-
-                        updateSiswaChart(obj.chartData);
-
-
-
-                        // Update Titles
-
-                        // const className = $('#filterKelas option:selected').attr('data-kelas');
-
-                        // if (idKelas == "") {
-
-                        //     $('#titleSiswaStats').text("Absensi Siswa Hari Ini");
-
-                        //     $('#titleSiswaChart').text("Tingkat Kehadiran Siswa");
-
-                        // } else {
-
-                        //     $('#titleSiswaStats').text("Absensi Siswa " + className + " Hari Ini");
-
-                        //     $('#titleSiswaChart').text("Tingkat Kehadiran Siswa " + className);
-
-                        // }
-
+                        const className = $('#filterKelas option:selected').attr('data-kelas');
+                        if (idKelas === "") {
+                            $('#titleSiswaStats').text("Absensi Siswa Hari Ini");
+                            $('#titleSiswaChart').text("Tingkat Kehadiran Siswa (7 Hari Terakhir)");
+                        } else {
+                            $('#titleSiswaStats').text("Absensi Siswa Kelas " + className + " Hari Ini");
+                            $('#titleSiswaChart').text("Tingkat Kehadiran Siswa Kelas " + className + " (7 Hari Terakhir)");
+                        }
                     }
-
                 },
-
-                error: function (xhr, status, thrown) {
-
-                    console.error(thrown);
-
+                error: function(xhr, status, thrown) {
+                    console.error("Filter error:", thrown);
                 },
-
-                complete: function () {
-
+                complete: function() {
                     loader.hide();
-
                 }
-
             });
-
         });
-
     });
-
 </script>
-
 @endsection
-
