@@ -22,9 +22,9 @@
                 <style>
                     .modern-table-card {
                         background: #fff;
-                        border-radius: 12px;
+                        border-radius: 16px;
                         box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-                        padding: 20px;
+                        padding: 24px;
                         margin-bottom: 30px;
                     }
                     .modern-table-header {
@@ -35,15 +35,15 @@
                     }
                     .modern-table-title {
                         font-size: 1.25rem;
-                        font-weight: 700;
-                        color: #1e293b;
+                        font-weight: 800;
+                        color: #0f172a;
                         margin: 0;
                     }
                     .modern-table-actions .btn {
                         margin: 0 0 0 10px;
-                        border-radius: 8px;
-                        padding: 8px 16px;
-                        font-weight: 600;
+                        border-radius: 10px;
+                        padding: 9px 18px;
+                        font-weight: 700;
                         text-transform: none;
                     }
                     .modern-table-actions .btn-refresh {
@@ -55,7 +55,7 @@
                     .modern-table-actions .btn-add {
                         background: #2563eb;
                         color: #fff;
-                        box-shadow: none;
+                        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
                     }
                     .modern-table-toolbar {
                         display: flex;
@@ -70,8 +70,8 @@
                     }
                     .toolbar-left select, .toolbar-right input {
                         border: 1px solid #e2e8f0;
-                        border-radius: 8px;
-                        padding: 8px 12px;
+                        border-radius: 10px;
+                        padding: 9px 14px;
                         color: #475569;
                         font-size: 0.9rem;
                         outline: none;
@@ -80,7 +80,7 @@
                     .toolbar-left .show-label {
                         font-size: 0.9rem;
                         color: #64748b;
-                        font-weight: 500;
+                        font-weight: 600;
                     }
                     .toolbar-right {
                         position: relative;
@@ -105,7 +105,7 @@
                     .modern-table th {
                         background: #f8fafc;
                         color: #64748b;
-                        font-weight: 600;
+                        font-weight: 700;
                         font-size: 0.75rem;
                         text-transform: uppercase;
                         padding: 15px 20px;
@@ -123,27 +123,27 @@
                         background: #fcfcfc;
                     }
                     .avatar-circle {
-                        width: 36px;
-                        height: 36px;
+                        width: 38px;
+                        height: 38px;
                         border-radius: 50%;
                         background: #e0e7ff;
                         color: #3b82f6;
                         display: inline-flex;
                         align-items: center;
                         justify-content: center;
-                        font-weight: 700;
+                        font-weight: 800;
                         margin-right: 15px;
                         font-size: 14px;
                     }
                     .student-name {
                         font-weight: 700;
-                        color: #1e293b;
+                        color: #0f172a;
                     }
                     .badge-kelas {
                         background: #eff6ff;
                         color: #2563eb;
                         padding: 5px 12px;
-                        border-radius: 6px;
+                        border-radius: 8px;
                         font-size: 0.75rem;
                         font-weight: 700;
                         text-transform: uppercase;
@@ -153,9 +153,9 @@
                         gap: 8px;
                     }
                     .btn-action {
-                        width: 32px;
-                        height: 32px;
-                        border-radius: 6px;
+                        width: 34px;
+                        height: 34px;
+                        border-radius: 8px;
                         display: flex;
                         align-items: center;
                         justify-content: center;
@@ -175,6 +175,75 @@
                     .btn-delete:hover { background: #fecaca; }
                     .btn-qr { background: #e0e7ff; color: #4f46e5; }
                     .btn-qr:hover { background: #c7d2fe; }
+
+                    /* Custom Modal Styles */
+                    .form-label-custom {
+                        font-size: 0.72rem;
+                        font-weight: 800;
+                        color: #475569;
+                        letter-spacing: 0.5px;
+                        text-transform: uppercase;
+                        margin-bottom: 6px;
+                        display: block;
+                    }
+                    .form-input-custom {
+                        border-radius: 10px !important;
+                        border: 1px solid #e2e8f0 !important;
+                        background: #f8fafc !important;
+                        padding: 10px 14px !important;
+                        font-size: 0.9rem !important;
+                        color: #0f172a !important;
+                        width: 100%;
+                        outline: none;
+                        transition: all 0.2s;
+                    }
+                    .form-input-custom:focus {
+                        background: #ffffff !important;
+                        border-color: #2563eb !important;
+                        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+                    }
+                    .btn-cancel-custom {
+                        background: transparent;
+                        color: #475569;
+                        border: none;
+                        font-weight: 700;
+                        font-size: 0.9rem;
+                        padding: 10px 20px;
+                        cursor: pointer;
+                        border-radius: 10px;
+                    }
+                    .btn-cancel-custom:hover {
+                        background: #f1f5f9;
+                    }
+                    .btn-save-custom {
+                        background: #2563eb;
+                        color: #ffffff;
+                        border: none;
+                        border-radius: 10px;
+                        font-weight: 700;
+                        font-size: 0.9rem;
+                        padding: 10px 24px;
+                        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+                        cursor: pointer;
+                        transition: all 0.2s;
+                    }
+                    .btn-save-custom:hover {
+                        background: #1d4ed8;
+                    }
+
+                    .detail-label {
+                        font-size: 0.72rem;
+                        font-weight: 800;
+                        color: #64748b;
+                        letter-spacing: 0.5px;
+                        text-transform: uppercase;
+                        margin-bottom: 2px;
+                    }
+                    .detail-value {
+                        font-size: 0.95rem;
+                        font-weight: 700;
+                        color: #0f172a;
+                    }
                 </style>
                 
                 <div class="row">
@@ -248,7 +317,7 @@
                                                 <td>{{ $item->jenis_kelamin == 'Laki-laki' ? 'L' : 'P' }}</td>
                                                 <td>
                                                     <div class="action-btns" style="justify-content: flex-end;">
-                                                        <button class="btn-action btn-view" title="Detail">
+                                                        <button wire:click="showDetail({{ $item->id_siswa }})" class="btn-action btn-view" title="Detail Data Santri">
                                                             <i class="material-icons">visibility</i>
                                                         </button>
                                                         <button wire:click="edit({{ $item->id_siswa }})" class="btn-action btn-edit" title="Edit">
@@ -282,74 +351,178 @@
         </div>
     </div>
 
-    <!-- Form Modal (Add / Edit Siswa) -->
+    <!-- Detail Modal (Tanda Mata / View Full Santri Data) -->
+    @if($showDetailModal && $detailStudent)
+    <div class="modal fade show" style="display: block; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 1050; overflow-y: auto;" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 540px;">
+            <div class="modal-content" style="border-radius: 20px; border: none; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); overflow: hidden; background: #fff;">
+                <div class="modal-header" style="padding: 24px 28px 18px 28px; border-bottom: 1px solid #f1f5f9; background: #ffffff; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 14px;">
+                        <div style="width: 44px; height: 44px; border-radius: 12px; background: #dcfce7; color: #16a34a; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <i class="material-icons" style="font-size: 24px;">visibility</i>
+                        </div>
+                        <div>
+                            <h5 class="modal-title" style="font-size: 1.2rem; font-weight: 800; color: #0f172a; margin: 0;">Detail Data Santri</h5>
+                            <p style="font-size: 0.82rem; color: #64748b; margin: 2px 0 0 0;">Informasi lengkap identitas santri</p>
+                        </div>
+                    </div>
+                    <button type="button" wire:click="closeDetailModal" style="background: transparent; border: none; font-size: 24px; color: #94a3b8; cursor: pointer; padding: 4px;">
+                        &times;
+                    </button>
+                </div>
+                <div class="modal-body" style="padding: 24px 28px; background: #fff;">
+                    <!-- Avatar & Header Banner -->
+                    <div class="d-flex align-items-center mb-4 p-3" style="background: #f8fafc; border-radius: 14px; border: 1px solid #f1f5f9;">
+                        <div class="avatar-circle" style="width: 52px; height: 52px; font-size: 20px; flex-shrink: 0;">
+                            {{ strtoupper(substr($detailStudent->nama_siswa, 0, 1)) }}
+                        </div>
+                        <div style="overflow: hidden;">
+                            <h4 style="font-weight: 800; color: #0f172a; margin: 0; font-size: 1.15rem;">{{ $detailStudent->nama_siswa }}</h4>
+                            <span class="badge-kelas mt-1" style="display: inline-block;">
+                                {{ $detailStudent->kelas ? ($detailStudent->kelas->tingkat . ' ' . $detailStudent->kelas->index_kelas) : 'Belum Ada Kelas' }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Details Grid -->
+                    <div class="row" style="row-gap: 16px;">
+                        <div class="col-6">
+                            <div class="detail-label">NISN / NIS</div>
+                            <div class="detail-value">{{ $detailStudent->nis }}</div>
+                        </div>
+                        <div class="col-6">
+                            <div class="detail-label">JENIS KELAMIN</div>
+                            <div class="detail-value">{{ $detailStudent->jenis_kelamin }}</div>
+                        </div>
+                        <div class="col-6">
+                            <div class="detail-label">TANGGAL LAHIR</div>
+                            <div class="detail-value">
+                                {{ $detailStudent->tanggal_lahir ? \Carbon\Carbon::parse($detailStudent->tanggal_lahir)->locale('id')->translatedFormat('d F Y') : '-' }}
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="detail-label">NO. HANDPHONE / WA</div>
+                            <div class="detail-value">{{ $detailStudent->no_hp ?: '-' }}</div>
+                        </div>
+                    </div>
+
+                    <!-- Parents Info Card -->
+                    <div style="background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 14px; padding: 16px 18px; margin-top: 20px;">
+                        <div style="font-size: 0.75rem; font-weight: 800; color: #475569; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 12px;">Data Orang Tua Santri</div>
+                        <div class="row" style="row-gap: 12px;">
+                            <div class="col-6">
+                                <div class="detail-label">NAMA AYAH</div>
+                                <div class="detail-value" style="font-size: 0.9rem;">{{ $detailStudent->nama_ayah ?: '-' }}</div>
+                            </div>
+                            <div class="col-6">
+                                <div class="detail-label">NAMA IBU</div>
+                                <div class="detail-value" style="font-size: 0.9rem;">{{ $detailStudent->nama_ibu ?: '-' }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="padding: 16px 28px; background: #fff; border-top: 1px solid #f1f5f9; display: flex; justify-content: flex-end;">
+                    <button type="button" class="btn-save-custom" wire:click="closeDetailModal">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    <!-- Form Modal (Registrasi Siswa Baru / Edit Data Siswa) -->
     @if($showModal)
     <div class="modal fade show" style="display: block; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 1050; overflow-y: auto;" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-            <div class="modal-content" style="border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); overflow: hidden; background: #fff;">
+            <div class="modal-content" style="border-radius: 20px; border: none; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); overflow: hidden; background: #fff;">
                 <form wire:submit.prevent="{{ $isEdit ? 'update' : 'store' }}">
-                    <div class="modal-header" style="padding: 20px 24px; border-bottom: 1px solid #f1f5f9; background: #fafafa; display: flex; align-items: center; justify-content: space-between;">
-                        <div style="display: flex; align-items: center; gap: 12px;">
-                            <div style="width: 40px; height: 40px; border-radius: 10px; background: #dcfce7; color: #16a34a; display: flex; align-items: center; justify-content: center;">
-                                <i class="material-icons" style="font-size: 22px;">{{ $isEdit ? 'edit_note' : 'person_add' }}</i>
+                    <!-- Modal Header with Kept Text/Icons -->
+                    <div class="modal-header" style="padding: 24px 28px 18px 28px; border-bottom: 1px solid #f1f5f9; background: #ffffff; display: flex; align-items: center; justify-content: space-between;">
+                        <div style="display: flex; align-items: center; gap: 14px;">
+                            <div style="width: 44px; height: 44px; border-radius: 12px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                <i class="material-icons" style="font-size: 24px;">{{ $isEdit ? 'edit_note' : 'person_add' }}</i>
                             </div>
                             <div>
-                                <h5 class="modal-title" style="font-size: 1.1rem; font-weight: 700; color: #0f172a; margin: 0;">{{ $isEdit ? 'Edit Data Siswa' : 'Tambah Data Siswa' }}</h5>
-                                <p style="font-size: 0.78rem; color: #64748b; margin: 2px 0 0 0;">Isi formulir di bawah ini dengan data santri yang valid</p>
+                                <h5 class="modal-title" style="font-size: 1.2rem; font-weight: 800; color: #0f172a; margin: 0;">{{ $isEdit ? 'Edit Data Siswa' : 'Tambah Data Siswa' }}</h5>
+                                <p style="font-size: 0.82rem; color: #64748b; margin: 2px 0 0 0;">Isi formulir di bawah ini dengan data santri yang valid</p>
                             </div>
                         </div>
-                        <button type="button" wire:click="$set('showModal', false)" style="background: transparent; border: none; font-size: 20px; color: #94a3b8; cursor: pointer; padding: 4px;">
+                        <button type="button" wire:click="$set('showModal', false)" style="background: transparent; border: none; font-size: 24px; color: #94a3b8; cursor: pointer; padding: 4px;">
                             &times;
                         </button>
                     </div>
-                    <div class="modal-body" style="padding: 24px; background: #fff;">
+
+                    <!-- Modal Body Form Layout matching requested Image -->
+                    <div class="modal-body" style="padding: 24px 28px; background: #fff;">
+                        <!-- Row 1: NAMA LENGKAP -->
+                        <div class="mb-3">
+                            <label class="form-label-custom">NAMA LENGKAP <span class="text-danger">*</span></label>
+                            <input type="text" wire:model="nama_siswa" class="form-input-custom" placeholder="Sesuai Akta Kelahiran" required minlength="3">
+                            @error('nama_siswa') <span class="text-danger" style="font-size: 0.78rem;">{{ $message }}</span> @enderror
+                        </div>
+
+                        <!-- Row 2: NISN & KELAS -->
                         <div class="row">
-                            <div class="col-md-6 form-group mb-3">
-                                <label style="font-size: 0.82rem; font-weight: 600; color: #334155; margin-bottom: 6px; display: block;">NIS <span class="text-danger">*</span></label>
-                                <input type="number" wire:model="nis" class="form-control" style="border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.9rem;" required placeholder="Masukkan NIS">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label-custom">NISN / NIS <span class="text-danger">*</span></label>
+                                <input type="number" wire:model="nis" class="form-input-custom" placeholder="Nomor Induk" required>
                                 @error('nis') <span class="text-danger" style="font-size: 0.78rem;">{{ $message }}</span> @enderror
                             </div>
-                            <div class="col-md-6 form-group mb-3">
-                                <label style="font-size: 0.82rem; font-weight: 600; color: #334155; margin-bottom: 6px; display: block;">Nama Lengkap <span class="text-danger">*</span></label>
-                                <input type="text" wire:model="nama_siswa" class="form-control" style="border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.9rem;" required minlength="3" placeholder="Masukkan Nama Lengkap">
-                                @error('nama_siswa') <span class="text-danger" style="font-size: 0.78rem;">{{ $message }}</span> @enderror
-                            </div>
-                            <div class="col-md-6 form-group mb-3">
-                                <label style="font-size: 0.82rem; font-weight: 600; color: #334155; margin-bottom: 6px; display: block;">Kelas <span class="text-danger">*</span></label>
-                                <select wire:model="id_kelas" class="form-control" style="border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.9rem; background: #fff;" required>
-                                    <option value="">-- Pilih Kelas --</option>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label-custom">KELAS <span class="text-danger">*</span></label>
+                                <select wire:model="id_kelas" class="form-input-custom" required>
+                                    <option value="">Ketik atau pilih kelas</option>
                                     @foreach($kelasList as $k)
                                         <option value="{{ $k->id_kelas }}">{{ $k->tingkat }} {{ $k->index_kelas }}</option>
                                     @endforeach
                                 </select>
                                 @error('id_kelas') <span class="text-danger" style="font-size: 0.78rem;">{{ $message }}</span> @enderror
                             </div>
-                            <div class="col-md-6 form-group mb-3">
-                                <label style="font-size: 0.82rem; font-weight: 600; color: #334155; margin-bottom: 6px; display: block;">Jenis Kelamin <span class="text-danger">*</span></label>
-                                <select wire:model="jenis_kelamin" class="form-control" style="border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.9rem; background: #fff;" required>
-                                    <option value="">-- Pilih Jenis Kelamin --</option>
-                                    <option value="Laki-laki">Laki-Laki</option>
+                        </div>
+
+                        <!-- Row 3: JENIS KELAMIN & TANGGAL LAHIR -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label-custom">JENIS KELAMIN <span class="text-danger">*</span></label>
+                                <select wire:model="jenis_kelamin" class="form-input-custom" required>
+                                    <option value="">Pilih Jenis Kelamin</option>
+                                    <option value="Laki-laki">Laki-laki</option>
                                     <option value="Perempuan">Perempuan</option>
                                 </select>
                                 @error('jenis_kelamin') <span class="text-danger" style="font-size: 0.78rem;">{{ $message }}</span> @enderror
                             </div>
-                            <div class="col-md-6 form-group mb-3">
-                                <label style="font-size: 0.82rem; font-weight: 600; color: #334155; margin-bottom: 6px; display: block;">Nomor HP / WA Ortu</label>
-                                <input type="text" wire:model="no_hp" class="form-control" style="border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.9rem;" placeholder="08xxxxxxxxxx">
-                                @error('no_hp') <span class="text-danger" style="font-size: 0.78rem;">{{ $message }}</span> @enderror
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label-custom">TANGGAL LAHIR</label>
+                                <input type="date" wire:model="tanggal_lahir" class="form-input-custom">
+                                @error('tanggal_lahir') <span class="text-danger" style="font-size: 0.78rem;">{{ $message }}</span> @enderror
                             </div>
-                            <div class="col-md-6 form-group mb-3">
-                                <label style="font-size: 0.82rem; font-weight: 600; color: #334155; margin-bottom: 6px; display: block;">Kode RFID (Opsional)</label>
-                                <input type="text" wire:model="rfid_code" class="form-control" style="border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.9rem;" placeholder="Tempelkan kartu RFID">
-                                @error('rfid_code') <span class="text-danger" style="font-size: 0.78rem;">{{ $message }}</span> @enderror
+                        </div>
+
+                        <!-- Row 4: Grouped Parent & Contact Container -->
+                        <div style="background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 14px; padding: 18px 20px; margin-top: 6px;">
+                            <div class="row">
+                                <div class="col-md-4 mb-3 mb-md-0">
+                                    <label class="form-label-custom">NAMA AYAH</label>
+                                    <input type="text" wire:model="nama_ayah" class="form-input-custom" style="background: #ffffff !important;" placeholder="Nama Ayah Kandung">
+                                    @error('nama_ayah') <span class="text-danger" style="font-size: 0.78rem;">{{ $message }}</span> @enderror
+                                </div>
+                                <div class="col-md-4 mb-3 mb-md-0">
+                                    <label class="form-label-custom">NAMA IBU</label>
+                                    <input type="text" wire:model="nama_ibu" class="form-input-custom" style="background: #ffffff !important;" placeholder="Nama Ibu Kandung">
+                                    @error('nama_ibu') <span class="text-danger" style="font-size: 0.78rem;">{{ $message }}</span> @enderror
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label-custom">NO. HANDPHONE</label>
+                                    <input type="text" wire:model="no_hp" class="form-input-custom" style="background: #ffffff !important;" placeholder="08xxxxxxxxxx">
+                                    @error('no_hp') <span class="text-danger" style="font-size: 0.78rem;">{{ $message }}</span> @enderror
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer" style="padding: 16px 24px; background: #f8fafc; border-top: 1px solid #f1f5f9; display: flex; justify-content: flex-end; gap: 10px;">
-                        <button type="button" class="btn" style="background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 18px; font-weight: 600; font-size: 0.85rem;" wire:click="$set('showModal', false)">Batal</button>
-                        <button type="submit" class="btn" style="background: #16a34a; color: #ffffff; border: none; border-radius: 8px; padding: 8px 22px; font-weight: 700; font-size: 0.85rem; box-shadow: 0 4px 6px -1px rgba(22, 163, 74, 0.2);">
-                            <i class="material-icons" style="font-size: 18px; vertical-align: middle; margin-right: 4px;">save</i> Simpan
-                        </button>
+
+                    <!-- Modal Footer Buttons -->
+                    <div class="modal-footer" style="padding: 18px 28px; background: #ffffff; border-top: 1px solid #f1f5f9; display: flex; justify-content: flex-end; align-items: center; gap: 12px;">
+                        <button type="button" class="btn-cancel-custom" wire:click="$set('showModal', false)">Batal</button>
+                        <button type="submit" class="btn-save-custom">Simpan Data</button>
                     </div>
                 </form>
             </div>
@@ -362,7 +535,7 @@
     <style>
         @media print {
             @page {
-                size: 3.75in 5.52in; /* Matches 360px x 530px card size */
+                size: 3.75in 5.52in;
                 margin: 0;
             }
             * {
@@ -458,19 +631,19 @@
     <!-- Delete Confirmation Modal -->
     <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" wire:ignore.self>
         <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Hapus Data Siswa</h5>
+            <div class="modal-content" style="border-radius: 16px; border: none;">
+                <div class="modal-header" style="border-bottom: 1px solid #f1f5f9;">
+                    <h5 class="modal-title" style="font-weight: 700;">Hapus Data Siswa</h5>
                     <button type="button" class="close" data-dismiss="modal">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body" style="color: #475569;">
                     Apakah Anda yakin ingin menghapus data siswa ini?
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                    <button type="button" class="btn btn-danger" wire:click="delete">Hapus</button>
+                <div class="modal-footer" style="border-top: 1px solid #f1f5f9;">
+                    <button type="button" class="btn-cancel-custom" data-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-danger" style="border-radius: 10px; font-weight: 700; padding: 8px 20px;" wire:click="delete">Hapus</button>
                 </div>
             </div>
         </div>

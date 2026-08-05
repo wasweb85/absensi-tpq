@@ -29,11 +29,16 @@ class SiswaIndex extends Component
     public $nama_siswa;
     public $id_kelas;
     public $jenis_kelamin;
+    public $tanggal_lahir;
+    public $nama_ayah;
+    public $nama_ibu;
     public $no_hp;
-    public $rfid_code;
 
     public $isEdit = false;
     public $showModal = false;
+
+    public $showDetailModal = false;
+    public $detailStudent = null;
     
     public $showQrModal = false;
     public $qrDataUrl = '';
@@ -83,6 +88,20 @@ class SiswaIndex extends Component
         $this->showModal = true;
     }
 
+    public function showDetail($id)
+    {
+        $this->detailStudent = Siswa::with('kelas')->find($id);
+        if ($this->detailStudent) {
+            $this->showDetailModal = true;
+        }
+    }
+
+    public function closeDetailModal()
+    {
+        $this->showDetailModal = false;
+        $this->detailStudent = null;
+    }
+
     public function store()
     {
         $this->validate([
@@ -90,19 +109,20 @@ class SiswaIndex extends Component
             'nama_siswa' => 'required|min:3|max:255',
             'id_kelas' => 'required|exists:tb_kelas,id_kelas',
             'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
+            'tanggal_lahir' => 'nullable|date',
+            'nama_ayah' => 'nullable|string|max:255',
+            'nama_ibu' => 'nullable|string|max:255',
             'no_hp' => 'nullable|min:5|max:30',
-            'rfid_code' => 'nullable|max:100|unique:tb_siswa,rfid_code',
         ], [
-            'nis.required' => 'NIS wajib diisi.',
-            'nis.numeric' => 'NIS harus berupa angka.',
-            'nis.max_digits' => 'NIS maksimal 35 digit.',
-            'nis.unique' => 'NIS ini sudah terdaftar.',
-            'nama_siswa.required' => 'Nama siswa wajib diisi.',
-            'nama_siswa.min' => 'Nama siswa minimal 3 karakter.',
+            'nis.required' => 'NIS/NISN wajib diisi.',
+            'nis.numeric' => 'NIS/NISN harus berupa angka.',
+            'nis.max_digits' => 'NIS/NISN maksimal 35 digit.',
+            'nis.unique' => 'NIS/NISN ini sudah terdaftar.',
+            'nama_siswa.required' => 'Nama lengkap wajib diisi.',
+            'nama_siswa.min' => 'Nama lengkap minimal 3 karakter.',
             'id_kelas.required' => 'Kelas wajib dipilih.',
             'jenis_kelamin.required' => 'Jenis kelamin wajib dipilih.',
             'no_hp.max' => 'Nomor HP maksimal 30 karakter.',
-            'rfid_code.unique' => 'Kode RFID ini sudah digunakan.',
         ]);
 
         Siswa::create([
@@ -110,8 +130,10 @@ class SiswaIndex extends Component
             'nama_siswa' => $this->nama_siswa,
             'id_kelas' => $this->id_kelas,
             'jenis_kelamin' => $this->jenis_kelamin,
-            'no_hp' => $this->no_hp,
-            'rfid_code' => $this->rfid_code,
+            'tanggal_lahir' => $this->tanggal_lahir ?: null,
+            'nama_ayah' => $this->nama_ayah ?: null,
+            'nama_ibu' => $this->nama_ibu ?: null,
+            'no_hp' => $this->no_hp ?: null,
             'unique_code' => Str::random(16),
         ]);
 
@@ -128,8 +150,10 @@ class SiswaIndex extends Component
         $this->nama_siswa = $siswa->nama_siswa;
         $this->id_kelas = $siswa->id_kelas;
         $this->jenis_kelamin = $siswa->jenis_kelamin;
+        $this->tanggal_lahir = $siswa->tanggal_lahir;
+        $this->nama_ayah = $siswa->nama_ayah;
+        $this->nama_ibu = $siswa->nama_ibu;
         $this->no_hp = $siswa->no_hp;
-        $this->rfid_code = $siswa->rfid_code;
 
         $this->isEdit = true;
         $this->showModal = true;
@@ -142,19 +166,20 @@ class SiswaIndex extends Component
             'nama_siswa' => 'required|min:3|max:255',
             'id_kelas' => 'required|exists:tb_kelas,id_kelas',
             'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
+            'tanggal_lahir' => 'nullable|date',
+            'nama_ayah' => 'nullable|string|max:255',
+            'nama_ibu' => 'nullable|string|max:255',
             'no_hp' => 'nullable|min:5|max:30',
-            'rfid_code' => ['nullable', 'max:100', Rule::unique('tb_siswa', 'rfid_code')->ignore($this->id_siswa, 'id_siswa')],
         ], [
-            'nis.required' => 'NIS wajib diisi.',
-            'nis.numeric' => 'NIS harus berupa angka.',
-            'nis.max_digits' => 'NIS maksimal 35 digit.',
-            'nis.unique' => 'NIS ini sudah terdaftar.',
-            'nama_siswa.required' => 'Nama siswa wajib diisi.',
-            'nama_siswa.min' => 'Nama siswa minimal 3 karakter.',
+            'nis.required' => 'NIS/NISN wajib diisi.',
+            'nis.numeric' => 'NIS/NISN harus berupa angka.',
+            'nis.max_digits' => 'NIS/NISN maksimal 35 digit.',
+            'nis.unique' => 'NIS/NISN ini sudah terdaftar.',
+            'nama_siswa.required' => 'Nama lengkap wajib diisi.',
+            'nama_siswa.min' => 'Nama lengkap minimal 3 karakter.',
             'id_kelas.required' => 'Kelas wajib dipilih.',
             'jenis_kelamin.required' => 'Jenis kelamin wajib dipilih.',
             'no_hp.max' => 'Nomor HP maksimal 30 karakter.',
-            'rfid_code.unique' => 'Kode RFID ini sudah digunakan.',
         ]);
 
         $siswa = Siswa::findOrFail($this->id_siswa);
@@ -163,8 +188,10 @@ class SiswaIndex extends Component
             'nama_siswa' => $this->nama_siswa,
             'id_kelas' => $this->id_kelas,
             'jenis_kelamin' => $this->jenis_kelamin,
-            'no_hp' => $this->no_hp,
-            'rfid_code' => $this->rfid_code,
+            'tanggal_lahir' => $this->tanggal_lahir ?: null,
+            'nama_ayah' => $this->nama_ayah ?: null,
+            'nama_ibu' => $this->nama_ibu ?: null,
+            'no_hp' => $this->no_hp ?: null,
         ]);
 
         $this->showModal = false;
@@ -222,7 +249,9 @@ class SiswaIndex extends Component
         $this->nama_siswa = '';
         $this->id_kelas = '';
         $this->jenis_kelamin = '';
+        $this->tanggal_lahir = '';
+        $this->nama_ayah = '';
+        $this->nama_ibu = '';
         $this->no_hp = '';
-        $this->rfid_code = '';
     }
 }
