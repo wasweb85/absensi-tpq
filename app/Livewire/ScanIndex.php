@@ -69,7 +69,7 @@ class ScanIndex extends Component
         } else {
             // 2. Cek Guru
             $guru = Guru::where(function ($q) use ($code, $guruIdFromPrefix) {
-                $q->where('nuptk', $code)
+                $q->where('niup', $code)
                   ->orWhere('rfid_code', $code)
                   ->orWhere('unique_code', $code);
 
@@ -126,7 +126,7 @@ class ScanIndex extends Component
                 'keterangan' => 'Hadir via Scan QR Code'
             ]);
 
-            $messageString = $user->nama_guru . ' dengan NIP ' . ($user->nuptk ?? '-') . " sudah absen pada tanggal $date jam $time";
+            $messageString = $user->nama_guru . ' dengan NIUP ' . ($user->niup ?? '-') . " sudah absen pada tanggal $date jam $time";
         } else {
             $idSiswa = $user->id_siswa;
             $sudahAbsen = PresensiSiswa::where('id_siswa', $idSiswa)->where('tanggal', $date)->first();

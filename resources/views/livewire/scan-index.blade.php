@@ -141,7 +141,7 @@
                                     <div>NIS: <b>{{ $scanResult['user']->nis }}</b></div>
                                     <div>Kelas: <b>{{ $scanResult['user']->kelas->tingkat ?? '' }} {{ $scanResult['user']->kelas->index_kelas ?? '' }}</b></div>
                                 @else
-                                    <div>NUPTK: <b>{{ $scanResult['user']->nuptk ?? '-' }}</b></div>
+                                    <div>NIUP: <b>{{ $scanResult['user']->niup ?? '-' }}</b></div>
                                 @endif
                                 <div>Jam: <b>{{ $scanResult['presensi']->jam_masuk ?? '-' }}</b></div>
                             </div>

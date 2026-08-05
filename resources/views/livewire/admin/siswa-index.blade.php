@@ -278,7 +278,7 @@
                                 </div>
                                 <div class="toolbar-right">
                                     <i class="material-icons">search</i>
-                                    <input type="text" wire:model.live.debounce.300ms="search" placeholder="Cari Nama / NISN...">
+                                    <input type="text" wire:model.live.debounce.300ms="search" placeholder="Cari Nama / NIS...">
                                 </div>
                             </div>
                         
@@ -288,7 +288,7 @@
                                         <tr>
                                             <th style="width: 50px;">NO</th>
                                             <th>NAMA</th>
-                                            <th>NISN</th>
+                                            <th>NIS</th>
                                             <th>KELAS</th>
                                             <th>L/P</th>
                                             <th style="text-align: right;">AKSI</th>
@@ -387,7 +387,7 @@
                     <!-- Details Grid -->
                     <div class="row" style="row-gap: 16px;">
                         <div class="col-6">
-                            <div class="detail-label">NISN / NIS</div>
+                            <div class="detail-label">NIS</div>
                             <div class="detail-value">{{ $detailStudent->nis }}</div>
                         </div>
                         <div class="col-6">
@@ -460,11 +460,11 @@
                             @error('nama_siswa') <span class="text-danger" style="font-size: 0.78rem;">{{ $message }}</span> @enderror
                         </div>
 
-                        <!-- Row 2: NISN & KELAS -->
+                        <!-- Row 2: NIS & KELAS -->
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label-custom">NISN / NIS <span class="text-danger">*</span></label>
-                                <input type="number" wire:model="nis" class="form-input-custom" placeholder="Nomor Induk" required>
+                                <label class="form-label-custom">NIS <span class="text-danger">*</span></label>
+                                <input type="number" wire:model="nis" class="form-input-custom" placeholder="Nomor Induk Santri" required>
                                 @error('nis') <span class="text-danger" style="font-size: 0.78rem;">{{ $message }}</span> @enderror
                             </div>
                             <div class="col-md-6 mb-3">
@@ -480,7 +480,7 @@
                         </div>
 
                         <!-- Row 3: JENIS KELAMIN & TANGGAL LAHIR -->
-                        <div class="row">
+                        <div class="row">   
                             <div class="col-md-6 mb-3">
                                 <label class="form-label-custom">JENIS KELAMIN <span class="text-danger">*</span></label>
                                 <select wire:model="jenis_kelamin" class="form-input-custom" required>

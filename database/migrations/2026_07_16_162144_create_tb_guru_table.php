@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('tb_guru', function (Blueprint $table) {
             $table->integer('id_guru', true); // AUTO_INCREMENT
-            $table->string('nuptk', 24);
+            $table->string('niup', 24);
             $table->string('nama_guru', 255);
             $table->enum('jenis_kelamin', ['Laki-laki', 'Perempuan']);
             $table->text('alamat');

@@ -88,7 +88,7 @@ class QrController extends Controller
                 $result = (new Builder(
                     writer: new PngWriter(),
                     writerOptions: [],
-                    data: (string) ($g->unique_code ?: $g->rfid_code ?: $g->nuptk ?: 'Guru-'.$g->id_guru),
+                    data: (string) ($g->unique_code ?: $g->rfid_code ?: $g->niup ?: 'Guru-'.$g->id_guru),
                     encoding: new Encoding('UTF-8'),
                     errorCorrectionLevel: ErrorCorrectionLevel::High,
                     size: 300,

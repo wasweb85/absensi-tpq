@@ -81,7 +81,7 @@ class ScanQr extends Component
         } else {
             // 2. Cek Guru
             $guru = Guru::where(function ($q) use ($code, $guruIdFromPrefix) {
-                $q->where('nuptk', $code)
+                $q->where('niup', $code)
                   ->orWhere('rfid_code', $code)
                   ->orWhere('unique_code', $code);
 

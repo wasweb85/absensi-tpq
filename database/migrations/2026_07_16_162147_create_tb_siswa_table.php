@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('nama_siswa', 255);
             $table->unsignedInteger('id_kelas');
             $table->enum('jenis_kelamin', ['Laki-laki', 'Perempuan']);
-            $table->string('no_hp', 32);
+            $table->string('no_hp', 32)->nullable();
             $table->string('unique_code', 64)->unique();
             $table->string('rfid_code', 100)->nullable()->index('idx_tb_siswa_rfid_code');
 

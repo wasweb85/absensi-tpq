@@ -25,4 +25,9 @@ class Guru extends Model
     {
         return $this->hasOne(User::class, 'id_guru', 'id_guru');
     }
+
+    public function kelasBinaan()
+    {
+        return $this->belongsToMany(Kelas::class, 'guru_kelas', 'id_guru', 'id_kelas');
+    }
 }

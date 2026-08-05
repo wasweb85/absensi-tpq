@@ -5,6 +5,7 @@ namespace App\Livewire\Teacher;
 use Livewire\Component;
 use App\Models\Kelas;
 use App\Models\Siswa;
+use App\Models\Guru;
 use App\Models\PresensiSiswa;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -18,14 +19,39 @@ class ManualAttendance extends Component
     public function mount()
     {
         $this->tanggal = Carbon::today()->toDateString();
-        $user = Auth::user();
+        $this->initClasses();
+    }
 
-        // Check if teacher is wali kelas
-        $kelas = Kelas::where('id_wali_kelas', $user->id_guru)->first();
-        if ($kelas) {
-            $this->id_kelas = $kelas->id_kelas;
+    private function initClasses()
+    {
+        $allKelas = $this->getAssignedClasses();
+        if ($allKelas->count() > 0 && empty($this->id_kelas)) {
+            $this->id_kelas = $allKelas->first()->id_kelas;
         }
         $this->loadData();
+    }
+
+    private function getAssignedClasses()
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return collect();
+        }
+
+        if ($user->is_superadmin == 1) {
+            return Kelas::orderBy('tingkat')->get();
+        }
+
+        if ($user->id_guru) {
+            $guru = Guru::with('kelasBinaan')->find($user->id_guru);
+            if ($guru) {
+                $waliKelas = Kelas::where('id_wali_kelas', $user->id_guru)->get();
+                $binaanKelas = $guru->kelasBinaan;
+                return $waliKelas->merge($binaanKelas)->unique('id_kelas')->sortBy('tingkat');
+            }
+        }
+
+        return collect();
     }
 
     public function updatedTanggal()
@@ -45,7 +71,7 @@ class ManualAttendance extends Component
             return;
         }
 
-        $siswaList = Siswa::where('id_kelas', $this->id_kelas)->get();
+        $siswaList = Siswa::where('id_kelas', $this->id_kelas)->orderBy('nama_siswa')->get();
         $siswaIds = $siswaList->pluck('id_siswa');
         
         $presensiHariIni = PresensiSiswa::whereIn('id_siswa', $siswaIds)
@@ -86,18 +112,17 @@ class ManualAttendance extends Component
             }
         }
 
-        session()->flash('success', "Berhasil menyimpan data absensi untuk $successCount siswa.");
+        session()->flash('success', "Berhasil menyimpan data absensi untuk $successCount santri.");
     }
 
     public function render()
     {
-        $user = Auth::user();
-        $allKelas = Kelas::where('id_wali_kelas', $user->id_guru)->get();
-        $siswaList = empty($this->id_kelas) ? collect() : Siswa::where('id_kelas', $this->id_kelas)->get();
+        $allKelas = $this->getAssignedClasses();
+        $siswaList = empty($this->id_kelas) ? collect() : Siswa::where('id_kelas', $this->id_kelas)->orderBy('nama_siswa')->get();
 
         return view('livewire.teacher.manual-attendance', [
             'allKelas' => $allKelas,
             'siswaList' => $siswaList
-        ])->layout('layouts.admin', ['title' => 'Input Absensi', 'context' => 'absen-manual']);
+        ])->layout('layouts.admin', ['title' => 'Monitoring & Absensi Santri', 'context' => 'absen-manual']);
     }
 }

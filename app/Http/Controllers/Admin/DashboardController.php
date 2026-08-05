@@ -16,6 +16,10 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        if (auth()->check() && !empty(auth()->user()->id_guru) && auth()->user()->is_superadmin != 1) {
+            return redirect()->route('teacher.dashboard');
+        }
+
         $today = Carbon::today()->toDateString();
 
         $jumlahKehadiranSiswa = [
