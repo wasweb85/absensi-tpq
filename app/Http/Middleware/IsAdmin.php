@@ -16,7 +16,7 @@ class IsAdmin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::check() && Auth::user()->is_superadmin == 1) {
+        if (Auth::check() && in_array((int) Auth::user()->is_superadmin, [1, 2, 3])) {
             return $next($request);
         }
 

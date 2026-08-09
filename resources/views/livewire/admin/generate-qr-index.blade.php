@@ -11,8 +11,8 @@
 
     <div class="card shadow-sm border border-slate-200 rounded-xl overflow-hidden bg-white">
         <div class="card-header px-4 py-3 border-b border-slate-200 bg-white">
-            <h2 class="text-lg font-bold text-purple-700 m-0">Generate QR Code</h2>
-            <p class="text-xs text-slate-500 mt-0.5 mb-0">Unduh bundle QR Code (.zip) berdasarkan kelas atau untuk seluruh guru</p>
+            <h2 class="text-lg font-bold text-purple-700 m-0">Download Kartu QR Code Massal</h2>
+            <p class="text-xs text-slate-500 mt-0.5 mb-0">Unduh bundle file gambar Kartu Absensi berdesain resmi (.zip) berdasarkan kelas atau semua santri/guru</p>
         </div>
 
         <div class="p-4 bg-slate-50/50">
@@ -26,7 +26,7 @@
                                 <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
                                     <i class="material-icons text-lg">school</i>
                                 </div>
-                                <h3 class="text-sm font-bold text-slate-800 m-0">Data Siswa</h3>
+                                <h3 class="text-sm font-bold text-slate-800 m-0">Kartu Santri</h3>
                             </div>
                             <a href="{{ url('admin/siswa') }}" class="text-xs font-semibold text-blue-600 hover:text-blue-700 hover:underline flex items-center space-x-0.5">
                                 <span>Lihat data</span>
@@ -36,31 +36,28 @@
 
                         <div class="py-2.5">
                             <p class="text-xs text-slate-600 m-0">
-                                Total jumlah siswa : <b class="text-slate-800 text-sm font-extrabold">{{ $totalSiswa }}</b>
+                                Total jumlah santri : <b class="text-slate-800 text-sm font-extrabold">{{ $totalSiswa }}</b>
                             </p>
                         </div>
 
                         <div class="pt-2 border-t border-slate-100">
-                            <h4 class="text-xs font-bold text-slate-800 mb-1.5">Generate per kelas</h4>
+                            <h4 class="text-xs font-bold text-slate-800 mb-1.5">Pilih Kelas / Jilid</h4>
                             
                             <select wire:model="kelas" class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all cursor-pointer">
-                                <option value="">--Pilih kelas--</option>
+                                <option value="all">-- Semua Kelas / Jilid --</option>
                                 @foreach ($kelasList as $k)
                                     <option value="{{ $k->id_kelas }}">
-                                        {{ $k->tingkat }} {{ $k->index_kelas }} - {{ $k->total_siswa }} siswa
+                                        {{ $k->tingkat }} {{ $k->index_kelas }} ({{ $k->total_siswa }} santri)
                                     </option>
                                 @endforeach
                             </select>
-                            @error('kelas') 
-                                <span class="text-xs text-rose-500 font-semibold block mt-1">{{ $message }}</span> 
-                            @enderror
                         </div>
                     </div>
 
                     <div class="pt-3 mt-3 border-t border-slate-100">
-                        <button wire:click="downloadSiswa" class="w-full py-2 px-3 bg-purple-600 hover:bg-purple-700 active:bg-purple-800 text-white font-bold text-xs rounded-lg transition-all shadow-sm flex items-center justify-center space-x-1.5">
+                        <button wire:click="downloadSiswa" class="w-full py-2.5 px-3 bg-purple-600 hover:bg-purple-700 active:bg-purple-800 text-white font-bold text-xs rounded-lg transition-all shadow-sm flex items-center justify-center space-x-1.5">
                             <i class="material-icons text-lg">cloud_download</i>
-                            <span>Download ZIP Kelas</span>
+                            <span>Download ZIP Kartu Santri</span>
                         </button>
                     </div>
                 </div>
@@ -73,7 +70,7 @@
                                 <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
                                     <i class="material-icons text-lg">record_voice_over</i>
                                 </div>
-                                <h3 class="text-sm font-bold text-slate-800 m-0">Data Guru</h3>
+                                <h3 class="text-sm font-bold text-slate-800 m-0">Kartu Pengajar / Guru</h3>
                             </div>
                             <a href="{{ url('admin/guru') }}" class="text-xs font-semibold text-blue-600 hover:text-blue-700 hover:underline flex items-center space-x-0.5">
                                 <span>Lihat data</span>
@@ -88,15 +85,15 @@
                         </div>
 
                         <div class="pt-2 border-t border-slate-100">
-                            <h4 class="text-xs font-bold text-slate-800 mb-1">Generate Semua Guru</h4>
-                            <p class="text-xs text-slate-500 m-0">Unduh seluruh QR Code milik semua guru dalam format ZIP.</p>
+                            <h4 class="text-xs font-bold text-slate-800 mb-1">Download Semua Guru</h4>
+                            <p class="text-xs text-slate-500 m-0">Unduh seluruh file gambar Kartu Absensi Pengajar milik semua guru dalam format ZIP.</p>
                         </div>
                     </div>
 
                     <div class="pt-3 mt-3 border-t border-slate-100">
-                        <button wire:click="downloadGuru" class="w-full py-2 px-3 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold text-xs rounded-lg transition-all shadow-sm flex items-center justify-center space-x-1.5">
+                        <button wire:click="downloadGuru" class="w-full py-2.5 px-3 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold text-xs rounded-lg transition-all shadow-sm flex items-center justify-center space-x-1.5">
                             <i class="material-icons text-lg">cloud_download</i>
-                            <span>Download ZIP Guru</span>
+                            <span>Download ZIP Kartu Guru</span>
                         </button>
                     </div>
                 </div>

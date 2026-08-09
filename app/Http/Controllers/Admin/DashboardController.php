@@ -16,7 +16,7 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        if (auth()->check() && !empty(auth()->user()->id_guru) && auth()->user()->is_superadmin != 1) {
+        if (auth()->check() && (int) (auth()->user()->is_superadmin ?? 0) === 0 && !empty(auth()->user()->id_guru)) {
             return redirect()->route('teacher.dashboard');
         }
 

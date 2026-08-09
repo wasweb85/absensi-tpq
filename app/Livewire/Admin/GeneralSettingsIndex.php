@@ -48,12 +48,18 @@ class GeneralSettingsIndex extends Component
         $settings->copyright = $this->copyright;
 
         if ($this->logo) {
-            // Remove old logo if needed. 
-            // The legacy system saves to public/uploads/logo/
-            $filename = 'logo-tpq.' . $this->logo->getClientOriginalExtension();
+            $ext = strtolower($this->logo->getClientOriginalExtension());
+            $filename = 'logo-tpq-' . time() . '.' . $ext;
+            
+            // Remove old logo file if present
+            if ($settings->logo && file_exists(public_path('uploads/logo/' . $settings->logo))) {
+                @unlink(public_path('uploads/logo/' . $settings->logo));
+            }
+
             $this->logo->storeAs('logo', $filename, 'public_uploads');
             $settings->logo = $filename;
             $this->currentLogo = $filename;
+            $this->logo = null;
         }
 
         $settings->save();

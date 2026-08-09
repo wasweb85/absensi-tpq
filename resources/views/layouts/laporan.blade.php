@@ -1,8 +1,12 @@
 <html>
 
 <head>
-   <title>Rekap absen {{ $grup ?? '' }}</title>
-   <link rel="icon" type="image/jpeg" href="{{ asset('uploads/logo/logo-tpq.png') }}">
+   @php
+      $logoImg = (!empty($appSettings->logo) && file_exists(public_path('uploads/logo/' . $appSettings->logo))) 
+         ? asset('uploads/logo/' . $appSettings->logo) 
+         : asset('uploads/logo/logo-tpq.png');
+   @endphp
+   <link rel="icon" type="image/png" href="{{ $logoImg }}">
    <style>
       body {
          font-family: Arial, Helvetica, sans-serif;

@@ -46,6 +46,11 @@ class SiswaIndex extends Component
 
     public function mount()
     {
+        $user = auth()->user();
+        if (!\App\Models\RolePermission::hasAccess($user, 'data_santri')) {
+            session()->flash('error', 'Anda tidak memiliki hak akses ke Manajemen Data Santri.');
+            return redirect()->to('/dashboard');
+        }
         $this->kelasList = Kelas::orderBy('tingkat')->get();
     }
 

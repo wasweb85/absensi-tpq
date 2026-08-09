@@ -7,9 +7,13 @@
     <meta name="description" content="Absensi Sekolah QR Code - Sistem absensi modern berbasis QR Code">
     <meta name="theme-color" content="#0284c7">
 
-    <title>{{ $title ?? 'Scan QR Code Absensi' }}</title>
-    
-    <link rel="icon" type="image/png" href="{{ asset('uploads/logo/logo-tpq.png') }}">
+   @php
+      $logoImg = (!empty($appSettings->logo) && file_exists(public_path('uploads/logo/' . $appSettings->logo))) 
+         ? asset('uploads/logo/' . $appSettings->logo) 
+         : asset('uploads/logo/logo-tpq.png');
+   @endphp
+   <title>{{ $title ?? ('Scan QR Code Absensi - ' . ($appSettings->school_name ?? 'TPQ')) }}</title>
+   <link rel="icon" type="image/png" href="{{ $logoImg }}">
     
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Inter:400,500,600,700,800|Material+Icons" />
     <link href="{{ asset('assets/css/material-dashboard.min.css') }}" rel="stylesheet" />

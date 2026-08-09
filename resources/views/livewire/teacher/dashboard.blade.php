@@ -66,7 +66,7 @@
                     </div>
                     <div style="flex: 1;">
                         <div class="t-card-title">Statistik Kehadiran Hari Ini</div>
-                        <div class="t-card-subtitle">Grafik perbandingan status kehadiran</div>
+                        <div class="t-card-subtitle">Grafik perbandingan status kehadiran seluruh santri binaan</div>
                     </div>
                     <span class="t-badge purple" style="font-size: 0.7rem;">
                         <i class="material-icons" style="font-size: 0.85rem;">schedule</i> Realtime
@@ -140,60 +140,69 @@
                     </div>
                 </div>
             </div>
-        @endif
 
-        {{-- ── BOTTOM 2-COLUMN SECTION ──────────────── --}}
-        <div style="display: grid; grid-template-columns: 1fr; gap: 1.5rem;">
-            @media (min-width: 1024px) {}
-
-            @if($isWaliKelas)
-                {{-- JADWAL KBM --}}
-                <div class="t-card">
-                    <div class="t-card-header">
-                        <div class="t-card-header-icon purple">
-                            <i class="material-icons">menu_book</i>
-                        </div>
-                        <div>
-                            <div class="t-card-title">Jadwal KBM</div>
-                            <div class="t-card-subtitle">Jadwal pelajaran hari ini</div>
-                        </div>
+            {{-- JADWAL KBM --}}
+            <div class="t-card">
+                <div class="t-card-header">
+                    <div class="t-card-header-icon purple">
+                        <i class="material-icons">menu_book</i>
                     </div>
-
-                    @if($jadwalKelasHariIni->isEmpty())
-                        <div class="t-empty">
-                            <i class="material-icons">event_busy</i>
-                            <p>Tidak ada jadwal KBM hari ini.</p>
-                        </div>
-                    @else
-                        <div style="overflow-x: auto;">
-                            <table class="t-table">
-                                <thead>
-                                    <tr>
-                                        <th>Mata Pelajaran</th>
-                                        <th>Guru</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($jadwalKelasHariIni as $j)
-                                        <tr>
-                                            <td style="font-weight: 600;">{{ $j->mapel->nama_mapel ?? '-' }}</td>
-                                            <td>
-                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                                    <div style="width: 1.75rem; height: 1.75rem; border-radius: 50%; background: var(--t-primary-light); color: var(--t-primary); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700;">
-                                                        {{ substr($j->guru->nama_guru ?? '?', 0, 1) }}
-                                                    </div>
-                                                    {{ $j->guru->nama_guru ?? '-' }}
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    @endif
+                    <div>
+                        <div class="t-card-title">Jadwal KBM Kelas Binaan</div>
+                        <div class="t-card-subtitle">Jadwal pelajaran hari ini ({{ $hariIni }})</div>
+                    </div>
                 </div>
-            @endif
 
-        </div>
+                @if($jadwalKelasHariIni->isEmpty())
+                    <div class="t-empty" style="padding: 2rem; text-align: center; color: #64748b;">
+                        <i class="material-icons" style="font-size: 3rem; color: #cbd5e1; margin-bottom: 0.5rem;">event_busy</i>
+                        <p style="margin: 0; font-weight: 500;">Tidak ada jadwal KBM untuk kelas binaan Anda hari ini.</p>
+                    </div>
+                @else
+                    <div style="overflow-x: auto;">
+                        <table class="t-table">
+                            <thead>
+                                <tr>
+                                    <th>Kelas</th>
+                                    <th>Mata Pelajaran</th>
+                                    <th>Guru Pengajar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($jadwalKelasHariIni as $j)
+                                    <tr>
+                                        <td>
+                                            <span style="background: #f1f5f9; color: #334155; padding: 3px 8px; border-radius: 6px; font-size: 0.78rem; font-weight: 600; border: 1px solid #e2e8f0;">
+                                                {{ $j->kelas->tingkat ?? '-' }} {{ $j->kelas->index_kelas ?? '' }}
+                                            </span>
+                                        </td>
+                                        <td style="font-weight: 600;">{{ $j->mapel->nama_mapel ?? '-' }}</td>
+                                        <td>
+                                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                <div style="width: 1.75rem; height: 1.75rem; border-radius: 50%; background: var(--t-primary-light); color: var(--t-primary); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700;">
+                                                    {{ substr($j->guru->nama_guru ?? '?', 0, 1) }}
+                                                </div>
+                                                {{ $j->guru->nama_guru ?? '-' }}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
+            </div>
+
+        @else
+            <div class="t-card" style="padding: 2.5rem; text-align: center;">
+                <div style="width: 4rem; height: 4rem; border-radius: 50%; background: #e0f2fe; color: #0284c7; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                    <i class="material-icons" style="font-size: 2rem;">info</i>
+                </div>
+                <h3 style="font-size: 1.2rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem;">Belum Ada Kelas Binaan</h3>
+                <p style="color: #64748b; font-size: 0.9rem; max-width: 28rem; margin: 0 auto 1.5rem auto;">
+                    Anda belum ditugaskan mengampu kelas/jilid binaan oleh Admin. Silakan hubungi Administrator untuk penugasan kelas.
+                </p>
+            </div>
+        @endif
     @endif
 </div>

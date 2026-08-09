@@ -1,4 +1,7 @@
 <?php
+
+use App\Models\RolePermission;
+
 // Helper equivalent in Blade
 if (!isset($context)) {
     $context = $ctx ?? 'dashboard';
@@ -17,14 +20,13 @@ $user = auth()->user();
 $isWaliKelas = $user ? !empty($user->id_guru) : false;
 $isSuperadmin = $user ? ($user->is_superadmin == 1) : false;
 $isKepsek = $user ? ($user->is_superadmin == 2) : false;
-$canGenerateQR = $user ? in_array($user->is_superadmin, [1, 3]) : false;
-$canViewReport = $user ? in_array($user->is_superadmin, [1, 2, 3]) : false;
-$roleLabel = $user ? match($user->is_superadmin) {
-    0 => 'Scanner',
+$isStaf = $user ? ($user->is_superadmin == 3) : false;
+
+$roleLabel = $user ? match((int)$user->is_superadmin) {
     1 => 'Super Admin',
     2 => 'Kepsek',
     3 => 'Staf Petugas',
-    default => 'User'
+    default => ($isWaliKelas ? 'Wali Kelas' : 'Operator')
 } : 'User';
 ?>
 
@@ -32,12 +34,16 @@ $roleLabel = $user ? match($user->is_superadmin) {
 
    <!-- ── Header ──────────────────────────── -->
    <div class="sb-header">
-      <div class="sb-brand-icon">
-         <i class="material-icons">school</i>
+      <div class="sb-brand-icon flex items-center justify-center">
+         @if (!empty($appSettings->logo) && file_exists(public_path('uploads/logo/' . $appSettings->logo)))
+            <img src="{{ asset('uploads/logo/' . $appSettings->logo) }}" alt="Logo" style="max-height: 32px; max-width: 32px; object-fit: contain;">
+         @else
+            <i class="material-icons">school</i>
+         @endif
       </div>
       <div class="sb-brand-text">
-         <div class="sb-role">{{ $isWaliKelas ? 'Wali Kelas' : 'Operator' }}</div>
-         <div class="sb-school">Sekolah</div>
+         <div class="sb-role">{{ $roleLabel }}</div>
+         <div class="sb-school">{{ $appSettings->school_name ?? 'Sekolah' }}</div>
       </div>
       <button class="sb-toggle" id="sidebarToggle" title="Toggle Sidebar">
          <i class="material-icons">menu_open</i>
@@ -55,110 +61,140 @@ $roleLabel = $user ? match($user->is_superadmin) {
    <!-- ── Nav ─────────────────────────────── -->
    <nav class="sb-nav">
 
-      @if ($isWaliKelas)
-      <!-- ======= WALI KELAS MENU ======= -->
+      @if ((int)($user->is_superadmin ?? 0) === 0 && !empty($user->id_guru))
+      <!-- ======= GURU / WALI KELAS MENU (DYNAMIC PERMISSIONS) ======= -->
 
       <!-- Dashboard -->
-      <a wire:navigate.hover class="sb-item {{ sbActive($context, 'dashboard') }}" href="{{ url('teacher/dashboard') }}" data-tooltip="Dashboard">
+      @if (RolePermission::hasAccess($user, 'dashboard'))
+      <a wire:navigate.hover class="sb-item {{ sbActive($context, 'dashboard') }}" href="{{ url('teacher/dashboard') }}" data-tooltip="Dashboard Guru">
          <i class="material-icons">dashboard</i>
-         <span class="sb-item-label">Dashboard Wali Kelas</span>
+         <span class="sb-item-label">Dashboard Guru</span>
       </a>
+      @endif
 
-      <!-- Kelas group -->
-      @php $kGrp = sbOpen($context, ['absen-manual', 'scan', 'siswa-kelas', 'laporan-kelas']); @endphp
-      <div class="sb-section-label">Kelas</div>
-      <div class="sb-group">
-         <div class="sb-group-header {{ $kGrp }}" data-tooltip="Manajemen Kelas">
-            <i class="material-icons">school</i>
-            <span class="sb-group-title">Manajemen Kelas</span>
-            <i class="material-icons sb-chevron">expand_more</i>
-         </div>
-         <div class="sb-children {{ $kGrp }}">
-            <a wire:navigate.hover class="sb-child-item {{ sbActive($context, 'absen-manual') }}" href="{{ url('manual-attendance') }}">
-               <i class="material-icons">edit_note</i>
-               <span class="sb-child-label">Input Absensi</span>
-            </a>
-            <a class="sb-child-item {{ sbActive($context, 'scan') }}" href="{{ url('scan') }}">
-               <i class="material-icons">qr_code_scanner</i>
-               <span class="sb-child-label">Scan QR Code</span>
-            </a>
-            <a wire:navigate.hover class="sb-child-item {{ sbActive($context, 'siswa-kelas') }}" href="{{ url('teacher/siswa') }}">
-               <i class="material-icons">people</i>
-               <span class="sb-child-label">Data Siswa</span>
-            </a>
-            <a wire:navigate.hover class="sb-child-item {{ sbActive($context, 'laporan-kelas') }}" href="{{ url('teacher/laporan') }}">
-               <i class="material-icons">print</i>
-               <span class="sb-child-label">Laporan Kelas</span>
-            </a>
-         </div>
-      </div>
+      @if (RolePermission::hasAccess($user, 'monitoring') || RolePermission::hasAccess($user, 'scan_qr') || RolePermission::hasAccess($user, 'data_santri') || RolePermission::hasAccess($user, 'laporan'))
+      <div class="sb-section-label">Manajemen Kelas</div>
+      @endif
 
+      @if (RolePermission::hasAccess($user, 'monitoring'))
+      <a wire:navigate.hover class="sb-item {{ sbActive($context, 'absen-manual') }}" href="{{ url('manual-attendance') }}" data-tooltip="Monitoring & Absensi">
+         <i class="material-icons">fact_check</i>
+         <span class="sb-item-label">Monitoring &amp; Absensi</span>
+      </a>
+      @endif
+
+      @if (RolePermission::hasAccess($user, 'scan_qr'))
+      <a class="sb-item {{ sbActive($context, 'scan') }}" href="{{ url('scan') }}" data-tooltip="Scan QR Code">
+         <i class="material-icons">qr_code_scanner</i>
+         <span class="sb-item-label">Scan QR Code</span>
+      </a>
+      @endif
+
+      @if (RolePermission::hasAccess($user, 'data_santri'))
+      <a wire:navigate.hover class="sb-item {{ sbActive($context, 'siswa-kelas') }}" href="{{ url('teacher/siswa') }}" data-tooltip="Data Santri">
+         <i class="material-icons">people</i>
+         <span class="sb-item-label">Data Santri Kelas</span>
+      </a>
+      @endif
+
+      @if (RolePermission::hasAccess($user, 'generate_qr'))
+      <a wire:navigate.hover class="sb-item {{ sbActive($context, 'qr') }}" href="{{ url('teacher/qr') }}" data-tooltip="Generate QR Code">
+         <i class="material-icons">qr_code</i>
+         <span class="sb-item-label">Generate QR Code</span>
+      </a>
+      @endif
+
+      @if (RolePermission::hasAccess($user, 'laporan'))
+      <a wire:navigate.hover class="sb-item {{ sbActive($context, 'laporan-kelas') }}" href="{{ url('teacher/laporan') }}" data-tooltip="Laporan Kelas">
+         <i class="material-icons">print</i>
+         <span class="sb-item-label">Laporan Kelas</span>
+      </a>
+      @endif
+
+      @if (RolePermission::hasAccess($user, 'absen_guru'))
+      <a wire:navigate.hover class="sb-item {{ sbActive($context, 'absen-guru') }}" href="{{ url('admin/absen-guru') }}" data-tooltip="Absensi Guru">
+         <i class="material-icons">person_4</i>
+         <span class="sb-item-label">Absensi Guru</span>
+      </a>
+      @endif
 
       @else
-      <!-- ======= ADMIN MENU ======= -->
+      <!-- ======= ADMIN / KEPSEK / STAF MENU ======= -->
 
       <!-- Dashboard -->
+      @if ($isSuperadmin || RolePermission::hasAccess($user, 'dashboard'))
       <a wire:navigate.hover class="sb-item {{ sbActive($context, 'dashboard') }}" href="{{ url('dashboard') }}" data-tooltip="Dashboard">
          <i class="material-icons">dashboard</i>
          <span class="sb-item-label">Dashboard</span>
       </a>
-
-      @if (!$isSuperadmin)
-      <!-- Absensi group -->
-      @php $aGrp = sbOpen($context, ['absen-siswa', 'absen-guru']); @endphp
-      <div class="sb-section-label">Absensi</div>
-      <div class="sb-group">
-         <div class="sb-group-header {{ $aGrp }}" data-tooltip="Absensi">
-            <i class="material-icons">checklist</i>
-            <span class="sb-group-title">Absensi</span>
-            <i class="material-icons sb-chevron">expand_more</i>
-         </div>
-         <div class="sb-children {{ $aGrp }}">
-            <a wire:navigate.hover class="sb-child-item {{ sbActive($context, 'absen-siswa') }}" href="{{ url('admin/absen-siswa') }}">
-               <i class="material-icons">person</i>
-               <span class="sb-child-label">Absensi Siswa</span>
-            </a>
-            <a wire:navigate.hover class="sb-child-item {{ sbActive($context, 'absen-guru') }}" href="{{ url('admin/absen-guru') }}">
-               <i class="material-icons">person_4</i>
-               <span class="sb-child-label">Absensi Guru</span>
-            </a>
-         </div>
-      </div>
       @endif
 
-      <!-- Data Master group -->
-      @php $mGrp = sbOpen($context, ['siswa', 'guru', 'kelas', 'mapel', 'jadwal-pelajaran', 'petugas']); @endphp
+      @if (!$isSuperadmin && RolePermission::hasAccess($user, 'monitoring'))
+      <a wire:navigate.hover class="sb-item {{ sbActive($context, 'absen-manual') }}" href="{{ url('manual-attendance') }}" data-tooltip="Monitoring & Absensi">
+         <i class="material-icons">fact_check</i>
+         <span class="sb-item-label">Monitoring &amp; Absensi</span>
+      </a>
+      @endif
+
+      @if (!$isSuperadmin && RolePermission::hasAccess($user, 'absen_guru'))
+      <a wire:navigate.hover class="sb-item {{ sbActive($context, 'absen-guru') }}" href="{{ url('admin/absen-guru') }}" data-tooltip="Absensi Guru">
+         <i class="material-icons">person_4</i>
+         <span class="sb-item-label">Absensi Guru</span>
+      </a>
+      @endif
+
+      {{-- Data Master group --}}
+      @php
+         $canDataSantri = $isSuperadmin || RolePermission::hasAccess($user, 'data_santri');
+         $canDataGuru = $isSuperadmin || RolePermission::hasAccess($user, 'data_guru');
+         $canKelas = $isSuperadmin;
+         $canMapel = $isSuperadmin;
+         $canJadwal = $isSuperadmin;
+         $canPetugas = $isSuperadmin;
+         $hasDataMasterGroup = $canDataSantri || $canDataGuru || $canKelas || $canMapel || $canJadwal || $canPetugas;
+         $mGrp = sbOpen($context, ['siswa', 'guru', 'kelas', 'mapel', 'jadwal-pelajaran', 'petugas']);
+      @endphp
+
+      @if ($hasDataMasterGroup)
       <div class="sb-section-label">Data Master</div>
       <div class="sb-group">
-         <div class="sb-group-header {{ $mGrp }}" data-tooltip="Data Master">
+         <div class="sb-group-header {{ $mGrp || sbActive($context, ['siswa', 'guru', 'kelas', 'mapel', 'jadwal-pelajaran', 'petugas']) ? 'open' : '' }}" data-tooltip="Data Master">
             <i class="material-icons">storage</i>
             <span class="sb-group-title">Data Master</span>
             <i class="material-icons sb-chevron">expand_more</i>
          </div>
-         <div class="sb-children {{ $mGrp }}">
-            @if ($isSuperadmin || ($user && in_array($user->is_superadmin, [0, 1, 3])))
+         <div class="sb-children {{ $mGrp || sbActive($context, ['siswa', 'guru', 'kelas', 'mapel', 'jadwal-pelajaran', 'petugas']) ? 'open' : '' }}">
+            @if ($canDataSantri)
             <a wire:navigate.hover class="sb-child-item {{ sbActive($context, 'siswa') }}" href="{{ url('admin/siswa') }}">
                <i class="material-icons">person</i>
                <span class="sb-child-label">Data Santri</span>
             </a>
+            @endif
+            @if ($canDataGuru)
             <a wire:navigate.hover class="sb-child-item {{ sbActive($context, 'guru') }}" href="{{ url('admin/guru') }}">
                <i class="material-icons">person_4</i>
                <span class="sb-child-label">Data Guru</span>
             </a>
+            @endif
+            @if ($canKelas)
             <a wire:navigate.hover class="sb-child-item {{ sbActive($context, 'kelas') }}" href="{{ url('admin/kelas') }}">
                <i class="material-icons">school</i>
                <span class="sb-child-label">Kelas</span>
             </a>
             @endif
+            @if ($canMapel)
             <a wire:navigate.hover class="sb-child-item {{ sbActive($context, 'mapel') }}" href="{{ url('admin/mapel') }}">
                <i class="material-icons">class</i>
                <span class="sb-child-label">Mata Pelajaran</span>
             </a>
+            @endif
+            @if ($canJadwal)
             <a wire:navigate.hover class="sb-child-item {{ sbActive($context, 'jadwal-pelajaran') }}" href="{{ url('admin/jadwal-pelajaran') }}">
                <i class="material-icons">menu_book</i>
                <span class="sb-child-label">Jadwal Pelajaran</span>
             </a>
-            @if ($isSuperadmin)
+            @endif
+            @if ($canPetugas)
             <a wire:navigate.hover class="sb-child-item {{ sbActive($context, 'petugas') }}" href="{{ url('admin/petugas') }}">
                <i class="material-icons">computer</i>
                <span class="sb-child-label">Data Petugas</span>
@@ -166,28 +202,39 @@ $roleLabel = $user ? match($user->is_superadmin) {
             @endif
          </div>
       </div>
+      @endif
 
-      <!-- Laporan & QR group -->
-      @php $lGrp = sbOpen($context, ['scan', 'qr', 'laporan']); @endphp
+      {{-- Laporan & QR group --}}
+      @php
+         $canScan = $isSuperadmin || RolePermission::hasAccess($user, 'scan_qr');
+         $canGenQR = $isSuperadmin || RolePermission::hasAccess($user, 'generate_qr');
+         $canLaporan = $isSuperadmin || RolePermission::hasAccess($user, 'laporan');
+         $hasLaporanGroup = $canScan || $canGenQR || $canLaporan;
+         $lGrp = sbOpen($context, ['scan', 'qr', 'laporan']);
+      @endphp
+
+      @if ($hasLaporanGroup)
       <div class="sb-section-label">Laporan &amp; QR</div>
       <div class="sb-group">
-         <div class="sb-group-header {{ $lGrp }}" data-tooltip="Laporan &amp; QR">
+         <div class="sb-group-header {{ $lGrp || sbActive($context, ['scan', 'qr', 'laporan']) ? 'open' : '' }}" data-tooltip="Laporan &amp; QR">
             <i class="material-icons">assessment</i>
             <span class="sb-group-title">Laporan &amp; QR</span>
             <i class="material-icons sb-chevron">expand_more</i>
          </div>
-         <div class="sb-children {{ $lGrp }}">
+         <div class="sb-children {{ $lGrp || sbActive($context, ['scan', 'qr', 'laporan']) ? 'open' : '' }}">
+            @if ($canScan)
             <a class="sb-child-item {{ sbActive($context, 'scan') }}" href="{{ url('scan') }}">
                <i class="material-icons">qr_code_scanner</i>
                <span class="sb-child-label">Scan QR Code</span>
             </a>
-            @if ($canGenerateQR)
+            @endif
+            @if ($canGenQR)
             <a wire:navigate.hover class="sb-child-item {{ sbActive($context, 'qr') }}" href="{{ url('admin/qr') }}">
                <i class="material-icons">qr_code</i>
                <span class="sb-child-label">Generate QR Code</span>
             </a>
             @endif
-            @if ($canViewReport)
+            @if ($canLaporan)
             <a wire:navigate.hover class="sb-child-item {{ sbActive($context, 'laporan') }}" href="{{ url('admin/laporan') }}">
                <i class="material-icons">print</i>
                <span class="sb-child-label">Generate Laporan</span>
@@ -195,28 +242,44 @@ $roleLabel = $user ? match($user->is_superadmin) {
             @endif
          </div>
       </div>
+      @endif
 
-      <!-- Sistem group -->
-      @if ($isSuperadmin || $isKepsek)
-      @php $sGrp = sbOpen($context, ['backup', 'general_settings']); @endphp
+      {{-- Sistem group --}}
+      @php
+         $canBackup = $isSuperadmin || RolePermission::hasAccess($user, 'backup');
+         $canSettings = $isSuperadmin || RolePermission::hasAccess($user, 'general_settings');
+         $canHakAkses = $isSuperadmin;
+         $hasSistemGroup = $canBackup || $canSettings || $canHakAkses;
+         $sGrp = sbOpen($context, ['backup', 'general_settings', 'hak-akses']);
+      @endphp
+
+      @if ($hasSistemGroup)
       <div class="sb-section-label">Sistem</div>
       <div class="sb-group">
-         <div class="sb-group-header {{ $sGrp }}" data-tooltip="Sistem">
+         <div class="sb-group-header {{ $sGrp || sbActive($context, ['backup', 'general_settings', 'hak-akses']) ? 'open' : '' }}" data-tooltip="Sistem">
             <i class="material-icons">settings</i>
             <span class="sb-group-title">Sistem</span>
             <i class="material-icons sb-chevron">expand_more</i>
          </div>
-         <div class="sb-children {{ $sGrp }}">
-            @if ($isSuperadmin)
+         <div class="sb-children {{ $sGrp || sbActive($context, ['backup', 'general_settings', 'hak-akses']) ? 'open' : '' }}">
+            @if ($canHakAkses)
+            <a wire:navigate.hover class="sb-child-item {{ sbActive($context, 'hak-akses') }}" href="{{ url('admin/hak-akses') }}">
+               <i class="material-icons">admin_panel_settings</i>
+               <span class="sb-child-label">Hak Akses Role</span>
+            </a>
+            @endif
+            @if ($canBackup)
             <a wire:navigate.hover class="sb-child-item {{ sbActive($context, 'backup') }}" href="{{ url('admin/backup') }}">
                <i class="material-icons">backup</i>
                <span class="sb-child-label">Backup &amp; Restore</span>
             </a>
             @endif
+            @if ($canSettings)
             <a wire:navigate.hover class="sb-child-item {{ sbActive($context, 'general_settings') }}" href="{{ url('admin/general-settings') }}">
                <i class="material-icons">tune</i>
                <span class="sb-child-label">Pengaturan</span>
             </a>
+            @endif
          </div>
       </div>
       @endif

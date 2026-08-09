@@ -324,9 +324,10 @@
                             <div class="col-md-6 form-group mb-3">
                                 <label style="font-size: 0.82rem; font-weight: 600; color: #334155; margin-bottom: 6px; display: block;">Role / Akses <span class="text-danger">*</span></label>
                                 <select wire:model="is_superadmin" class="form-control" style="border-radius: 8px; border: 1px solid #cbd5e1; padding: 9px 12px; font-size: 0.9rem; background: #fff;" required>
-                                    <option value="">-- Pilih Role --</option>
-                                    <option value="1">Admin / Kepala TPQ</option>
-                                    <option value="0">Guru</option>
+                                    <option value="1">Super Admin</option>
+                                    <option value="2">Kepala Sekolah</option>
+                                    <option value="3">Staf Petugas</option>
+                                    <option value="0">Guru / Pengajar</option>
                                 </select>
                                 @error('is_superadmin') <span class="text-danger" style="font-size: 0.78rem;">{{ $message }}</span> @enderror
                             </div>

@@ -53,6 +53,7 @@ Route::middleware([
         Route::get('backup/photos/backup', [\App\Http\Controllers\Admin\BackupController::class, 'photosBackup'])->name('admin.backup.photos');
         Route::post('backup/photos/restore', [\App\Http\Controllers\Admin\BackupController::class, 'photosRestore'])->name('admin.backup.photos.restore');
         Route::get('general-settings', \App\Livewire\Admin\GeneralSettingsIndex::class);
+        Route::get('hak-akses', \App\Livewire\Admin\HakAksesIndex::class);
     });
 
     // Teacher Routes

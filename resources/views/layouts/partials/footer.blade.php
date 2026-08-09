@@ -1,9 +1,11 @@
 <footer class="footer">
    <div class="container-fluid">
-      <div class="copyright float-right">
-         &copy;
-         {{ date('Y') }}, dibuat dengan <i class="material-icons">favorite</i> oleh
-         <a href="#" target="_blank">TPQ Developer</a> untuk manajemen sekolah yang lebih baik.
+      <div class="copyright float-right text-sm text-gray-500">
+         @if (!empty($appSettings->copyright))
+            {{ $appSettings->copyright }}
+         @else
+            &copy; {{ date('Y') }} <strong>{{ $appSettings->school_name ?? 'TPQ' }}</strong> - Sistem Absensi Digital.
+         @endif
       </div>
    </div>
 </footer>

@@ -33,7 +33,12 @@
             <div class="text-right hidden sm:block">
                <div class="text-[14px] font-bold text-gray-800 leading-tight">{{ auth()->user()->name ?? 'User' }}</div>
                <div class="text-[10px] text-purple-600 font-bold uppercase tracking-widest mt-0.5">
-                  {{ !empty(auth()->user()->id_guru) ? 'Guru' : 'Admin' }}
+                  {{ match((int)(auth()->user()->is_superadmin ?? 0)) {
+                      1 => 'Super Admin',
+                      2 => 'Kepsek',
+                      3 => 'Staf Petugas',
+                      default => (!empty(auth()->user()->id_guru) ? 'Guru' : 'Operator')
+                  } }}
                </div>
             </div>
             <!-- Avatar -->

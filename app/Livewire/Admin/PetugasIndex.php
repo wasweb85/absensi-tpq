@@ -7,7 +7,6 @@ use App\Models\Guru;
 use Livewire\Component;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
-
 use Livewire\WithPagination;
 
 class PetugasIndex extends Component
@@ -24,8 +23,8 @@ class PetugasIndex extends Component
     public $name; // This is used as username in auth
     public $email;
     public $password;
-    public $is_superadmin;
-    public $id_guru;
+    public $is_superadmin = 0;
+    public $id_guru = null;
 
     public $isEdit = false;
     public $showModal = false;
@@ -76,19 +75,21 @@ class PetugasIndex extends Component
             'name' => 'required|string|min:4|unique:users,name',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6',
-            'is_superadmin' => 'required|boolean',
-            'id_guru' => 'nullable|exists:tb_guru,id_guru',
+            'is_superadmin' => 'required|in:0,1,2,3',
+            'id_guru' => 'nullable',
         ], [
             'name.unique' => 'Username/Nama ini sudah terdaftar.',
             'email.unique' => 'Email ini sudah terdaftar.'
         ]);
 
+        $guruId = !empty($this->id_guru) ? (int) $this->id_guru : null;
+
         User::create([
             'name' => $this->name,
             'email' => $this->email,
             'password' => Hash::make($this->password),
-            'is_superadmin' => $this->is_superadmin,
-            'id_guru' => $this->id_guru,
+            'is_superadmin' => (int) $this->is_superadmin,
+            'id_guru' => $guruId,
         ]);
 
         $this->showModal = false;
@@ -103,8 +104,8 @@ class PetugasIndex extends Component
         $this->id_petugas = $petugas->id;
         $this->name = $petugas->name;
         $this->email = $petugas->email;
-        $this->is_superadmin = $petugas->is_superadmin;
-        $this->id_guru = $petugas->id_guru;
+        $this->is_superadmin = (int) $petugas->is_superadmin;
+        $this->id_guru = $petugas->id_guru ? (string) $petugas->id_guru : '';
 
         $this->isEdit = true;
         $this->showModal = true;
@@ -116,20 +117,21 @@ class PetugasIndex extends Component
             'name' => ['required', 'string', 'min:4', Rule::unique('users', 'name')->ignore($this->id_petugas)],
             'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($this->id_petugas)],
             'password' => 'nullable|min:6',
-            'is_superadmin' => 'required|boolean',
-            'id_guru' => 'nullable|exists:tb_guru,id_guru',
+            'is_superadmin' => 'required|in:0,1,2,3',
+            'id_guru' => 'nullable',
         ], [
             'name.unique' => 'Username/Nama ini sudah terdaftar.',
             'email.unique' => 'Email ini sudah terdaftar.'
         ]);
 
         $petugas = User::findOrFail($this->id_petugas);
+        $guruId = !empty($this->id_guru) ? (int) $this->id_guru : null;
         
         $data = [
             'name' => $this->name,
             'email' => $this->email,
-            'is_superadmin' => $this->is_superadmin,
-            'id_guru' => $this->id_guru,
+            'is_superadmin' => (int) $this->is_superadmin,
+            'id_guru' => $guruId,
         ];
 
         if (!empty($this->password)) {
@@ -175,7 +177,7 @@ class PetugasIndex extends Component
         $this->name = '';
         $this->email = '';
         $this->password = '';
-        $this->is_superadmin = false;
-        $this->id_guru = null;
+        $this->is_superadmin = 0;
+        $this->id_guru = '';
     }
 }

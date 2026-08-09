@@ -582,15 +582,20 @@
                 
                 <div style="position: relative; z-index: 2; height: 514px; padding: 15px 20px 20px 20px; display: flex; flex-direction: column; align-items: center; box-sizing: border-box;">
                     <!-- Logo & Header -->
+                    @php
+                       $cardLogo = (!empty($appSettings->logo) && file_exists(public_path('uploads/logo/' . $appSettings->logo))) 
+                          ? asset('uploads/logo/' . $appSettings->logo) 
+                          : (file_exists(public_path('assets/img/logo-sekolah.jpg')) ? asset('assets/img/logo-sekolah.jpg') : asset('uploads/logo/logo-tpq.png'));
+                    @endphp
                     <div style="background: white; padding: 6px; border-radius: 50%; display: inline-flex; justify-content: center; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 5px;">
-                        <img src="{{ asset('assets/img/logo-sekolah.jpg') }}" alt="Logo" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover;">
+                        <img src="{{ $cardLogo }}" alt="Logo" style="width: 45px; height: 45px; border-radius: 50%; object-fit: contain;">
                     </div>
                     
                     <h2 style="font-size: 0.95rem; font-weight: 800; color: #ffffff; margin: 0; letter-spacing: 0.5px; text-transform: uppercase; text-align: center; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">Kartu Absensi Santri</h2>
                     
                     <div style="display: flex; align-items: center; gap: 6px; margin-top: 2px; color: #e0f2fe; font-weight: 700; font-size: 0.65rem; letter-spacing: 1px; text-shadow: 0 1px 2px rgba(0,0,0,0.1);">
                         <div style="width: 15px; height: 2px; background: #e0f2fe; border-radius: 2px;"></div>
-                        TPQ NURUL MUNI'IM
+                        {{ strtoupper($appSettings->school_name ?? 'TPQ Absensi') }}
                         <div style="width: 15px; height: 2px; background: #e0f2fe; border-radius: 2px;"></div>
                     </div>
                     

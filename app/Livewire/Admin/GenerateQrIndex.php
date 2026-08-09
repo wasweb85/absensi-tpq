@@ -9,14 +9,10 @@ use Livewire\Component;
 
 class GenerateQrIndex extends Component
 {
-    public $kelas;
+    public $kelas = 'all';
 
     public function downloadSiswa()
     {
-        $this->validate([
-            'kelas' => 'required'
-        ]);
-
         return redirect()->route('admin.qr.siswa', ['kelas' => $this->kelas]);
     }
 
@@ -40,6 +36,6 @@ class GenerateQrIndex extends Component
             'kelasList' => $kelasList,
             'totalSiswa' => $totalSiswa,
             'totalGuru' => $totalGuru
-        ])->layout('layouts.admin', ['title' => 'Generate QR Code', 'context' => 'qr']);
+        ])->layout('layouts.admin', ['title' => 'Generate & Download Kartu QR Code', 'context' => 'qr']);
     }
 }

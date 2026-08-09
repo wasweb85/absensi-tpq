@@ -9,8 +9,13 @@
    <meta name="theme-color" content="#00ddd9ff">
    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-   <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('uploads/logo/logo-tpq.png') }}">
-   <link rel="icon" type="image/png" href="{{ asset('uploads/logo/logo-tpq.png') }}">
+   @php
+      $logoUrl = (!empty($appSettings->logo) && file_exists(public_path('uploads/logo/' . $appSettings->logo))) 
+         ? asset('uploads/logo/' . $appSettings->logo) 
+         : asset('uploads/logo/logo-tpq.png');
+   @endphp
+   <link rel="apple-touch-icon" sizes="76x76" href="{{ $logoUrl }}">
+   <link rel="icon" type="image/png" href="{{ $logoUrl }}">
 
    <!-- Google Fonts: Plus Jakarta Sans -->
    <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -113,7 +118,7 @@
    @livewireStyles
    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-   <title>{{ $title ?? 'Absensi TPQ' }}</title>
+   <title>{{ $title ?? ($appSettings->school_name ?? 'Absensi Digital') }}</title>
 </head>
 
 <body>

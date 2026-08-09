@@ -1,13 +1,18 @@
 @extends('layouts.laporan')
 
 @section('content')
+@php 
+   $logoImg = (!empty($appSettings->logo) && file_exists(public_path('uploads/logo/' . $appSettings->logo))) 
+      ? asset('uploads/logo/' . $appSettings->logo) 
+      : asset('uploads/logo/logo-tpq.png');
+@endphp
 <table>
    <tr>
-      <td><img src="{{ asset('uploads/logo/logo-tpq.png') }}" width="100px" height="100px"></img></td>
+      <td><img src="{{ $logoImg }}" width="90px" height="90px" style="object-fit:contain;"></td>
       <td width="100%">
          <h2 align="center">DAFTAR HADIR SISWA</h2>
-         <h4 align="center">{{ $generalSettings->school_name ?? 'TPQ Absensi' }}</h4>
-         <h4 align="center">TAHUN PELAJARAN {{ $generalSettings->school_year ?? '2026/2027' }}</h4>
+         <h4 align="center">{{ $appSettings->school_name ?? ($generalSettings->school_name ?? 'TPQ Absensi') }}</h4>
+         <h4 align="center">TAHUN PELAJARAN {{ $appSettings->school_year ?? ($generalSettings->school_year ?? '2026/2027') }}</h4>
       </td>
       <td>
          <div style="width:100px"></div>

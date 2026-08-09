@@ -13,21 +13,17 @@ use Illuminate\Support\Facades\Auth;
 class ManualAttendance extends Component
 {
     public $tanggal;
-    public $id_kelas;
+    public $filter_jk = ''; // '', 'Laki-laki', 'Perempuan'
     public $kehadiran = []; // array to store [id_siswa => id_kehadiran]
+    public $jamScan = [];   // array to store [id_siswa => jam_masuk]
 
     public function mount()
     {
-        $this->tanggal = Carbon::today()->toDateString();
-        $this->initClasses();
-    }
-
-    private function initClasses()
-    {
-        $allKelas = $this->getAssignedClasses();
-        if ($allKelas->count() > 0 && empty($this->id_kelas)) {
-            $this->id_kelas = $allKelas->first()->id_kelas;
+        if (!\App\Models\RolePermission::hasAccess(Auth::user(), 'monitoring')) {
+            session()->flash('error', 'Anda tidak memiliki hak akses ke fitur Monitoring Absensi.');
+            return redirect()->to('/teacher/dashboard');
         }
+        $this->tanggal = Carbon::today()->toDateString();
         $this->loadData();
     }
 
@@ -59,7 +55,7 @@ class ManualAttendance extends Component
         $this->loadData();
     }
 
-    public function updatedIdKelas()
+    public function updatedFilterJk()
     {
         $this->loadData();
     }
@@ -67,11 +63,22 @@ class ManualAttendance extends Component
     public function loadData()
     {
         $this->kehadiran = [];
-        if (empty($this->id_kelas)) {
+        $this->jamScan = [];
+
+        $assignedClasses = $this->getAssignedClasses();
+        $assignedIds = $assignedClasses->pluck('id_kelas')->toArray();
+
+        if (empty($assignedIds)) {
             return;
         }
 
-        $siswaList = Siswa::where('id_kelas', $this->id_kelas)->orderBy('nama_siswa')->get();
+        $query = Siswa::whereIn('id_kelas', $assignedIds);
+
+        if (!empty($this->filter_jk)) {
+            $query->where('jenis_kelamin', $this->filter_jk);
+        }
+
+        $siswaList = $query->orderBy('nama_siswa')->get();
         $siswaIds = $siswaList->pluck('id_siswa');
         
         $presensiHariIni = PresensiSiswa::whereIn('id_siswa', $siswaIds)
@@ -82,29 +89,45 @@ class ManualAttendance extends Component
         foreach ($siswaList as $siswa) {
             $presensi = $presensiHariIni->get($siswa->id_siswa);
             $this->kehadiran[$siswa->id_siswa] = $presensi ? (string) $presensi->id_kehadiran : null;
+            $this->jamScan[$siswa->id_siswa] = ($presensi && $presensi->jam_masuk) ? $presensi->jam_masuk : '-';
         }
     }
 
     public function saveAttendance()
     {
-        if (empty($this->id_kelas)) {
-            session()->flash('error', 'Kelas tidak dipilih.');
+        $assignedClasses = $this->getAssignedClasses();
+        $assignedIds = $assignedClasses->pluck('id_kelas')->toArray();
+
+        if (empty($assignedIds)) {
+            session()->flash('error', 'Anda belum memiliki kelas binaan.');
             return;
         }
+
+        $siswaMap = Siswa::whereIn('id_kelas', $assignedIds)->get()->keyBy('id_siswa');
 
         $successCount = 0;
 
         foreach ($this->kehadiran as $idSiswa => $idKehadiran) {
             if ($idKehadiran !== null && $idKehadiran !== '') {
+                $siswa = $siswaMap->get($idSiswa);
+                if (!$siswa) continue;
+
+                $existing = PresensiSiswa::where('id_siswa', $idSiswa)
+                    ->whereDate('tanggal', $this->tanggal)
+                    ->first();
+
+                // Preserve existing scan time if present, otherwise set current time
+                $jamMasuk = $existing && $existing->jam_masuk ? $existing->jam_masuk : Carbon::now()->toTimeString();
+
                 PresensiSiswa::updateOrCreate(
                     [
                         'id_siswa' => $idSiswa,
                         'tanggal' => $this->tanggal
                     ],
                     [
-                        'id_kelas' => $this->id_kelas,
+                        'id_kelas' => $siswa->id_kelas,
                         'id_kehadiran' => $idKehadiran,
-                        'jam_masuk' => Carbon::now()->toTimeString(),
+                        'jam_masuk' => $jamMasuk,
                         'keterangan' => ''
                     ]
                 );
@@ -112,13 +135,24 @@ class ManualAttendance extends Component
             }
         }
 
+        $this->loadData();
         session()->flash('success', "Berhasil menyimpan data absensi untuk $successCount santri.");
     }
 
     public function render()
     {
         $allKelas = $this->getAssignedClasses();
-        $siswaList = empty($this->id_kelas) ? collect() : Siswa::where('id_kelas', $this->id_kelas)->orderBy('nama_siswa')->get();
+        $assignedIds = $allKelas->pluck('id_kelas')->toArray();
+        
+        if (!empty($assignedIds)) {
+            $query = Siswa::with('kelas')->whereIn('id_kelas', $assignedIds);
+            if (!empty($this->filter_jk)) {
+                $query->where('jenis_kelamin', $this->filter_jk);
+            }
+            $siswaList = $query->orderBy('nama_siswa')->get();
+        } else {
+            $siswaList = collect();
+        }
 
         return view('livewire.teacher.manual-attendance', [
             'allKelas' => $allKelas,

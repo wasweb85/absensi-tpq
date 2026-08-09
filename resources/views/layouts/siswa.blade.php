@@ -4,15 +4,20 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-    <title>{{ $title ?? 'Presensi Siswa' }} | E-absensi TPQ</title>
-    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport' />
-    
-    <!-- Fonts and icons -->
-    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Outfit:300,400,500,700|Material+Icons" />
-    
-    <!-- Icons -->
-    <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('uploads/logo/logo-tpq.png') }}">
-    <link rel="icon" type="image/png" href="{{ asset('uploads/logo/logo-tpq.png') }}">
+   @php
+      $logoUrl = (!empty($appSettings->logo) && file_exists(public_path('uploads/logo/' . $appSettings->logo))) 
+         ? asset('uploads/logo/' . $appSettings->logo) 
+         : asset('uploads/logo/logo-tpq.png');
+   @endphp
+   <title>{{ $title ?? 'Presensi Santri' }} | {{ $appSettings->school_name ?? 'E-Absensi TPQ' }}</title>
+   <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport' />
+   
+   <!-- Fonts and icons -->
+   <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Outfit:300,400,500,700|Material+Icons" />
+   
+   <!-- Icons -->
+   <link rel="apple-touch-icon" sizes="76x76" href="{{ $logoUrl }}">
+   <link rel="icon" type="image/png" href="{{ $logoUrl }}">
     
     <!-- CSS Files -->
     <link href="{{ asset('assets/css/siswa_modern.css') }}" rel="stylesheet" />

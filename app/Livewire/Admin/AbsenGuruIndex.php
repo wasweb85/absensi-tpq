@@ -16,9 +16,10 @@ class AbsenGuruIndex extends Component
 
     public function mount()
     {
-        if (auth()->check() && auth()->user()->is_superadmin == 1) {
-            session()->flash('error', 'Akses ditolak. Superadmin tidak memiliki akses untuk menginput absensi.');
-            return redirect()->to('/dashboard');
+        $user = auth()->user();
+        if (!\App\Models\RolePermission::hasAccess($user, 'absen_guru')) {
+            session()->flash('error', 'Anda tidak memiliki hak akses ke fitur Input Absensi Guru.');
+            return redirect()->to($user && !empty($user->id_guru) ? '/teacher/dashboard' : '/dashboard');
         }
 
         $this->filter_tanggal = Carbon::today()->toDateString();
