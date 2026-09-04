@@ -86,8 +86,16 @@ class SiswaIndex extends Component
         ])->layout('layouts.admin', ['title' => 'Data Siswa', 'context' => 'siswa']);
     }
 
+    protected function checkKepsekReadOnly()
+    {
+        if (auth()->user() && (int) (auth()->user()->is_superadmin ?? 0) === 2) {
+            abort(403, 'Akses dibatasi. Kepala TPQ hanya memiliki hak akses pemantauan (Read-Only).');
+        }
+    }
+
     public function create()
     {
+        $this->checkKepsekReadOnly();
         $this->resetFields();
         $this->isEdit = false;
         $this->showModal = true;
@@ -109,6 +117,7 @@ class SiswaIndex extends Component
 
     public function store()
     {
+        $this->checkKepsekReadOnly();
         $this->validate([
             'nis' => 'required|numeric|max_digits:35|unique:tb_siswa,nis',
             'nama_siswa' => 'required|min:3|max:255',
@@ -148,6 +157,7 @@ class SiswaIndex extends Component
 
     public function edit($id)
     {
+        $this->checkKepsekReadOnly();
         $this->resetFields();
         $siswa = Siswa::findOrFail($id);
         $this->id_siswa = $siswa->id_siswa;
@@ -166,6 +176,7 @@ class SiswaIndex extends Component
 
     public function update()
     {
+        $this->checkKepsekReadOnly();
         $this->validate([
             'nis' => ['required', 'numeric', 'max_digits:35', Rule::unique('tb_siswa', 'nis')->ignore($this->id_siswa, 'id_siswa')],
             'nama_siswa' => 'required|min:3|max:255',
@@ -205,12 +216,14 @@ class SiswaIndex extends Component
 
     public function deleteId($id)
     {
+        $this->checkKepsekReadOnly();
         $this->id_siswa = $id;
         $this->dispatch('show-delete-modal');
     }
 
     public function delete()
     {
+        $this->checkKepsekReadOnly();
         if ($this->id_siswa) {
             Siswa::find($this->id_siswa)->delete();
             session()->flash('success', 'Data siswa berhasil dihapus.');

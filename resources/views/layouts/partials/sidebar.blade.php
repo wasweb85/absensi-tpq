@@ -24,7 +24,7 @@ $isStaf = $user ? ($user->is_superadmin == 3) : false;
 
 $roleLabel = $user ? match((int)$user->is_superadmin) {
     1 => 'Super Admin',
-    2 => 'Kepsek',
+    2 => 'Kepala TPQ',
     3 => 'Staf Petugas',
     default => ($isWaliKelas ? 'Wali Kelas' : 'Operator')
 } : 'User';
@@ -81,10 +81,15 @@ $roleLabel = $user ? match((int)$user->is_superadmin) {
          <i class="material-icons">fact_check</i>
          <span class="sb-item-label">Monitoring &amp; Absensi</span>
       </a>
+      
+      <a wire:navigate.hover class="sb-item {{ sbActive($context, 'riwayat-tabungan') }}" href="{{ url('teacher/riwayat-tabungan') }}" data-tooltip="Riwayat Tabungan">
+         <i class="material-icons">savings</i>
+         <span class="sb-item-label">Riwayat Tabungan</span>
+      </a>
       @endif
 
       @if (RolePermission::hasAccess($user, 'scan_qr'))
-      <a class="sb-item {{ sbActive($context, 'scan') }}" href="{{ url('scan') }}" data-tooltip="Scan QR Code">
+      <a wire:navigate.hover class="sb-item {{ sbActive($context, 'scan') }}" href="{{ url('scan') }}" data-tooltip="Scan QR Code">
          <i class="material-icons">qr_code_scanner</i>
          <span class="sb-item-label">Scan QR Code</span>
       </a>
@@ -118,14 +123,28 @@ $roleLabel = $user ? match((int)$user->is_superadmin) {
       </a>
       @endif
 
+      @if (RolePermission::hasAccess($user, 'setoran_bendahara'))
+      <a wire:navigate.hover class="sb-item {{ sbActive($context, 'setoran-guru') }}" href="{{ url('admin/setoran-guru') }}" data-tooltip="Rekap Setoran">
+         <i class="material-icons">account_balance_wallet</i>
+         <span class="sb-item-label">Rekap Setoran</span>
+      </a>
+      @endif
+
+      @if (RolePermission::hasAccess($user, 'laporan_tabungan'))
+      <a wire:navigate.hover class="sb-item {{ sbActive($context, 'laporan-tabungan') }}" href="{{ url('admin/laporan-tabungan') }}" data-tooltip="Laporan Tabungan">
+         <i class="material-icons">savings</i>
+         <span class="sb-item-label">Laporan Tabungan</span>
+      </a>
+      @endif
+
       @else
       <!-- ======= ADMIN / KEPSEK / STAF MENU ======= -->
 
       <!-- Dashboard -->
       @if ($isSuperadmin || RolePermission::hasAccess($user, 'dashboard'))
-      <a wire:navigate.hover class="sb-item {{ sbActive($context, 'dashboard') }}" href="{{ url('dashboard') }}" data-tooltip="Dashboard">
+      <a wire:navigate.hover class="sb-item {{ sbActive($context, 'dashboard') }}" href="{{ $isKepsek ? url('kepsek/dashboard') : url('dashboard') }}" data-tooltip="{{ $isKepsek ? 'Executive Dashboard' : 'Dashboard' }}">
          <i class="material-icons">dashboard</i>
-         <span class="sb-item-label">Dashboard</span>
+         <span class="sb-item-label">{{ $isKepsek ? 'Executive Dashboard' : 'Dashboard' }}</span>
       </a>
       @endif
 
@@ -209,21 +228,22 @@ $roleLabel = $user ? match((int)$user->is_superadmin) {
          $canScan = $isSuperadmin || RolePermission::hasAccess($user, 'scan_qr');
          $canGenQR = $isSuperadmin || RolePermission::hasAccess($user, 'generate_qr');
          $canLaporan = $isSuperadmin || RolePermission::hasAccess($user, 'laporan');
-         $hasLaporanGroup = $canScan || $canGenQR || $canLaporan;
-         $lGrp = sbOpen($context, ['scan', 'qr', 'laporan']);
+         $canLaporanTabungan = $isSuperadmin || RolePermission::hasAccess($user, 'laporan_tabungan');
+         $hasLaporanGroup = $canScan || $canGenQR || $canLaporan || $canLaporanTabungan;
+         $lGrp = sbOpen($context, ['scan', 'qr', 'laporan', 'laporan-tabungan']);
       @endphp
 
       @if ($hasLaporanGroup)
       <div class="sb-section-label">Laporan &amp; QR</div>
       <div class="sb-group">
-         <div class="sb-group-header {{ $lGrp || sbActive($context, ['scan', 'qr', 'laporan']) ? 'open' : '' }}" data-tooltip="Laporan &amp; QR">
+         <div class="sb-group-header {{ $lGrp || sbActive($context, ['scan', 'qr', 'laporan', 'laporan-tabungan']) ? 'open' : '' }}" data-tooltip="Laporan &amp; QR">
             <i class="material-icons">assessment</i>
             <span class="sb-group-title">Laporan &amp; QR</span>
             <i class="material-icons sb-chevron">expand_more</i>
          </div>
-         <div class="sb-children {{ $lGrp || sbActive($context, ['scan', 'qr', 'laporan']) ? 'open' : '' }}">
+         <div class="sb-children {{ $lGrp || sbActive($context, ['scan', 'qr', 'laporan', 'laporan-tabungan']) ? 'open' : '' }}">
             @if ($canScan)
-            <a class="sb-child-item {{ sbActive($context, 'scan') }}" href="{{ url('scan') }}">
+            <a wire:navigate.hover class="sb-child-item {{ sbActive($context, 'scan') }}" href="{{ url('scan') }}">
                <i class="material-icons">qr_code_scanner</i>
                <span class="sb-child-label">Scan QR Code</span>
             </a>
@@ -232,6 +252,12 @@ $roleLabel = $user ? match((int)$user->is_superadmin) {
             <a wire:navigate.hover class="sb-child-item {{ sbActive($context, 'qr') }}" href="{{ url('admin/qr') }}">
                <i class="material-icons">qr_code</i>
                <span class="sb-child-label">Generate QR Code</span>
+            </a>
+            @endif
+            @if ($canLaporanTabungan)
+            <a wire:navigate.hover class="sb-child-item {{ sbActive($context, 'laporan-tabungan') }}" href="{{ url('admin/laporan-tabungan') }}">
+               <i class="material-icons">savings</i>
+               <span class="sb-child-label">Laporan Tabungan</span>
             </a>
             @endif
             @if ($canLaporan)
@@ -288,14 +314,22 @@ $roleLabel = $user ? match((int)$user->is_superadmin) {
 
    </nav>
 
-   <div class="sb-footer p-4">
-      <form method="POST" action="{{ route('logout') }}" id="logout-form" style="display: none;">
-         @csrf
-      </form>
-      <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="flex items-center text-gray-400 hover:text-white transition-colors" title="Logout">
-         <i class="material-icons mr-2">logout</i>
-         <span class="text-sm font-medium">Keluar Aplikasi</span>
-      </a>
+   <div class="sb-footer">
+      <div class="sb-user">
+         <div class="sb-avatar">
+            {{ strtoupper(substr($user->name ?? 'U', 0, 1)) }}
+         </div>
+         <div class="sb-user-info">
+            <div class="sb-uname">{{ $user->name ?? 'User' }}</div>
+            <div class="sb-urole">{{ $roleLabel }}</div>
+         </div>
+         <form method="POST" action="{{ route('logout') }}" id="logout-form" style="display: none;">
+            @csrf
+         </form>
+         <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="sb-user-action" title="Keluar Aplikasi">
+            <i class="material-icons">logout</i>
+         </a>
+      </div>
    </div>
 </aside>
 

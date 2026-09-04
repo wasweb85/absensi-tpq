@@ -45,23 +45,23 @@
                         margin-top: 3px;
                         margin-bottom: 0;
                     }
-                    .modern-table-actions .btn {
-                        margin: 0 0 0 10px;
+                    .btn-add {
+                        background: #2563eb;
+                        color: #fff;
+                        border: none;
                         border-radius: 8px;
                         padding: 8px 16px;
                         font-weight: 600;
-                        text-transform: none;
+                        font-size: 0.85rem;
+                        cursor: pointer;
+                        box-shadow: 0 3px 10px rgba(37, 99, 235, 0.25);
+                        display: inline-flex;
+                        align-items: center;
+                        white-space: nowrap;
+                        transition: background 0.2s;
                     }
-                    .modern-table-actions .btn-refresh {
-                        background: #f1f5f9;
-                        color: #475569;
-                        border: 1px solid #e2e8f0;
-                        box-shadow: none;
-                    }
-                    .modern-table-actions .btn-add {
-                        background: #2563eb;
-                        color: #fff;
-                        box-shadow: none;
+                    .btn-add:hover {
+                        background: #1d4ed8;
                     }
                     .modern-table-toolbar {
                         display: flex;
@@ -128,18 +128,66 @@
                     .modern-table tbody tr:hover {
                         background: #fcfcfc;
                     }
-                    .avatar-circle {
-                        width: 36px;
-                        height: 36px;
-                        border-radius: 50%;
-                        background: #e0e7ff;
-                        color: #3b82f6;
-                        display: inline-flex;
-                        align-items: center;
-                        justify-content: center;
-                        font-weight: 700;
-                        margin-right: 15px;
-                        font-size: 14px;
+                    .mobile-only {
+                        display: none !important;
+                    }
+                    .desktop-only {
+                        display: flex !important;
+                    }
+
+                    /* ── MOBILE RESPONSIVE ── */
+                    @media (max-width: 640px) {
+                        .mobile-only {
+                            display: inline-flex !important;
+                        }
+                        .desktop-only {
+                            display: none !important;
+                        }
+                        .modern-table-card {
+                            padding: 14px;
+                        }
+                        .modern-table-header {
+                            flex-direction: column;
+                            align-items: flex-start;
+                            gap: 10px;
+                            margin-bottom: 14px;
+                        }
+                        .modern-table-toolbar {
+                            flex-direction: column;
+                            align-items: stretch;
+                            gap: 10px;
+                            margin-bottom: 12px;
+                        }
+                        .toolbar-left {
+                            flex-wrap: wrap;
+                            gap: 8px;
+                        }
+                        .toolbar-right input {
+                            width: 100%;
+                        }
+                        /* Sembunyikan kolom NIUP, Akun Login, L/P, NO HP di mobile */
+                        .modern-table th.col-niup,
+                        .modern-table td.col-niup,
+                        .modern-table th.col-akun,
+                        .modern-table td.col-akun,
+                        .modern-table th.col-lp,
+                        .modern-table td.col-lp,
+                        .modern-table th.col-nohp,
+                        .modern-table td.col-nohp {
+                            display: none;
+                        }
+                        .modern-table th,
+                        .modern-table td {
+                            padding: 10px 10px;
+                            font-size: 0.85rem;
+                        }
+                        .btn-action {
+                            width: 30px;
+                            height: 30px;
+                        }
+                        .action-btns {
+                            gap: 5px;
+                        }
                     }
                     .teacher-name {
                         font-weight: 700;
@@ -200,14 +248,11 @@
                                     <h4 class="modern-table-title">Direktori Guru</h4>
                                     <p class="modern-table-subtitle">Manajemen Data Pengajar TPQ</p>
                                 </div>
-                                <div class="modern-table-actions">
-                                    <button wire:click="$refresh" class="btn btn-refresh">
-                                        <i class="material-icons" style="font-size: 18px; vertical-align: middle;">refresh</i>
-                                    </button>
-                                    <button wire:click="create" class="btn btn-add">
-                                        <i class="material-icons" style="font-size: 18px; vertical-align: middle; margin-right: 5px;">add</i> Tambah
-                                    </button>
-                                </div>
+                                @if((int)(auth()->user()->is_superadmin ?? 0) !== 2)
+                                <button wire:click="create" class="btn btn-add desktop-only">
+                                    <i class="material-icons" style="font-size: 18px; vertical-align: middle; margin-right: 5px;">add</i> Tambah
+                                </button>
+                                @endif
                             </div>
 
                             <div class="modern-table-toolbar">
@@ -218,6 +263,11 @@
                                         <option value="25">25</option>
                                         <option value="50">50</option>
                                     </select>
+                                    @if((int)(auth()->user()->is_superadmin ?? 0) !== 2)
+                                    <button wire:click="create" class="btn btn-add mobile-only">
+                                        <i class="material-icons" style="font-size: 16px; vertical-align: middle; margin-right: 4px;">add</i> Tambah
+                                    </button>
+                                    @endif
                                 </div>
                                 <div class="toolbar-right">
                                     <i class="material-icons">search</i>
@@ -231,11 +281,11 @@
                                         <tr>
                                              <th style="width: 50px;">NO</th>
                                              <th>NAMA GURU</th>
-                                             <th>NIUP</th>
+                                             <th class="col-niup">NIUP</th>
                                              <th>AKSES KELAS BINAAN</th>
-                                             <th>AKUN LOGIN</th>
-                                             <th>L/P</th>
-                                             <th>NO HP</th>
+                                             <th class="col-akun">AKUN LOGIN</th>
+                                             <th class="col-lp">L/P</th>
+                                             <th class="col-nohp">NO HP</th>
                                              <th style="text-align: right;">AKSI</th>
                                          </tr>
                                      </thead>
@@ -244,48 +294,49 @@
                                              <tr>
                                                  <td>{{ $guruList->firstItem() + $index }}</td>
                                                  <td>
-                                                     <div style="display: flex; align-items: center;">
-                                                         <div class="avatar-circle">
-                                                             {{ strtoupper(substr($item->nama_guru, 0, 1)) }}
-                                                         </div>
-                                                         <div>
-                                                             <span class="teacher-name">{{ $item->nama_guru }}</span>
-                                                             @if($item->can_crud_siswa)
-                                                                 <br><span class="badge-akses">Akses CRUD Siswa</span>
-                                                             @endif
-                                                         </div>
+                                                     <div>
+                                                         <span class="teacher-name">{{ $item->nama_guru }}</span>
+                                                         @if($item->can_crud_siswa)
+                                                             <br><span class="badge-akses">Akses CRUD Siswa</span>
+                                                         @endif
                                                      </div>
                                                  </td>
-                                                 <td>{{ $item->niup }}</td>
-                                                 <td>
+                                                 <td class="col-niup">{{ $item->niup }}</td>
+                                                 <td style="white-space: nowrap;">
                                                      @forelse($item->kelasBinaan as $kb)
-                                                         <span class="badge" style="background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; font-size: 0.72rem; padding: 3px 7px; margin: 1px; border-radius: 6px;">{{ $kb->tingkat }} {{ $kb->index_kelas }}</span>
+                                                         <span class="badge" style="background: transparent; color: #374151; font-weight: 700; font-size: 0.78rem; padding: 0; margin-right: 6px; border: none; white-space: nowrap; text-transform: uppercase;">{{ $kb->tingkat }} {{ $kb->index_kelas }}</span>
                                                      @empty
                                                          <span class="text-muted" style="font-size: 0.78rem;">-</span>
                                                      @endforelse
                                                  </td>
-                                                 <td>
+                                                 <td class="col-akun">
                                                      @if($item->user)
                                                          <span class="badge" style="background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; font-size: 0.75rem; padding: 4px 8px; border-radius: 6px; font-weight: 600;">
                                                              <i class="material-icons" style="font-size: 13px; vertical-align: text-bottom;">person</i> {{ $item->user->name }}
                                                          </span>
+                                                         @if((int)(auth()->user()->is_superadmin ?? 0) !== 2)
                                                          <button type="button" wire:click="resetPassword({{ $item->id_guru }})" class="btn-action" style="color: #d97706; background: #fef3c7; border: 1px solid #fde68a; padding: 2px 6px; font-size: 0.7rem; border-radius: 4px; margin-left: 4px;" title="Reset Password ke 12345678">
                                                              Reset Pass
                                                          </button>
+                                                         @endif
                                                      @else
                                                          <span class="badge" style="background: #f1f5f9; color: #64748b; font-size: 0.75rem;">Belum ada</span>
                                                      @endif
                                                  </td>
-                                                 <td>{{ ($item->jenis_kelamin == 'Laki-laki' || $item->jk == 'Laki-laki') ? 'L' : 'P' }}</td>
-                                                 <td>{{ $item->no_hp }}</td>
+                                                 <td class="col-lp">{{ ($item->jenis_kelamin == 'Laki-laki' || $item->jk == 'Laki-laki') ? 'L' : 'P' }}</td>
+                                                 <td class="col-nohp">{{ $item->no_hp }}</td>
                                                 <td>
                                                     <div class="action-btns" style="justify-content: flex-end;">
+                                                        @if((int)(auth()->user()->is_superadmin ?? 0) !== 2)
                                                         <button wire:click="edit({{ $item->id_guru }})" class="btn-action btn-edit" title="Edit">
                                                             <i class="material-icons">edit</i>
                                                         </button>
                                                         <button wire:click="deleteId({{ $item->id_guru }})" class="btn-action btn-delete" title="Hapus">
                                                             <i class="material-icons">delete</i>
                                                         </button>
+                                                        @else
+                                                        <span class="text-muted" style="font-size: 0.75rem;">Read-only</span>
+                                                        @endif
                                                     </div>
                                                 </td>
                                             </tr>

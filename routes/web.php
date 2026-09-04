@@ -7,7 +7,7 @@ Route::get('/', function () {
     return redirect('/login');
 });
 
-Route::get('/scan', \App\Livewire\ScanIndex::class);
+Route::get('/scan', \App\Livewire\ScanIndex::class)->name('scan');
 
 // Siswa Portal Routes (Custom Session Auth)
 Route::get('/login-siswa', [\App\Http\Controllers\Siswa\AuthController::class, 'index'])->name('siswa.login');
@@ -26,6 +26,7 @@ Route::middleware([
 ])->group(function () {
 
     Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/kepsek/dashboard', \App\Livewire\Kepsek\Dashboard::class)->name('kepsek.dashboard');
     Route::post('admin/dashboard/filter-data', [\App\Http\Controllers\Admin\DashboardController::class, 'filterData'])->name('admin.dashboard.filter-data');
 
     Route::get('/manual-attendance', App\Livewire\Teacher\ManualAttendance::class)->name('manual.attendance')->middleware('is_guru');
@@ -46,19 +47,25 @@ Route::middleware([
         Route::get('laporan/guru', [\App\Http\Controllers\Admin\ReportController::class, 'generateLaporanGuru'])->name('admin.laporan.guru');
         Route::get('qr', \App\Livewire\Admin\GenerateQrIndex::class);
         Route::get('qr/siswa', [\App\Http\Controllers\Admin\QrController::class, 'downloadSiswa'])->name('admin.qr.siswa');
+        Route::get('qr/siswa/{id}/view', [\App\Http\Controllers\Admin\QrController::class, 'viewSingleSiswa'])->name('admin.qr.siswa.view');
+        Route::get('qr/siswa/{id}/download', [\App\Http\Controllers\Admin\QrController::class, 'downloadSingleSiswa'])->name('admin.qr.siswa.download');
         Route::get('qr/guru', [\App\Http\Controllers\Admin\QrController::class, 'downloadGuru'])->name('admin.qr.guru');
         Route::get('backup', [\App\Http\Controllers\Admin\BackupController::class, 'index']);
         Route::get('backup/db/backup', [\App\Http\Controllers\Admin\BackupController::class, 'dbBackup'])->name('admin.backup.db');
         Route::post('backup/db/restore', [\App\Http\Controllers\Admin\BackupController::class, 'dbRestore'])->name('admin.backup.db.restore');
         Route::get('backup/photos/backup', [\App\Http\Controllers\Admin\BackupController::class, 'photosBackup'])->name('admin.backup.photos');
         Route::post('backup/photos/restore', [\App\Http\Controllers\Admin\BackupController::class, 'photosRestore'])->name('admin.backup.photos.restore');
+        Route::get('laporan-tabungan', \App\Livewire\Admin\LaporanTabunganIndex::class)->name('admin.laporan-tabungan');
         Route::get('general-settings', \App\Livewire\Admin\GeneralSettingsIndex::class);
         Route::get('hak-akses', \App\Livewire\Admin\HakAksesIndex::class);
+        Route::get('setoran-guru', \App\Livewire\Admin\SetoranGuruIndex::class)->name('admin.setoran-guru');
     });
 
     // Teacher Routes
     Route::prefix('teacher')->group(function () {
         Route::get('dashboard', \App\Livewire\Teacher\Dashboard::class)->name('teacher.dashboard');
+        Route::get('attendance', \App\Livewire\Teacher\ManualAttendance::class)->name('teacher.attendance');
+        Route::get('riwayat-tabungan', \App\Livewire\Teacher\RiwayatTabunganGuru::class)->name('teacher.riwayat-tabungan');
         Route::get('laporan', \App\Livewire\Teacher\GenerateLaporanIndex::class)->name('teacher.laporan');
         Route::get('siswa', \App\Livewire\Teacher\SiswaIndex::class)->name('teacher.siswa');
         Route::get('jadwal', \App\Livewire\Teacher\JadwalIndex::class)->name('teacher.jadwal');

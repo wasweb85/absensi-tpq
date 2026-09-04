@@ -58,8 +58,16 @@ class GuruIndex extends Component
         ])->layout('layouts.admin', ['title' => 'Data Guru', 'context' => 'guru']);
     }
 
+    protected function checkKepsekReadOnly()
+    {
+        if (auth()->user() && (int) (auth()->user()->is_superadmin ?? 0) === 2) {
+            abort(403, 'Akses dibatasi. Kepala TPQ hanya memiliki hak akses pemantauan (Read-Only).');
+        }
+    }
+
     public function create()
     {
+        $this->checkKepsekReadOnly();
         $this->resetFields();
         $this->isEdit = false;
         $this->showModal = true;
@@ -67,6 +75,7 @@ class GuruIndex extends Component
 
     public function store()
     {
+        $this->checkKepsekReadOnly();
         $this->validate([
             'niup' => 'required|min:5|max:30|unique:tb_guru,niup',
             'nama_guru' => 'required|min:3',
@@ -114,6 +123,7 @@ class GuruIndex extends Component
 
     public function edit($id)
     {
+        $this->checkKepsekReadOnly();
         $this->resetFields();
         $guru = Guru::with('kelasBinaan')->findOrFail($id);
         $this->id_guru = $guru->id_guru;
@@ -132,6 +142,7 @@ class GuruIndex extends Component
 
     public function update()
     {
+        $this->checkKepsekReadOnly();
         $this->validate([
             'niup' => ['required', 'min:5', 'max:30', Rule::unique('tb_guru', 'niup')->ignore($this->id_guru, 'id_guru')],
             'nama_guru' => 'required|min:3',
@@ -185,6 +196,7 @@ class GuruIndex extends Component
 
     public function resetPassword($id)
     {
+        $this->checkKepsekReadOnly();
         $guru = Guru::findOrFail($id);
         $user = User::where('id_guru', $guru->id_guru)->first();
         if ($user) {
@@ -204,12 +216,14 @@ class GuruIndex extends Component
 
     public function deleteId($id)
     {
+        $this->checkKepsekReadOnly();
         $this->id_guru = $id;
         $this->dispatch('show-delete-modal');
     }
 
     public function delete()
     {
+        $this->checkKepsekReadOnly();
         $guru = Guru::findOrFail($this->id_guru);
         User::where('id_guru', $guru->id_guru)->delete();
         $guru->kelasBinaan()->detach();

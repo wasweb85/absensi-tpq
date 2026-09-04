@@ -20,6 +20,10 @@ class DashboardController extends Controller
             return redirect()->route('teacher.dashboard');
         }
 
+        if (auth()->check() && (int) (auth()->user()->is_superadmin ?? 0) === 2) {
+            return redirect()->route('kepsek.dashboard');
+        }
+
         $today = Carbon::today()->toDateString();
 
         $jumlahKehadiranSiswa = [
@@ -65,11 +69,23 @@ class DashboardController extends Controller
         $totalKelas = $kelases->count();
         $totalPetugas = User::count();
 
+        // Data Keuangan Tabungan
+        $totalSetor = \App\Models\Tabungan::where('jenis_transaksi', 'setor')->sum('nominal');
+        $totalTarik = \App\Models\Tabungan::where('jenis_transaksi', 'tarik')->sum('nominal');
+        $totalKasTabungan = $totalSetor - $totalTarik;
+        
+        $totalBelumDisetor = \App\Models\Tabungan::where('jenis_transaksi', 'setor')
+            ->where('status_setoran', 'belum')
+            ->sum('nominal');
+            
+
         return view('dashboard', [
             'totalSiswa' => $totalSiswa,
             'totalGuru' => $totalGuru,
             'totalKelas' => $totalKelas,
             'totalPetugas' => $totalPetugas,
+            'totalKasTabungan' => $totalKasTabungan,
+            'totalBelumDisetor' => $totalBelumDisetor,
             'kelases' => $kelases,
             'jumlahKehadiranSiswa' => $jumlahKehadiranSiswa,
             'jumlahKehadiranGuru' => $jumlahKehadiranGuru,
