@@ -13,6 +13,7 @@ class GeneralSettingsIndex extends Component
     public $settingsId;
     public $school_name;
     public $school_year;
+    public $hari_libur_mingguan = 'jumat';
     public $copyright;
     public $logo; // For new upload
     public $currentLogo; // For showing current logo
@@ -24,6 +25,7 @@ class GeneralSettingsIndex extends Component
             $this->settingsId = $settings->id;
             $this->school_name = $settings->school_name;
             $this->school_year = $settings->school_year;
+            $this->hari_libur_mingguan = $settings->hari_libur_mingguan ?? 'jumat';
             $this->copyright = $settings->copyright;
             $this->currentLogo = $settings->logo;
         }
@@ -45,6 +47,7 @@ class GeneralSettingsIndex extends Component
 
         $settings->school_name = $this->school_name;
         $settings->school_year = $this->school_year;
+        $settings->hari_libur_mingguan = $this->hari_libur_mingguan ?? 'jumat';
         $settings->copyright = $this->copyright;
 
         if ($this->logo) {

@@ -72,6 +72,12 @@ $roleLabel = $user ? match((int)$user->is_superadmin) {
       </a>
       @endif
 
+      <!-- Kalender & Agenda -->
+      <a wire:navigate.hover class="sb-item {{ sbActive($context, 'kalender-agenda') }}" href="{{ url('teacher/kalender-agenda') }}" data-tooltip="Kalender & Agenda">
+         <i class="material-icons">calendar_month</i>
+         <span class="sb-item-label">Kalender &amp; Agenda</span>
+      </a>
+
       @if (RolePermission::hasAccess($user, 'monitoring') || RolePermission::hasAccess($user, 'scan_qr') || RolePermission::hasAccess($user, 'data_santri') || RolePermission::hasAccess($user, 'laporan'))
       <div class="sb-section-label">Manajemen Kelas</div>
       @endif
@@ -147,6 +153,12 @@ $roleLabel = $user ? match((int)$user->is_superadmin) {
          <span class="sb-item-label">{{ $isKepsek ? 'Executive Dashboard' : 'Dashboard' }}</span>
       </a>
       @endif
+
+      <!-- Kalender & Agenda -->
+      <a wire:navigate.hover class="sb-item {{ sbActive($context, 'kalender-agenda') }}" href="{{ url('admin/kalender-agenda') }}" data-tooltip="Kalender & Agenda">
+         <i class="material-icons">calendar_month</i>
+         <span class="sb-item-label">Kalender &amp; Agenda</span>
+      </a>
 
       @if (!$isSuperadmin && RolePermission::hasAccess($user, 'monitoring'))
       <a wire:navigate.hover class="sb-item {{ sbActive($context, 'absen-manual') }}" href="{{ url('manual-attendance') }}" data-tooltip="Monitoring & Absensi">

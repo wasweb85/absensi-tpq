@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\AgendaKalender;
 use App\Models\Guru;
 use App\Models\Kelas;
 use App\Models\PresensiGuru;
@@ -37,8 +38,8 @@ class ReportController extends Controller
 
         // Loop per hari dalam bulan tersebut
         for ($date = $begin->copy(); $date->lte($end); $date->addDay()) {
-            // TPQ Libur on Tuesday and Friday (Tue and Fri)
-            $isLibur = ($date->format('D') == 'Tue' || $date->format('D') == 'Fri');
+            // Cek status hari libur dinamis dari Kalender TPQ & Hari Libur Mingguan
+            $isLibur = AgendaKalender::isTanggalLibur($date);
             $lewat = $date->isAfter(Carbon::today());
 
             // Left join with presensi_siswa for this specific date
@@ -113,7 +114,7 @@ class ReportController extends Controller
 
         // Loop per hari dalam bulan tersebut
         for ($date = $begin->copy(); $date->lte($end); $date->addDay()) {
-            $isLibur = ($date->format('D') == 'Tue' || $date->format('D') == 'Fri');
+            $isLibur = AgendaKalender::isTanggalLibur($date);
             $lewat = $date->isAfter(Carbon::today());
 
             // Left join with presensi_guru

@@ -58,6 +58,10 @@
             <i class="material-icons">calendar_today</i>
             <span>Jadwal</span>
         </a>
+        <a href="{{ route('siswa.kalender') }}" class="nav-item {{ ($context ?? '') == 'kalender' ? 'active' : '' }}">
+            <i class="material-icons">calendar_month</i>
+            <span>Kalender</span>
+        </a>
     </div>
 
     @livewireScripts

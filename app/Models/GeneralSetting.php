@@ -14,6 +14,7 @@ class GeneralSetting extends Model
         'logo',
         'school_name',
         'school_year',
+        'hari_libur_mingguan',
         'copyright'
     ];
 }

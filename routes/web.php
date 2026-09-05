@@ -17,6 +17,7 @@ Route::get('/siswa/logout', [\App\Http\Controllers\Siswa\AuthController::class, 
 Route::middleware(['is_siswa'])->prefix('siswa')->group(function () {
     Route::get('/dashboard', \App\Livewire\Siswa\DashboardIndex::class)->name('siswa.dashboard');
     Route::get('/jadwal', \App\Livewire\Siswa\JadwalIndex::class)->name('siswa.jadwal');
+    Route::get('/kalender', \App\Livewire\Admin\KalenderAgendaIndex::class)->name('siswa.kalender');
 });
 
 Route::middleware([
@@ -59,6 +60,7 @@ Route::middleware([
         Route::get('general-settings', \App\Livewire\Admin\GeneralSettingsIndex::class);
         Route::get('hak-akses', \App\Livewire\Admin\HakAksesIndex::class);
         Route::get('setoran-guru', \App\Livewire\Admin\SetoranGuruIndex::class)->name('admin.setoran-guru');
+        Route::get('kalender-agenda', \App\Livewire\Admin\KalenderAgendaIndex::class)->name('admin.kalender-agenda');
     });
 
     // Teacher Routes
@@ -70,5 +72,6 @@ Route::middleware([
         Route::get('siswa', \App\Livewire\Teacher\SiswaIndex::class)->name('teacher.siswa');
         Route::get('jadwal', \App\Livewire\Teacher\JadwalIndex::class)->name('teacher.jadwal');
         Route::get('qr', \App\Livewire\Teacher\GenerateQrIndex::class)->name('teacher.qr');
+        Route::get('kalender-agenda', \App\Livewire\Admin\KalenderAgendaIndex::class)->name('teacher.kalender-agenda');
     });
 });

@@ -1,5 +1,7 @@
 <div>
-    <div class="row">
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
         <div class="col-md-12">
             @if (session()->has('msg'))
                 <div class="pb-2 px-3">
@@ -32,6 +34,15 @@
                                     @error('school_year') <span class="text-danger">{{ $message }}</span> @enderror
                                 </div>
                                 <div class="form-group">
+                                    <label class="bmd-label-floating">Hari Libur Rutin Mingguan</label>
+                                    <select wire:model="hari_libur_mingguan" class="form-control">
+                                        <option value="jumat">Hari Jumat (Sistem Pesantren/TPQ)</option>
+                                        <option value="ahad">Hari Ahad / Minggu</option>
+                                        <option value="sabtu">Hari Sabtu</option>
+                                    </select>
+                                    <small class="text-muted d-block">Menentukan hari libur mingguan pada kalender & mesin presensi</small>
+                                </div>
+                                <div class="form-group">
                                     <label class="bmd-label-floating">Copyright / Footer (Opsional)</label>
                                     <input type="text" wire:model="copyright" class="form-control">
                                     @error('copyright') <span class="text-danger">{{ $message }}</span> @enderror
@@ -62,6 +73,7 @@
                     </form>
                 </div>
             </div>
+        </div>
         </div>
     </div>
 </div>
