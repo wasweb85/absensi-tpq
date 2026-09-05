@@ -46,6 +46,6 @@ class GenerateLaporanIndex extends Component
 
     public function render()
     {
-        return view('livewire.teacher.generate-laporan-index')->layout('layouts.admin', ['title' => 'Laporan Kelas', 'context' => 'laporan-kelas']);
+        return view('livewire.teacher.generate-laporan-index')->layout('layouts.admin', ['title' => 'Laporan Kelas', 'nav_title' => 'Laporan', 'context' => 'laporan-kelas']);
     }
 }

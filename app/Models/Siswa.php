@@ -20,4 +20,9 @@ class Siswa extends Authenticatable
     {
         return $this->hasMany(PresensiSiswa::class, 'id_siswa', 'id_siswa');
     }
+
+    public function tabungan()
+    {
+        return $this->hasMany(Tabungan::class, 'id_siswa', 'id_siswa');
+    }
 }

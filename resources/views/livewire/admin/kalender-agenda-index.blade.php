@@ -383,6 +383,10 @@
                 color: #64748b;
                 letter-spacing: 0.5px;
             }
+            .un-day-name.red {
+                color: #e11d48 !important;
+                font-weight: 800;
+            }
             .un-jum-badge {
                 background: #ffe4e6;
                 color: #e11d48;
@@ -431,8 +435,13 @@
             .un-cell:nth-child(7n) {
                 border-right: none;
             }
+            .un-cell.is-holiday,
             .un-cell.is-friday {
                 background: #fff8f8;
+            }
+            .un-cell.is-holiday:hover,
+            .un-cell.is-friday:hover {
+                background: #fff1f2;
             }
             .un-cell.other-month {
                 background: #fbfcfd;
@@ -451,7 +460,8 @@
                 color: #1e293b;
             }
             .un-masehi-num.red {
-                color: #e11d48;
+                color: #e11d48 !important;
+                font-weight: 800;
             }
             .un-today-badge {
                 width: 20px;
@@ -465,11 +475,6 @@
                 align-items: center;
                 justify-content: center;
                 box-shadow: 0 2px 5px rgba(90, 32, 203, 0.3);
-            }
-            .un-hijri-text {
-                font-size: 9px;
-                font-weight: 500;
-                color: #94a3b8;
             }
 
             /* Event Chips */
@@ -521,6 +526,12 @@
                 border: 1px solid #fde68a;
                 color: #b45309;
             }
+            .un-event-chip.libur {
+                background: #ffe4e6 !important;
+                border: 1px solid #fecdd3 !important;
+                color: #e11d48 !important;
+                font-weight: 700 !important;
+            }
             .un-libur-jumat-pill {
                 background: #ffe4e6;
                 color: #e11d48;
@@ -529,8 +540,13 @@
                 font-size: 9px;
                 font-weight: 700;
                 display: inline-block;
+                margin-top: auto;
                 margin-bottom: 2px;
                 white-space: nowrap;
+                align-self: flex-start;
+                max-width: 100%;
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
 
             /* --- 6. KALENDER TAHUNAN (12 BULAN MINI) --- */
@@ -598,24 +614,64 @@
                 font-size: 10px;
             }
             .un-mini-cell {
-                padding: 3px 0;
-                border-radius: 4px;
+                padding: 4px 0;
+                border-radius: 6px;
                 font-weight: 600;
+                font-size: 10.5px;
                 color: #475569;
+                cursor: pointer;
+                transition: all 0.15s ease;
+                position: relative;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                user-select: none;
             }
+            .un-mini-cell:hover {
+                transform: scale(1.18);
+                z-index: 5;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            }
+            .un-mini-cell.is-holiday,
             .un-mini-cell.red {
-                color: #e11d48;
+                color: #e11d48 !important;
+                background: #fff1f2;
                 font-weight: 800;
             }
-            .un-mini-cell.event {
-                background: #ecfdf5;
-                color: #047857;
+            .un-mini-cell.is-holiday:hover,
+            .un-mini-cell.red:hover {
+                background: #ffe4e6 !important;
+            }
+            .un-mini-cell.has-event:not(.is-holiday):not(.red) {
+                background: #eff6ff;
+                color: #2563eb !important;
                 font-weight: 800;
+            }
+            .un-mini-cell.has-event.is-holiday,
+            .un-mini-cell.has-event.red {
+                color: #e11d48 !important;
+                background: #fee2e2 !important;
+                font-weight: 800;
+            }
+            .un-mini-cell.has-event::after {
+                content: '';
+                position: absolute;
+                bottom: 2px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 3.5px;
+                height: 3.5px;
+                border-radius: 50%;
+                background: currentColor;
             }
             .un-mini-cell.today {
                 background: #5a20cb !important;
                 color: #ffffff !important;
                 font-weight: 800;
+                box-shadow: 0 2px 6px rgba(90, 32, 203, 0.35);
+            }
+            .un-mini-cell.today::after {
+                background: #ffffff;
             }
 
             /* --- 7. PANEL KANAN (STATISTIK & TIMELINE) --- */
@@ -789,7 +845,7 @@
                 display: flex;
                 align-items: center;
                 gap: 4px;
-                opacity: 0.6;
+                opacity: 0.85;
                 transition: opacity 0.15s;
             }
             .un-timeline-item:hover .un-time-actions {
@@ -804,13 +860,66 @@
                 color: #94a3b8;
                 outline: none !important;
                 display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.15s;
             }
             .un-icon-btn:hover {
                 background: #f1f5f9;
                 color: #6d28d9;
             }
+            .un-icon-btn.danger {
+                color: #f43f5e;
+            }
             .un-icon-btn.danger:hover {
+                background: #fff1f2;
                 color: #e11d48;
+            }
+
+            /* Tombol Hapus pada Modal */
+            .un-btn-delete-modal {
+                padding: 8px 14px;
+                border-radius: 10px;
+                border: 1px solid #fecdd3;
+                background: #fff1f2;
+                color: #e11d48;
+                font-weight: 700;
+                font-size: 12.5px;
+                cursor: pointer;
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                transition: all 0.15s ease;
+            }
+            .un-btn-delete-modal:hover {
+                background: #ffe4e6;
+                border-color: #fda4af;
+                color: #be123c;
+                box-shadow: 0 2px 8px rgba(225, 29, 72, 0.15);
+            }
+
+            /* Banner Notifikasi Glassmorphic */
+            .un-alert-success {
+                background: #ecfdf5;
+                border: 1px solid #a7f3d0;
+                border-radius: 14px;
+                padding: 12px 18px;
+                margin-bottom: 18px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                box-shadow: 0 4px 12px rgba(16, 185, 129, 0.1);
+            }
+            .un-alert-error {
+                background: #fef2f2;
+                border: 1px solid #fecaca;
+                border-radius: 14px;
+                padding: 12px 18px;
+                margin-bottom: 18px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                box-shadow: 0 4px 12px rgba(239, 68, 68, 0.1);
             }
 
             /* --- 8. MODAL KACA INTERAKTIF --- */
@@ -877,6 +986,27 @@
 
         <div class="un-wrapper">
 
+            {{-- NOTIFIKASI FLASH SUKSES / ERROR --}}
+            @if (session()->has('success_message'))
+                <div class="un-alert-success" x-data="{ show: true }" x-show="show" x-transition>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="material-icons" style="font-size: 20px; color: #059669;">check_circle</i>
+                        <span style="font-size: 13px; font-weight: 600; color: #065f46;">{{ session('success_message') }}</span>
+                    </div>
+                    <button type="button" @click="show = false" style="background: transparent; border: none; color: #059669; cursor: pointer; font-size: 20px; line-height: 1;">&times;</button>
+                </div>
+            @endif
+
+            @if (session()->has('error_message'))
+                <div class="un-alert-error" x-data="{ show: true }" x-show="show" x-transition>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="material-icons" style="font-size: 20px; color: #dc2626;">error</i>
+                        <span style="font-size: 13px; font-weight: 600; color: #991b1b;">{{ session('error_message') }}</span>
+                    </div>
+                    <button type="button" @click="show = false" style="background: transparent; border: none; color: #dc2626; cursor: pointer; font-size: 20px; line-height: 1;">&times;</button>
+                </div>
+            @endif
+
             {{-- 1. HERO HEADER BANNER --}}
             <div class="un-hero">
                 <div class="un-hero-bg-glow"></div>
@@ -941,24 +1071,10 @@
                     </button>
                     <button 
                         type="button" 
-                        wire:click="setCategory('akademik')" 
-                        class="un-pill {{ $selectedCategory === 'akademik' ? 'active' : '' }}">
-                        <span style="width: 7px; height: 7px; border-radius: 50%; background: #10b981; display: inline-block;"></span>
-                        Akademik
-                    </button>
-                    <button 
-                        type="button" 
                         wire:click="setCategory('penting')" 
                         class="un-pill {{ $selectedCategory === 'penting' ? 'active' : '' }}">
                         <span style="width: 7px; height: 7px; border-radius: 50%; background: #8b5cf6; display: inline-block;"></span>
                         Penting
-                    </button>
-                    <button 
-                        type="button" 
-                        wire:click="setCategory('tugas')" 
-                        class="un-pill {{ $selectedCategory === 'tugas' ? 'active' : '' }}">
-                        <span style="width: 7px; height: 7px; border-radius: 50%; background: #f59e0b; display: inline-block;"></span>
-                        Tugas
                     </button>
 
                     {{-- Tombol Tambah Agenda (Khusus Admin / Petugas) --}}
@@ -992,7 +1108,7 @@
                                     type="button" 
                                     wire:click="toggleLiburPekan" 
                                     class="un-btn-toggle-holiday">
-                                    JUMAT &amp; LIBUR {{ $showLiburPekan ? 'ON' : 'OFF' }}
+                                    {{ strtoupper($liburMingguan) }} &amp; LIBUR {{ $showLiburPekan ? 'ON' : 'OFF' }}
                                 </button>
                             </div>
 
@@ -1036,15 +1152,35 @@
                         <div class="un-cal-card">
                             {{-- Header 7 Hari --}}
                             <div class="un-cal-header-row">
-                                <div class="un-day-name">MIN</div>
+                                <div class="un-day-name {{ in_array($liburMingguan, ['ahad', 'jumat_ahad']) ? 'red' : '' }}">
+                                    @if ($liburMingguan === 'ahad')
+                                        <span class="un-jum-badge">
+                                            MIN <span class="un-jum-libur-tag">LIBUR</span>
+                                        </span>
+                                    @else
+                                        MIN
+                                    @endif
+                                </div>
                                 <div class="un-day-name">SEN</div>
-                                <div class="un-day-name">SEL</div>
+                                <div class="un-day-name {{ in_array($liburMingguan, ['selasa_jumat', 'jumat_selasa', 'selasa']) ? 'red' : '' }}">
+                                    @if (in_array($liburMingguan, ['selasa_jumat', 'jumat_selasa', 'selasa']))
+                                        <span class="un-jum-badge">
+                                            SEL <span class="un-jum-libur-tag">LIBUR</span>
+                                        </span>
+                                    @else
+                                        SEL
+                                    @endif
+                                </div>
                                 <div class="un-day-name">RAB</div>
                                 <div class="un-day-name">KAM</div>
-                                <div>
-                                    <span class="un-jum-badge">
-                                        JUM <span class="un-jum-libur-tag">LIBUR</span>
-                                    </span>
+                                <div class="un-day-name red">
+                                    @if (in_array($liburMingguan, ['jumat', 'selasa_jumat', 'jumat_selasa', 'jumat_ahad']))
+                                        <span class="un-jum-badge">
+                                            JUM <span class="un-jum-libur-tag">LIBUR</span>
+                                        </span>
+                                    @else
+                                        JUM
+                                    @endif
                                 </div>
                                 <div class="un-day-name">SAB</div>
                             </div>
@@ -1055,39 +1191,29 @@
                                     @php
                                         $isJum = $cell['is_weekly_holiday'];
                                         $isCur = $cell['is_current_month'];
+                                        $isHoliday = $cell['is_holiday'];
                                     @endphp
                                     <div 
                                         @if ($isManageable) wire:click="openCreateModal('{{ $cell['date_string'] }}')" @endif
-                                        class="un-cell {{ $isJum ? 'is-friday' : '' }} {{ !$isCur ? 'other-month' : '' }}">
+                                        class="un-cell {{ $isHoliday ? 'is-holiday' : '' }} {{ $isJum ? 'is-friday' : '' }} {{ !$isCur ? 'other-month' : '' }}">
                                         
-                                        {{-- Header Angka Tanggal Masehi & Hijriah --}}
+                                        {{-- Header Angka Tanggal Masehi --}}
                                         <div class="un-cell-top">
                                             @if ($cell['is_today'])
                                                 <div class="un-today-badge">
                                                     {{ $cell['day'] }}
                                                 </div>
                                             @else
-                                                <span class="un-masehi-num {{ $isJum ? 'red' : '' }}">
+                                                <span class="un-masehi-num {{ $isHoliday ? 'red' : '' }}">
                                                     {{ $cell['day'] }}
                                                 </span>
                                             @endif
-
-                                            <span class="un-hijri-text" title="{{ $cell['hijri_formatted'] }}">
-                                                {{ $cell['hijri_formatted'] }}
-                                            </span>
                                         </div>
-
-                                        {{-- Libur Jumat Rutin --}}
-                                        @if ($isJum && $showLiburPekan && $isCur)
-                                            <div class="un-libur-jumat-pill">
-                                                Libur Jumat
-                                            </div>
-                                        @endif
 
                                         {{-- Event Pills --}}
                                         @foreach ($cell['events']->take(2) as $ev)
                                             @php
-                                                $katClass = in_array($ev->kategori, ['akademik', 'penting', 'umum', 'tugas']) ? $ev->kategori : 'umum';
+                                                $katClass = $ev->is_libur ? 'libur' : (in_array($ev->kategori, ['akademik', 'penting', 'umum', 'tugas']) ? $ev->kategori : 'umum');
                                             @endphp
                                             <div 
                                                 wire:click.stop="{{ $isManageable ? 'editAgenda(' . $ev->id . ')' : 'showDetail(' . $ev->id . ')' }}" 
@@ -1103,6 +1229,13 @@
                                         @if ($cell['events']->count() > 2)
                                             <div style="font-size: 9px; font-weight: 700; color: #6d28d9; padding-left: 2px;">
                                                 +{{ $cell['events']->count() - 2 }} agenda
+                                            </div>
+                                        @endif
+
+                                        {{-- Libur Rutin Mingguan: posisi paling bawah, disembunyikan bila ada kegiatan/agenda --}}
+                                        @if ($isJum && $showLiburPekan && $isCur && $cell['events']->isEmpty())
+                                            <div class="un-libur-jumat-pill">
+                                                Libur {{ $cell['carbon']->isTuesday() ? 'Selasa' : ($cell['carbon']->isFriday() ? "Jum'at" : ($cell['carbon']->isSunday() ? 'Ahad' : 'Pekan')) }}
                                             </div>
                                         @endif
                                     </div>
@@ -1138,8 +1271,12 @@
                                             @endif
                                         </div>
                                         <div class="un-mini-day-headers">
-                                            <span>M</span><span>S</span><span>S</span><span>R</span><span>K</span>
-                                            <span class="red">J</span>
+                                            <span class="{{ in_array($liburMingguan, ['ahad', 'jumat_ahad']) ? 'red' : '' }}">M</span>
+                                            <span>S</span>
+                                            <span class="{{ in_array($liburMingguan, ['selasa_jumat', 'jumat_selasa', 'selasa']) ? 'red' : '' }}">S</span>
+                                            <span>R</span>
+                                            <span>K</span>
+                                            <span class="{{ in_array($liburMingguan, ['jumat', 'selasa_jumat', 'jumat_selasa', 'jumat_ahad']) ? 'red' : '' }}">J</span>
                                             <span>S</span>
                                         </div>
                                         <div class="un-mini-days-grid">
@@ -1147,7 +1284,10 @@
                                                 @if ($dItem['day'] === null)
                                                     <span></span>
                                                 @else
-                                                    <span class="un-mini-cell {{ $dItem['is_today'] ? 'today' : '' }} {{ $dItem['is_weekly'] && !$dItem['is_today'] ? 'red' : '' }} {{ $dItem['has_event'] && !$dItem['is_today'] ? 'event' : '' }}">
+                                                    <span 
+                                                        wire:click.stop="openDayModal('{{ $dItem['date_string'] }}')"
+                                                        class="un-mini-cell {{ $dItem['is_today'] ? 'today' : '' }} {{ $dItem['is_holiday'] && !$dItem['is_today'] ? 'red is-holiday' : '' }} {{ $dItem['has_event'] && !$dItem['is_today'] ? 'has-event' : '' }}"
+                                                        title="Tanggal {{ $dItem['day'] }} {{ $m['name'] }}: Klik untuk melihat info kegiatan">
                                                         {{ $dItem['day'] }}
                                                     </span>
                                                 @endif
@@ -1239,8 +1379,8 @@
 
                         {{-- List Timeline Items --}}
                         <div class="un-timeline-scroll">
-                            @forelse ($timelineEvents as $item)
-                                <div class="un-timeline-item">
+                            @forelse ($timelineEvents as $itemIndex => $item)
+                                <div class="un-timeline-item" wire:key="timeline-item-{{ $item['agenda_id'] ?? ($item['date_string'].'-'.$itemIndex) }}">
                                     <div class="un-time-col">
                                         <div class="un-time-day" style="{{ $item['is_libur'] ? 'color: #e11d48;' : '' }}">
                                             {{ $item['day_num'] }}
@@ -1270,8 +1410,7 @@
                                             </button>
                                             <button 
                                                 type="button" 
-                                                wire:confirm="Yakin ingin menghapus agenda ini?" 
-                                                wire:click="deleteAgenda({{ $item['agenda_id'] }})" 
+                                                wire:click="confirmDeleteAgenda({{ $item['agenda_id'] }})" 
                                                 class="un-icon-btn danger" 
                                                 title="Hapus Agenda">
                                                 <i class="material-icons" style="font-size: 16px;">delete</i>
@@ -1329,9 +1468,10 @@
                             <label class="un-form-label">Kategori *</label>
                             <select wire:model="form_kategori" class="un-form-control">
                                 <option value="umum">Umum</option>
-                                <option value="akademik">Akademik</option>
                                 <option value="penting">Penting</option>
-                                <option value="tugas">Tugas</option>
+                                @if (in_array($form_kategori, ['akademik', 'tugas']))
+                                    <option value="{{ $form_kategori }}">{{ ucfirst($form_kategori) }}</option>
+                                @endif
                             </select>
                         </div>
                         <div>
@@ -1372,20 +1512,207 @@
                         <textarea wire:model="form_deskripsi" rows="2" class="un-form-control" placeholder="Tuliskan catatan tambahan jika ada..."></textarea>
                     </div>
 
-                    <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #f1f5f9; padding-top: 14px;">
-                        <button 
-                            type="button" 
-                            wire:click="closeModals" 
-                            style="padding: 8px 18px; border-radius: 12px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; font-weight: 600; font-size: 13px; cursor: pointer;">
-                            Batal
-                        </button>
-                        <button 
-                            type="submit" 
-                            style="padding: 8px 22px; border-radius: 12px; border: none; background: linear-gradient(135deg, #6d28d9 0%, #4f46e5 100%); color: #ffffff; font-weight: 700; font-size: 13px; cursor: pointer; box-shadow: 0 4px 12px rgba(109,40,217,0.25);">
-                            Simpan Agenda
-                        </button>
+                    <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid #f1f5f9; padding-top: 16px; margin-top: 6px;">
+                        <div>
+                            @if ($agendaId)
+                                <button 
+                                    type="button" 
+                                    wire:click="confirmDeleteAgenda({{ $agendaId }})" 
+                                    class="un-btn-delete-modal"
+                                    title="Hapus agenda ini">
+                                    <i class="material-icons" style="font-size: 16px;">delete</i>
+                                    <span>Hapus Agenda</span>
+                                </button>
+                            @endif
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button 
+                                type="button" 
+                                wire:click="closeModals" 
+                                style="padding: 9px 18px; border-radius: 12px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; font-weight: 600; font-size: 13px; cursor: pointer;">
+                                Batal
+                            </button>
+                            <button 
+                                type="submit" 
+                                wire:loading.attr="disabled"
+                                style="padding: 9px 24px; border-radius: 12px; border: none; background: linear-gradient(135deg, #6d28d9 0%, #4f46e5 100%); color: #ffffff; font-weight: 700; font-size: 13px; cursor: pointer; box-shadow: 0 4px 12px rgba(109,40,217,0.25); display: inline-flex; align-items: center; gap: 6px;">
+                                <span wire:loading.remove>{{ $agendaId ? 'Simpan Perubahan' : 'Simpan Agenda' }}</span>
+                                <span wire:loading>Menyimpan...</span>
+                            </button>
+                        </div>
                     </div>
                 </form>
+            </div>
+        </div>
+    @endif
+
+    {{-- MODAL POPUP INFORMASI LENGKAP TANGGAL & KEGIATAN --}}
+    @if ($isOpenDayModal && $selectedDayData)
+        <div class="un-modal-backdrop" wire:click.self="closeModals" style="z-index: 10040;">
+            <div class="un-modal-box" style="max-width: 520px; border-radius: 22px; overflow: hidden; padding: 0; box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25);">
+                
+                {{-- Modal Header --}}
+                <div style="background: linear-gradient(135deg, #4f14e2 0%, #6d28d9 60%, #7c3aed 100%); padding: 20px 24px; color: #ffffff; display: flex; align-items: center; justify-content: space-between; position: relative;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="width: 44px; height: 44px; border-radius: 14px; background: rgba(255, 255, 255, 0.18); border: 1px solid rgba(255, 255, 255, 0.3); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <i class="material-icons" style="font-size: 22px; color: #ffffff;">calendar_month</i>
+                        </div>
+                        <div>
+                            <div style="font-size: 11px; font-weight: 700; color: rgba(255, 255, 255, 0.8); text-transform: uppercase; letter-spacing: 0.5px;">
+                                Informasi Tanggal &amp; Kegiatan
+                            </div>
+                            <h3 style="margin: 2px 0 0 0; font-size: 17px; font-weight: 800; color: #ffffff; letter-spacing: -0.3px;">
+                                {{ $selectedDayData['formatted_date'] }}
+                            </h3>
+                        </div>
+                    </div>
+                    <button type="button" wire:click="closeModals" style="width: 32px; height: 32px; border-radius: 50%; background: rgba(255, 255, 255, 0.15); border: none; color: #ffffff; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;">
+                        <i class="material-icons" style="font-size: 18px;">close</i>
+                    </button>
+                </div>
+
+                {{-- Modal Body --}}
+                <div style="padding: 22px 24px; max-height: 70vh; overflow-y: auto;">
+                    
+                    {{-- Status Banner (Hari Libur / Hari Kerja) --}}
+                    @if ($selectedDayData['is_holiday'])
+                        <div style="background: #fff1f2; border: 1px solid #fecdd3; border-radius: 14px; padding: 12px 16px; margin-bottom: 18px; display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 36px; height: 36px; border-radius: 10px; background: #ffe4e6; color: #e11d48; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                <i class="material-icons" style="font-size: 20px;">event_busy</i>
+                            </div>
+                            <div style="flex: 1;">
+                                <div style="font-size: 12.5px; font-weight: 800; color: #9f1239;">
+                                    Hari Libur
+                                    @if ($selectedDayData['is_weekly_holiday'])
+                                        (Libur Rutin {{ $selectedDayData['weekly_holiday_name'] }})
+                                    @elseif ($selectedDayData['has_holiday_event'])
+                                        (Libur Resmi TPQ)
+                                    @endif
+                                </div>
+                                <div style="font-size: 11px; color: #be123c;">
+                                    Presensi santri dan ustadz tidak mencatat alpa pada tanggal ini.
+                                </div>
+                            </div>
+                            @if ($selectedDayData['is_today'])
+                                <span style="background: #5a20cb; color: #ffffff; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 6px;">HARI INI</span>
+                            @endif
+                        </div>
+                    @else
+                        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 14px; padding: 12px 16px; margin-bottom: 18px; display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 36px; height: 36px; border-radius: 10px; background: #dcfce7; color: #16a34a; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                <i class="material-icons" style="font-size: 20px;">check_circle</i>
+                            </div>
+                            <div style="flex: 1;">
+                                <div style="font-size: 12.5px; font-weight: 800; color: #166534;">
+                                    Hari Kerja / Belajar Aktif TPQ
+                                </div>
+                                <div style="font-size: 11px; color: #15803d;">
+                                    Kegiatan pembelajaran dan administrasi berjalan normal.
+                                </div>
+                            </div>
+                            @if ($selectedDayData['is_today'])
+                                <span style="background: #5a20cb; color: #ffffff; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 6px;">HARI INI</span>
+                            @endif
+                        </div>
+                    @endif
+
+                    {{-- Daftar Agenda Kegiatan --}}
+                    <div style="margin-bottom: 8px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                            <span style="font-size: 12px; font-weight: 800; color: #334155; text-transform: uppercase; letter-spacing: 0.5px;">
+                                Agenda Kegiatan ({{ $selectedDayData['events']->count() }})
+                            </span>
+                            @if ($isManageable)
+                                <button 
+                                    type="button" 
+                                    wire:click="openCreateFromDayModal('{{ $selectedDayData['date_string'] }}')"
+                                    style="background: transparent; border: none; color: #6d28d9; font-size: 12px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; padding: 0;">
+                                    <i class="material-icons" style="font-size: 15px;">add_circle</i>
+                                    <span>Tambah Agenda</span>
+                                </button>
+                            @endif
+                        </div>
+
+                        @forelse ($selectedDayData['events'] as $ev)
+                            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-left: 4px solid {{ $ev->warna ?: ($ev->is_libur ? '#e11d48' : '#6d28d9') }}; border-radius: 12px; padding: 14px; margin-bottom: 10px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02); transition: all 0.15s ease;">
+                                <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 6px;">
+                                    <h4 style="margin: 0; font-size: 14px; font-weight: 800; color: #0f172a; line-height: 1.35;">
+                                        {{ $ev->judul }}
+                                    </h4>
+                                    <div style="display: flex; align-items: center; gap: 4px; flex-shrink: 0;">
+                                        @if ($ev->is_libur)
+                                            <span style="background: #ffe4e6; color: #e11d48; font-size: 9.5px; font-weight: 800; padding: 2px 7px; border-radius: 6px; text-transform: uppercase;">
+                                                Libur
+                                            </span>
+                                        @endif
+                                        <span style="background: {{ $ev->kategori === 'penting' ? '#f5f3ff' : '#eff6ff' }}; color: {{ $ev->kategori === 'penting' ? '#6d28d9' : '#1d4ed8' }}; font-size: 9.5px; font-weight: 800; padding: 2px 7px; border-radius: 6px; text-transform: uppercase;">
+                                            {{ ucfirst($ev->kategori) }}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div style="font-size: 11.5px; color: #64748b; margin-bottom: 6px; display: flex; align-items: center; gap: 5px;">
+                                    <i class="material-icons" style="font-size: 14px; color: #94a3b8;">date_range</i>
+                                    <span>
+                                        {{ $ev->tanggal_mulai ? $ev->tanggal_mulai->translatedFormat('d M Y') : '' }}
+                                        @if ($ev->tanggal_selesai && $ev->tanggal_selesai != $ev->tanggal_mulai)
+                                            &mdash; {{ $ev->tanggal_selesai->translatedFormat('d M Y') }}
+                                        @endif
+                                    </span>
+                                </div>
+
+                                @if ($ev->deskripsi)
+                                    <div style="background: #f8fafc; border-radius: 8px; padding: 8px 10px; font-size: 12px; color: #475569; line-height: 1.45; margin-bottom: 8px;">
+                                        {{ $ev->deskripsi }}
+                                    </div>
+                                @endif
+
+                                @if ($isManageable)
+                                    <div style="display: flex; justify-content: flex-end; gap: 8px; padding-top: 6px; border-top: 1px dashed #f1f5f9;">
+                                        <button 
+                                            type="button" 
+                                            wire:click="editAgenda({{ $ev->id }})" 
+                                            style="padding: 4px 10px; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; color: #334155; font-size: 11px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
+                                            <i class="material-icons" style="font-size: 13px;">edit</i>
+                                            <span>Edit</span>
+                                        </button>
+                                        <button 
+                                            type="button" 
+                                            wire:click="confirmDeleteAgenda({{ $ev->id }})" 
+                                            style="padding: 4px 10px; border-radius: 8px; border: 1px solid #fecdd3; background: #fff1f2; color: #e11d48; font-size: 11px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
+                                            <i class="material-icons" style="font-size: 13px;">delete</i>
+                                            <span>Hapus</span>
+                                        </button>
+                                    </div>
+                                @endif
+                            </div>
+                        @empty
+                            <div style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 14px; padding: 24px 16px; text-align: center; color: #64748b;">
+                                <i class="material-icons" style="font-size: 32px; color: #cbd5e1; margin-bottom: 4px;">event_available</i>
+                                <p style="font-size: 12.5px; margin: 0; font-weight: 600;">
+                                    Tidak ada agenda kegiatan khusus pada tanggal ini.
+                                </p>
+                            </div>
+                        @endforelse
+                    </div>
+                </div>
+
+                {{-- Modal Footer --}}
+                <div style="background: #f8fafc; border-top: 1px solid #e2e8f0; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between;">
+                    <button 
+                        type="button" 
+                        wire:click="jumpToMonthFromModal({{ $selectedDayData['month'] }})"
+                        style="background: transparent; border: none; color: #5a20cb; font-size: 12.5px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
+                        <span>Buka Kalender Bulan {{ \Carbon\Carbon::createFromDate($selectedDayData['year'], $selectedDayData['month'], 1)->translatedFormat('F') }}</span>
+                        <i class="material-icons" style="font-size: 16px;">arrow_forward</i>
+                    </button>
+                    <button 
+                        type="button" 
+                        wire:click="closeModals" 
+                        style="padding: 8px 20px; border-radius: 10px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; font-weight: 600; font-size: 12.5px; cursor: pointer;">
+                        Tutup
+                    </button>
+                </div>
             </div>
         </div>
     @endif
@@ -1393,7 +1720,7 @@
     {{-- MODAL DETAIL AGENDA --}}
     @if ($isOpenDetailModal && $detailEvent)
         <div class="un-modal-backdrop">
-            <div class="un-modal-box" style="max-width: 440px; padding: 22px;">
+            <div class="un-modal-box" style="max-width: 460px; padding: 22px;">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
                     <span style="font-size: 11px; font-weight: 800; padding: 3px 10px; border-radius: 6px; text-transform: uppercase; {{ $detailEvent->is_libur ? 'background: #ffe4e6; color: #e11d48;' : 'background: #ecfdf5; color: #047857;' }}">
                         {{ $detailEvent->is_libur ? 'Hari Libur TPQ' : ucfirst($detailEvent->kategori) }}
@@ -1423,12 +1750,77 @@
                     </div>
                 @endif
 
-                <div style="text-align: right;">
+                <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid #f1f5f9; padding-top: 14px; margin-top: 6px;">
+                    <div>
+                        @if ($isManageable)
+                            <button 
+                                type="button" 
+                                wire:click="confirmDeleteAgenda({{ $detailEvent->id }})" 
+                                class="un-btn-delete-modal"
+                                title="Hapus agenda ini">
+                                <i class="material-icons" style="font-size: 15px;">delete</i>
+                                <span>Hapus</span>
+                            </button>
+                        @endif
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        @if ($isManageable)
+                            <button 
+                                type="button" 
+                                wire:click="editAgenda({{ $detailEvent->id }})" 
+                                style="padding: 7px 16px; border-radius: 10px; border: 1px solid #c7d2fe; background: #eef2ff; color: #4338ca; font-weight: 700; font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
+                                <i class="material-icons" style="font-size: 14px;">edit</i>
+                                <span>Edit</span>
+                            </button>
+                        @endif
+                        <button 
+                            type="button" 
+                            wire:click="closeModals" 
+                            style="padding: 7px 18px; border-radius: 10px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; font-weight: 600; font-size: 12px; cursor: pointer;">
+                            Tutup
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- MODAL KONFIRMASI HAPUS AGENDA --}}
+    @if ($isDeleteModalOpen)
+        <div class="un-modal-backdrop" style="z-index: 10050;">
+            <div class="un-modal-box" style="max-width: 440px; border-radius: 20px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);">
+                <div style="padding: 26px 24px 18px 24px; text-align: center;">
+                    <div style="width: 58px; height: 58px; border-radius: 18px; background: #fee2e2; color: #dc2626; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 16px; box-shadow: 0 6px 16px rgba(220, 38, 38, 0.2);">
+                        <i class="material-icons" style="font-size: 32px;">delete_forever</i>
+                    </div>
+                    <h4 style="font-size: 18px; font-weight: 800; color: #0f172a; margin: 0 0 8px 0;">
+                        Hapus Agenda Kegiatan?
+                    </h4>
+                    <p style="font-size: 13px; color: #64748b; line-height: 1.5; margin: 0 0 12px 0;">
+                        Apakah Anda yakin ingin menghapus agenda kegiatan berikut?
+                    </p>
+                    <div style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 12px; padding: 12px 14px; font-size: 13.5px; font-weight: 700; color: #1e293b; margin-bottom: 12px; word-break: break-word;">
+                        "{{ $agendaToDeleteTitle }}"
+                    </div>
+                    <p style="font-size: 11.5px; color: #e11d48; margin: 0; font-weight: 600;">
+                        <i class="material-icons" style="font-size: 14px; vertical-align: middle;">warning</i> Tindakan ini permanen dan tidak dapat dibatalkan.
+                    </p>
+                </div>
+
+                <div style="background: #f8fafc; border-top: 1px solid #f1f5f9; padding: 16px 24px; display: flex; justify-content: flex-end; gap: 10px;">
                     <button 
                         type="button" 
-                        wire:click="closeModals" 
-                        style="padding: 7px 18px; border-radius: 10px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; font-weight: 600; font-size: 12px; cursor: pointer;">
-                        Tutup
+                        wire:click="closeDeleteModal" 
+                        style="padding: 9px 20px; border-radius: 10px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.15s;">
+                        Batal
+                    </button>
+                    <button 
+                        type="button" 
+                        wire:click="deleteAgenda" 
+                        wire:loading.attr="disabled"
+                        style="padding: 9px 22px; border-radius: 10px; border: none; background: #dc2626; color: #ffffff; font-weight: 700; font-size: 13px; cursor: pointer; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3); display: inline-flex; align-items: center; gap: 6px;">
+                        <span wire:loading.remove>Ya, Hapus Sekarang</span>
+                        <span wire:loading>Menghapus...</span>
                     </button>
                 </div>
             </div>

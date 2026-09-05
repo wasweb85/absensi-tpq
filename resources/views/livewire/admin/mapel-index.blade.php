@@ -45,23 +45,23 @@
                         margin-top: 3px;
                         margin-bottom: 0;
                     }
-                    .modern-table-actions .btn {
-                        margin: 0 0 0 10px;
+                    .btn-add {
+                        background: #2563eb;
+                        color: #fff;
+                        border: none;
                         border-radius: 8px;
                         padding: 8px 16px;
                         font-weight: 600;
-                        text-transform: none;
+                        font-size: 0.85rem;
+                        cursor: pointer;
+                        box-shadow: 0 3px 10px rgba(37, 99, 235, 0.25);
+                        display: inline-flex;
+                        align-items: center;
+                        white-space: nowrap;
+                        transition: background 0.2s;
                     }
-                    .modern-table-actions .btn-refresh {
-                        background: #f1f5f9;
-                        color: #475569;
-                        border: 1px solid #e2e8f0;
-                        box-shadow: none;
-                    }
-                    .modern-table-actions .btn-add {
-                        background: #2563eb;
-                        color: #fff;
-                        box-shadow: none;
+                    .btn-add:hover {
+                        background: #1d4ed8;
                     }
                     .modern-table-toolbar {
                         display: flex;
@@ -128,18 +128,55 @@
                     .modern-table tbody tr:hover {
                         background: #fcfcfc;
                     }
-                    .avatar-circle {
-                        width: 36px;
-                        height: 36px;
-                        border-radius: 50%;
-                        background: #e0e7ff;
-                        color: #3b82f6;
-                        display: inline-flex;
-                        align-items: center;
-                        justify-content: center;
-                        font-weight: 700;
-                        margin-right: 15px;
-                        font-size: 14px;
+                    .mobile-only {
+                        display: none !important;
+                    }
+                    .desktop-only {
+                        display: flex !important;
+                    }
+
+                    /* ── MOBILE RESPONSIVE ── */
+                    @media (max-width: 640px) {
+                        .mobile-only {
+                            display: inline-flex !important;
+                        }
+                        .desktop-only {
+                            display: none !important;
+                        }
+                        .modern-table-card {
+                            padding: 14px;
+                        }
+                        .modern-table-header {
+                            flex-direction: column;
+                            align-items: flex-start;
+                            gap: 10px;
+                            margin-bottom: 14px;
+                        }
+                        .modern-table-toolbar {
+                            flex-direction: column;
+                            align-items: stretch;
+                            gap: 10px;
+                            margin-bottom: 12px;
+                        }
+                        .toolbar-left {
+                            flex-wrap: wrap;
+                            gap: 8px;
+                        }
+                        .toolbar-right input {
+                            width: 100%;
+                        }
+                        .modern-table th,
+                        .modern-table td {
+                            padding: 10px 10px;
+                            font-size: 0.85rem;
+                        }
+                        .btn-action {
+                            width: 30px;
+                            height: 30px;
+                        }
+                        .action-btns {
+                            gap: 5px;
+                        }
                     }
                     .mapel-name {
                         font-weight: 700;
@@ -178,14 +215,9 @@
                                     <h4 class="modern-table-title">Direktori Mata Pelajaran</h4>
                                     <p class="modern-table-subtitle">Manajemen Mata Pelajaran TPQ</p>
                                 </div>
-                                <div class="modern-table-actions">
-                                    <button wire:click="$refresh" class="btn btn-refresh">
-                                        <i class="material-icons" style="font-size: 18px; vertical-align: middle;">refresh</i>
-                                    </button>
-                                    <button wire:click="create" class="btn btn-add">
-                                        <i class="material-icons" style="font-size: 18px; vertical-align: middle; margin-right: 5px;">add</i> Tambah
-                                    </button>
-                                </div>
+                                <button wire:click="create" class="btn btn-add desktop-only">
+                                    <i class="material-icons" style="font-size: 18px; vertical-align: middle; margin-right: 5px;">add</i> Tambah
+                                </button>
                             </div>
 
                             <div class="modern-table-toolbar">
@@ -196,6 +228,9 @@
                                         <option value="25">25</option>
                                         <option value="50">50</option>
                                     </select>
+                                    <button wire:click="create" class="btn btn-add mobile-only">
+                                        <i class="material-icons" style="font-size: 16px; vertical-align: middle; margin-right: 4px;">add</i> Tambah
+                                    </button>
                                 </div>
                                 <div class="toolbar-right">
                                     <i class="material-icons">search</i>
@@ -217,12 +252,7 @@
                                             <tr>
                                                 <td>{{ $mapelList->firstItem() + $index }}</td>
                                                 <td>
-                                                    <div style="display: flex; align-items: center;">
-                                                        <div class="avatar-circle">
-                                                            {{ strtoupper(substr($item->nama_mapel, 0, 1)) }}
-                                                        </div>
-                                                        <span class="mapel-name">{{ $item->nama_mapel }}</span>
-                                                    </div>
+                                                    <span class="mapel-name">{{ $item->nama_mapel }}</span>
                                                 </td>
                                                 <td>
                                                     <div class="action-btns" style="justify-content: flex-end;">

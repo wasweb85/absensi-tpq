@@ -45,23 +45,23 @@
                         margin-top: 3px;
                         margin-bottom: 0;
                     }
-                    .modern-table-actions .btn {
-                        margin: 0 0 0 10px;
+                    .btn-add {
+                        background: #2563eb;
+                        color: #fff;
+                        border: none;
                         border-radius: 8px;
                         padding: 8px 16px;
                         font-weight: 600;
-                        text-transform: none;
+                        font-size: 0.85rem;
+                        cursor: pointer;
+                        box-shadow: 0 3px 10px rgba(37, 99, 235, 0.25);
+                        display: inline-flex;
+                        align-items: center;
+                        white-space: nowrap;
+                        transition: background 0.2s;
                     }
-                    .modern-table-actions .btn-refresh {
-                        background: #f1f5f9;
-                        color: #475569;
-                        border: 1px solid #e2e8f0;
-                        box-shadow: none;
-                    }
-                    .modern-table-actions .btn-add {
-                        background: #2563eb;
-                        color: #fff;
-                        box-shadow: none;
+                    .btn-add:hover {
+                        background: #1d4ed8;
                     }
                     .modern-table-toolbar {
                         display: flex;
@@ -128,18 +128,61 @@
                     .modern-table tbody tr:hover {
                         background: #fcfcfc;
                     }
-                    .avatar-circle {
-                        width: 36px;
-                        height: 36px;
-                        border-radius: 50%;
-                        background: #e0e7ff;
-                        color: #3b82f6;
-                        display: inline-flex;
-                        align-items: center;
-                        justify-content: center;
-                        font-weight: 700;
-                        margin-right: 15px;
-                        font-size: 14px;
+                    .mobile-only {
+                        display: none !important;
+                    }
+                    .desktop-only {
+                        display: flex !important;
+                    }
+
+                    /* ── MOBILE RESPONSIVE ── */
+                    @media (max-width: 640px) {
+                        .mobile-only {
+                            display: inline-flex !important;
+                        }
+                        .desktop-only {
+                            display: none !important;
+                        }
+                        .modern-table-card {
+                            padding: 14px;
+                        }
+                        .modern-table-header {
+                            flex-direction: column;
+                            align-items: flex-start;
+                            gap: 10px;
+                            margin-bottom: 14px;
+                        }
+                        .modern-table-toolbar {
+                            flex-direction: column;
+                            align-items: stretch;
+                            gap: 10px;
+                            margin-bottom: 12px;
+                        }
+                        .toolbar-left {
+                            flex-wrap: wrap;
+                            gap: 8px;
+                        }
+                        .toolbar-right input {
+                            width: 100%;
+                        }
+                        .modern-table th.col-email,
+                        .modern-table td.col-email,
+                        .modern-table th.col-guru,
+                        .modern-table td.col-guru {
+                            display: none;
+                        }
+                        .modern-table th,
+                        .modern-table td {
+                            padding: 10px 10px;
+                            font-size: 0.85rem;
+                        }
+                        .btn-action {
+                            width: 30px;
+                            height: 30px;
+                        }
+                        .action-btns {
+                            gap: 5px;
+                        }
                     }
                     .user-name {
                         font-weight: 700;
@@ -190,14 +233,9 @@
                                     <h4 class="modern-table-title">Data Petugas / Pengguna</h4>
                                     <p class="modern-table-subtitle">Manajemen Akun Login Sistem</p>
                                 </div>
-                                <div class="modern-table-actions">
-                                    <button wire:click="$refresh" class="btn btn-refresh">
-                                        <i class="material-icons" style="font-size: 18px; vertical-align: middle;">refresh</i>
-                                    </button>
-                                    <button wire:click="create" class="btn btn-add">
-                                        <i class="material-icons" style="font-size: 18px; vertical-align: middle; margin-right: 5px;">person_add</i> Tambah
-                                    </button>
-                                </div>
+                                <button wire:click="create" class="btn btn-add desktop-only">
+                                    <i class="material-icons" style="font-size: 18px; vertical-align: middle; margin-right: 5px;">person_add</i> Tambah
+                                </button>
                             </div>
 
                             <div class="modern-table-toolbar">
@@ -208,6 +246,9 @@
                                         <option value="25">25</option>
                                         <option value="50">50</option>
                                     </select>
+                                    <button wire:click="create" class="btn btn-add mobile-only">
+                                        <i class="material-icons" style="font-size: 16px; vertical-align: middle; margin-right: 4px;">person_add</i> Tambah
+                                    </button>
                                 </div>
                                 <div class="toolbar-right">
                                     <i class="material-icons">search</i>
@@ -221,9 +262,9 @@
                                         <tr>
                                             <th style="width: 50px;">NO</th>
                                             <th>USERNAME</th>
-                                            <th>EMAIL</th>
+                                            <th class="col-email">EMAIL</th>
                                             <th>ROLE</th>
-                                            <th>GURU TERKAIT</th>
+                                            <th class="col-guru">GURU TERKAIT</th>
                                             <th style="text-align: right;">AKSI</th>
                                         </tr>
                                     </thead>
@@ -232,14 +273,9 @@
                                             <tr>
                                                 <td>{{ $petugasList->firstItem() + $index }}</td>
                                                 <td>
-                                                    <div style="display: flex; align-items: center;">
-                                                        <div class="avatar-circle">
-                                                            {{ strtoupper(substr($item->name, 0, 1)) }}
-                                                        </div>
-                                                        <span class="user-name">{{ $item->name }}</span>
-                                                    </div>
+                                                    <span class="user-name">{{ $item->name }}</span>
                                                 </td>
-                                                <td>{{ $item->email }}</td>
+                                                <td class="col-email">{{ $item->email }}</td>
                                                 <td>
                                                     @if($item->is_superadmin == 1)
                                                         <span class="badge-role badge-admin">Super Admin</span>
@@ -251,7 +287,7 @@
                                                         <span class="badge-role badge-guru">Guru</span>
                                                     @endif
                                                 </td>
-                                                <td>{{ $item->guru->nama_guru ?? '-' }}</td>
+                                                <td class="col-guru">{{ $item->guru->nama_guru ?? '-' }}</td>
                                                 <td>
                                                     <div class="action-btns" style="justify-content: flex-end;">
                                                         <button wire:click="edit({{ $item->id }})" class="btn-action btn-edit" title="Edit">

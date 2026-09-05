@@ -58,8 +58,9 @@
                 </div>
             </div>
 
-            {{-- ── ATTENDANCE CHART ─────────────────────── --}}
-            <div class="t-card" style="margin-bottom: 2rem;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; align-items: start;">
+                {{-- ── ATTENDANCE CHART ─────────────────────── --}}
+                <div class="t-card" style="height: 100%;">
                 <div class="t-card-header">
                     <div class="t-card-header-icon purple">
                         <i class="material-icons">bar_chart</i>
@@ -137,6 +138,83 @@
                                 <span style="font-size: 0.75rem; font-weight: 600; color: var(--t-on-surface-subtle); margin-top: 0.5rem;">Belum</span>
                             </div>
                         </div>
+                    </div>
+                </div>
+                </div>
+
+                {{-- ── TABUNGAN WIDGET ─────────────────────── --}}
+                <div class="t-card" style="height: 100%;">
+                    <div class="t-card-header">
+                        <div class="t-card-header-icon" style="background: #dcfce7; color: #16a34a;">
+                            <i class="material-icons">account_balance_wallet</i>
+                        </div>
+                        <div style="flex: 1;">
+                            <div class="t-card-title">Informasi Tabungan</div>
+                            <div class="t-card-subtitle">Aktivitas terbaru</div>
+                        </div>
+                        <div style="text-align: right; display: flex; gap: 0.5rem;">
+                            <div style="background: #f8fafc; padding: 0.35rem 0.75rem; border-radius: 8px; border: 1px solid #e2e8f0;" title="Total hak milik seluruh santri kelas ini">
+                                <div style="font-size: 0.65rem; color: #64748b; font-weight: 700; text-transform: uppercase;">Saldo Tabungan Kelas</div>
+                                <div style="font-size: 1rem; font-weight: 800; color: #334155;">Rp {{ number_format($totalSaldo, 0, ',', '.') }}</div>
+                            </div>
+                            <div style="background: #f0fdf4; padding: 0.35rem 0.75rem; border-radius: 8px; border: 1px solid #bbf7d0;" title="Uang fisik yang belum ditarik oleh bendahara">
+                                <div style="font-size: 0.65rem; color: #166534; font-weight: 700; text-transform: uppercase;">Tunai Belum Disetor</div>
+                                <div style="font-size: 1rem; font-weight: 800; color: #16a34a;">Rp {{ number_format($uangDiTangan, 0, ',', '.') }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="t-card-body" style="padding: 1.5rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h4 style="font-size: 0.95rem; font-weight: 700; color: #334155; margin: 0;">Aktivitas Terbaru</h4>
+                            <a href="{{ route('manual.attendance') }}" style="background: #e0f2fe; color: #0284c7; padding: 0.35rem 0.6rem; border-radius: 6px; font-size: 0.75rem; text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 0.25rem; transition: all 0.2s;" onmouseover="this.style.background='#bae6fd'" onmouseout="this.style.background='#e0f2fe'">
+                                Rincian <i class="material-icons" style="font-size: 0.9rem;">arrow_forward_ios</i>
+                            </a>
+                        </div>
+                        
+                        @if($aktifitasGabung->isEmpty())
+                            <div style="text-align: center; padding: 1.5rem 0; color: #94a3b8;">
+                                <i class="material-icons" style="font-size: 2.5rem; opacity: 0.5; margin-bottom: 0.5rem;">history</i>
+                                <p style="font-size: 0.85rem; margin: 0; font-weight: 500;">Belum ada aktivitas tabungan atau penarikan</p>
+                            </div>
+                        @else
+                            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                                @foreach($aktifitasGabung as $aktifitas)
+                                    <div style="display: flex; align-items: center; gap: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #f1f5f9; {{ $loop->last ? 'border-bottom: none; padding-bottom: 0;' : '' }}">
+                                        @if($aktifitas->activity_type == 'setoran')
+                                            <div style="width: 2.5rem; height: 2.5rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; background: #eff6ff; color: #3b82f6;">
+                                                <i class="material-icons" style="font-size: 1.2rem;">account_balance_wallet</i>
+                                            </div>
+                                            <div style="flex: 1;">
+                                                <div style="font-weight: 600; font-size: 0.9rem; color: #1e40af; line-height: 1.2;">Disetorkan ke Bendahara</div>
+                                                <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.2rem;">{{ \Carbon\Carbon::parse($aktifitas->created_at)->diffForHumans() }}</div>
+                                            </div>
+                                            <div style="font-weight: 700; font-size: 0.95rem; color: #3b82f6;">
+                                                Rp {{ number_format($aktifitas->nominal, 0, ',', '.') }}
+                                            </div>
+                                        @else
+                                            <div style="width: 2.5rem; height: 2.5rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem;
+                                                @if($aktifitas->jenis_transaksi == 'setor') background: #dcfce7; color: #16a34a; 
+                                                @else background: #fee2e2; color: #ef4444; 
+                                                @endif">
+                                                @if($aktifitas->jenis_transaksi == 'setor') +
+                                                @else -
+                                                @endif
+                                            </div>
+                                            <div style="flex: 1;">
+                                                <div style="font-weight: 600; font-size: 0.9rem; color: #334155; line-height: 1.2;">{{ $aktifitas->siswa->nama_siswa ?? 'Siswa' }}</div>
+                                                <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.2rem;">{{ \Carbon\Carbon::parse($aktifitas->created_at)->diffForHumans() }}</div>
+                                            </div>
+                                            <div style="font-weight: 700; font-size: 0.95rem; 
+                                                @if($aktifitas->jenis_transaksi == 'setor') color: #16a34a; 
+                                                @else color: #ef4444; 
+                                                @endif">
+                                                Rp {{ number_format($aktifitas->nominal, 0, ',', '.') }}
+                                            </div>
+                                        @endif
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>

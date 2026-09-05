@@ -41,14 +41,76 @@ class Dashboard extends Component
         $siswaAlfa = PresensiSiswa::where('tanggal', $today)->where('id_kehadiran', 4)->count();
         $persenSiswaHadir = $totalSiswa > 0 ? round(($siswaHadir / $totalSiswa) * 100, 1) : 0;
 
-        // 2. STATISTIK PRESENSI USTADZAH & INVAL
-        $totalGuru = Guru::count();
-        $presensiGuruHariIni = PresensiGuru::with(['guru.kelas', 'kehadiran'])->where('tanggal', $today)->get();
+        // 2. STATISTIK & EVALUASI KEHADIRAN USTADZAH (DETEKSI 3X ALPA BERTURUT-TURUT)
+        $allGurus = Guru::with('kelas')->orderBy('nama_guru')->get();
+        $totalGuru = $allGurus->count();
+        $presensiGuruHariIni = PresensiGuru::where('tanggal', $today)->get();
         $guruHadir = $presensiGuruHariIni->where('id_kehadiran', 1)->count();
-        $guruInval = $presensiGuruHariIni->where('id_kehadiran', '!=', 1);
 
-        $recordedGuruIds = $presensiGuruHariIni->pluck('id_guru')->filter()->toArray();
-        $guruBelumPresensi = Guru::with('kelas')->whereNotIn('id_guru', $recordedGuruIds)->get();
+        $distinctDates = PresensiGuru::select('tanggal')
+            ->distinct()
+            ->orderBy('tanggal', 'desc')
+            ->take(15)
+            ->pluck('tanggal')
+            ->toArray();
+
+        $guruIndisipliner = collect();
+
+        foreach ($allGurus as $guru) {
+            // Ambil riwayat presensi guru ini dari tanggal terbaru
+            $riwayat = PresensiGuru::where('id_guru', $guru->id_guru)
+                ->orderBy('tanggal', 'desc')
+                ->take(10)
+                ->get();
+
+            $consecutiveAlfa = 0;
+            $alfaDates = [];
+
+            foreach ($riwayat as $p) {
+                if ((int)$p->id_kehadiran === 4) { // 4 = Tanpa keterangan / Alpa
+                    $consecutiveAlfa++;
+                    $alfaDates[] = Carbon::parse($p->tanggal)->locale('id')->isoFormat('D MMM Y');
+                } else {
+                    // Terputus jika ada rekaman Hadir (1), Sakit (2), atau Izin (3)
+                    break;
+                }
+            }
+
+            // Alternatif: periksa jika guru tidak memiliki rekaman hadir/izin pada tanggal aktif presensi lembaga
+            if ($consecutiveAlfa < 3 && count($distinctDates) >= 3) {
+                $consecutiveMissingOrAlfa = 0;
+                $tempDates = [];
+                foreach (array_slice($distinctDates, 0, 5) as $tgl) {
+                    $presensiTgl = PresensiGuru::where('id_guru', $guru->id_guru)->where('tanggal', $tgl)->first();
+                    if ($presensiTgl && (int)$presensiTgl->id_kehadiran === 4) {
+                        $consecutiveMissingOrAlfa++;
+                        $tempDates[] = Carbon::parse($tgl)->locale('id')->isoFormat('D MMM Y');
+                    } elseif (!$presensiTgl) {
+                        $consecutiveMissingOrAlfa++;
+                        $tempDates[] = Carbon::parse($tgl)->locale('id')->isoFormat('D MMM Y');
+                    } else {
+                        break;
+                    }
+                }
+                if ($consecutiveMissingOrAlfa >= 3 && $consecutiveMissingOrAlfa > $consecutiveAlfa) {
+                    $consecutiveAlfa = $consecutiveMissingOrAlfa;
+                    $alfaDates = $tempDates;
+                }
+            }
+
+            if ($consecutiveAlfa >= 3) {
+                $guruIndisipliner->push([
+                    'id_guru' => $guru->id_guru,
+                    'guru' => $guru,
+                    'nama_guru' => $guru->nama_guru,
+                    'no_hp' => $guru->no_hp,
+                    'wali_kelas' => $guru->kelas->pluck('tingkat')->join(', '),
+                    'jumlah_alpa' => $consecutiveAlfa,
+                    'tanggal_alpa' => $alfaDates,
+                    'tanggal_terakhir' => $alfaDates[0] ?? '-',
+                ]);
+            }
+        }
 
         // 3. KEUANGAN TABUNGAN
         $totalSetor = Tabungan::where('jenis_transaksi', 'setor')->sum('nominal');
@@ -114,8 +176,7 @@ class Dashboard extends Component
             'persenSiswaHadir' => $persenSiswaHadir,
             'totalGuru' => $totalGuru,
             'guruHadir' => $guruHadir,
-            'guruInval' => $guruInval,
-            'guruBelumPresensi' => $guruBelumPresensi,
+            'guruIndisipliner' => $guruIndisipliner,
             'totalKasTabungan' => $totalKasTabungan,
             'totalBelumDisetor' => $totalBelumDisetor,
             'matriksKelas' => $matriksKelas,

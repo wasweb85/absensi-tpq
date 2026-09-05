@@ -443,6 +443,16 @@
                 showCameraError("Kamera Tidak Didukung", "Browser Anda tidak mendukung WebRTC atau tidak dijalankan melalui protokol aman (HTTPS / Localhost).");
             }
         });
+
+        // Ensure camera stops when navigating away via Livewire SPA
+        document.addEventListener('livewire:navigating', () => {
+            stopCamera();
+        });
+
+        // Ensure camera stops when browser tab is closed/refreshed
+        window.addEventListener('beforeunload', () => {
+            stopCamera();
+        });
     </script>
 
 </div>

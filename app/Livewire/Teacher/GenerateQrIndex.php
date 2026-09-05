@@ -58,6 +58,6 @@ class GenerateQrIndex extends Component
 
     public function render()
     {
-        return view('livewire.teacher.generate-qr-index')->layout('layouts.admin', ['title' => 'Download Kartu QR Code Siswa', 'context' => 'qr']);
+        return view('livewire.teacher.generate-qr-index')->layout('layouts.admin', ['title' => 'Download Kartu QR Code Siswa', 'nav_title' => 'Kartu QR', 'context' => 'qr']);
     }
 }

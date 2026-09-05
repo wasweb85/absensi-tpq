@@ -62,6 +62,16 @@ class HakAksesIndex extends Component
             'desc' => 'Melihat & mencetak laporan rekapitulasi presensi santri / guru',
             'icon' => 'assessment'
         ],
+        'setoran_bendahara' => [
+            'label' => 'Rekap Setoran Bendahara',
+            'desc' => 'Akses menu untuk menarik setoran uang tunai tabungan dari guru/wali kelas',
+            'icon' => 'account_balance_wallet'
+        ],
+        'laporan_tabungan' => [
+            'label' => 'Laporan Tabungan Global',
+            'desc' => 'Melihat laporan rekapitulasi tabungan santri secara keseluruhan',
+            'icon' => 'savings'
+        ],
         'general_settings' => [
             'label' => 'Pengaturan Aplikasi & Sekolah',
             'desc' => 'Mengatur nama TPQ, logo, tahun ajaran, dan teks copyright',
@@ -194,6 +204,6 @@ class HakAksesIndex extends Component
         return view('livewire.admin.hak-akses-index', [
             'rolesList' => self::$availableRoles,
             'featuresList' => self::$availableFeatures
-        ])->layout('layouts.admin', ['title' => 'Manajemen Hak Akses Role & Guru', 'context' => 'hak-akses']);
+        ])->layout('layouts.admin', ['title' => 'Manajemen Hak Akses Role & Guru', 'nav_title' => 'Hak Akses', 'context' => 'hak-akses']);
     }
 }

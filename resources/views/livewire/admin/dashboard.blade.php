@@ -1,4 +1,4 @@
-<div class="px-4 py-6 max-w-7xl mx-auto">
+<div class="px-4 py-6 w-full">
     <!-- Header Section -->
     <div class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center">
         <div>

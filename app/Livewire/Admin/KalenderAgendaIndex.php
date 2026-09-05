@@ -2,7 +2,6 @@
 
 namespace App\Livewire\Admin;
 
-use App\Helpers\HijriHelper;
 use App\Models\AgendaKalender;
 use App\Models\GeneralSetting;
 use App\Models\RolePermission;
@@ -14,7 +13,7 @@ class KalenderAgendaIndex extends Component
     public $viewMode = 'bulanan'; // 'bulanan' atau 'tahunan'
     public $selectedYear;
     public $selectedMonth;
-    public $selectedCategory = 'semua'; // 'semua', 'umum', 'akademik', 'penting', 'tugas'
+    public $selectedCategory = 'semua'; // 'semua', 'umum', 'penting'
     public $searchQuery = '';
     public $showLiburPekan = true; // Toggle "JUMAT & LIBUR OFF/ON"
     public $isManageable = false; // Wewenang CRUD bagi Admin / Petugas
@@ -30,9 +29,18 @@ class KalenderAgendaIndex extends Component
     public $form_warna = '#10b981';
     public $form_is_libur = false;
 
+    // State Modal Konfirmasi Hapus Agenda
+    public $isDeleteModalOpen = false;
+    public $agendaToDeleteId = null;
+    public $agendaToDeleteTitle = '';
+
     // State Detail Event Modal (Mobile / Viewer)
     public $isOpenDetailModal = false;
     public $detailEvent = null;
+
+    // State Modal Detail Tanggal & Kegiatan (Popup Kalender Tahunan & Harian)
+    public $isOpenDayModal = false;
+    public $selectedDayData = null;
 
     protected $rules = [
         'form_judul' => 'required|string|max:255',
@@ -51,13 +59,7 @@ class KalenderAgendaIndex extends Component
         $this->selectedMonth = (int) $now->month;
 
         // Tentukan wewenang modifikasi (Hanya Admin / Petugas)
-        $user = auth()->user();
-        if ($user) {
-            $isSuper = (int) ($user->is_superadmin ?? 0);
-            $this->isManageable = ($isSuper === 1 || $isSuper === 3 || RolePermission::hasAccess($user, 'kalender_agenda_manage'));
-        } else {
-            $this->isManageable = false;
-        }
+        $this->isManageable = $this->checkManageable();
     }
 
     public function changeViewMode($mode)
@@ -173,32 +175,145 @@ class KalenderAgendaIndex extends Component
         session()->flash('success_message', 'Agenda kegiatan berhasil disimpan!');
     }
 
-    /**
-     * Menghapus agenda
-     */
-    public function deleteAgenda($id)
+    public function checkManageable()
     {
-        if (!$this->isManageable) return;
+        $user = auth()->user();
+        if (!$user) return false;
+        $isSuper = (int) ($user->is_superadmin ?? 0);
+        return ($isSuper === 1 || $isSuper === 3 || RolePermission::hasAccess($user, 'kalender_agenda_manage'));
+    }
+
+    /**
+     * Membuka modal konfirmasi hapus agenda
+     */
+    public function confirmDeleteAgenda($id)
+    {
+        if (!$this->checkManageable()) return;
 
         $agenda = AgendaKalender::find($id);
         if ($agenda) {
-            $agenda->delete();
-            session()->flash('success_message', 'Agenda kegiatan berhasil dihapus.');
+            $this->agendaToDeleteId = $agenda->id;
+            $this->agendaToDeleteTitle = $agenda->judul;
+            $this->isDeleteModalOpen = true;
         }
+    }
+
+    /**
+     * Menutup modal konfirmasi hapus agenda
+     */
+    public function closeDeleteModal()
+    {
+        $this->isDeleteModalOpen = false;
+        $this->agendaToDeleteId = null;
+        $this->agendaToDeleteTitle = '';
+    }
+
+    /**
+     * Menghapus agenda secara permanen
+     */
+    public function deleteAgenda($id = null)
+    {
+        if (!$this->checkManageable()) return;
+
+        $targetId = $id ?: $this->agendaToDeleteId;
+        if (!$targetId) return;
+
+        $agenda = AgendaKalender::find($targetId);
+        if ($agenda) {
+            $title = $agenda->judul;
+            $agenda->delete();
+            session()->flash('success_message', "Agenda '{$title}' berhasil dihapus.");
+        }
+
+        $this->isDeleteModalOpen = false;
+        $this->agendaToDeleteId = null;
+        $this->agendaToDeleteTitle = '';
+        $this->isOpenModal = false;
+        $this->isOpenDetailModal = false;
     }
 
     public function showDetail($id)
     {
         $this->detailEvent = AgendaKalender::find($id);
         if ($this->detailEvent) {
+            $this->isOpenDayModal = false;
             $this->isOpenDetailModal = true;
         }
+    }
+
+    public function openDayModal($dateStr)
+    {
+        try {
+            $date = Carbon::parse($dateStr);
+        } catch (\Exception $e) {
+            return;
+        }
+
+        $setting = GeneralSetting::first();
+        $liburMingguan = strtolower($setting->hari_libur_mingguan ?? 'jumat');
+
+        $isWeekly = match ($liburMingguan) {
+            'selasa_jumat', 'jumat_selasa', 'tue_fri', 'fri_tue' => ($date->isTuesday() || $date->isFriday()),
+            'jumat', 'fri', 'friday' => $date->isFriday(),
+            'ahad', 'minggu', 'sun', 'sunday' => $date->isSunday(),
+            'sabtu', 'sat', 'saturday' => $date->isSaturday(),
+            'jumat_ahad', 'ahad_jumat' => ($date->isFriday() || $date->isSunday()),
+            default => ($date->isTuesday() || $date->isFriday()),
+        };
+
+        $namaHariLibur = $date->isTuesday() ? 'Selasa' : ($date->isFriday() ? "Jum'at" : ($date->isSunday() ? 'Ahad' : 'Sabtu'));
+
+        // Ambil semua agenda yang berlangsung pada tanggal ini
+        $events = AgendaKalender::where(function ($q) use ($dateStr) {
+            $q->where(function ($sub) use ($dateStr) {
+                $sub->whereDate('tanggal_mulai', '<=', $dateStr)
+                    ->where(function ($sub2) use ($dateStr) {
+                        $sub2->whereDate('tanggal_selesai', '>=', $dateStr)
+                             ->orWhereNull('tanggal_selesai');
+                    });
+            });
+        })->orderBy('is_libur', 'desc')->get();
+
+        $hasHolidayEvent = $events->where('is_libur', true)->isNotEmpty();
+        $isHoliday = ($isWeekly || $hasHolidayEvent);
+
+        $this->selectedDayData = [
+            'date_string' => $dateStr,
+            'day' => $date->day,
+            'month' => $date->month,
+            'year' => $date->year,
+            'day_name' => $date->translatedFormat('l'),
+            'formatted_date' => $date->translatedFormat('l, d F Y'),
+            'is_today' => $date->isToday(),
+            'is_weekly_holiday' => $isWeekly,
+            'weekly_holiday_name' => $namaHariLibur,
+            'is_holiday' => $isHoliday,
+            'has_holiday_event' => $hasHolidayEvent,
+            'events' => $events,
+        ];
+
+        $this->isOpenDayModal = true;
+    }
+
+    public function openCreateFromDayModal($dateStr)
+    {
+        $this->closeModals();
+        $this->openCreateModal($dateStr);
+    }
+
+    public function jumpToMonthFromModal($monthNum)
+    {
+        $this->closeModals();
+        $this->jumpToMonth($monthNum);
     }
 
     public function closeModals()
     {
         $this->isOpenModal = false;
         $this->isOpenDetailModal = false;
+        $this->isOpenDayModal = false;
+        $this->isDeleteModalOpen = false;
+        $this->selectedDayData = null;
         $this->resetForm();
     }
 
@@ -253,13 +368,17 @@ class KalenderAgendaIndex extends Component
             $isCurrentMonth = ($currentDate->month === $this->selectedMonth);
             $isToday = ($dateStr === $todayStr);
 
-            // Cek libur mingguan (default: Jumat)
+            // Cek libur mingguan (default: Selasa & Jum'at)
             $isWeeklyHoliday = match ($liburMingguan) {
+                'selasa_jumat', 'jumat_selasa', 'tue_fri', 'fri_tue' => ($currentDate->isTuesday() || $currentDate->isFriday()),
                 'jumat', 'fri', 'friday' => $currentDate->isFriday(),
                 'ahad', 'minggu', 'sun', 'sunday' => $currentDate->isSunday(),
                 'sabtu', 'sat', 'saturday' => $currentDate->isSaturday(),
-                default => $currentDate->isFriday(),
+                'jumat_ahad', 'ahad_jumat' => ($currentDate->isFriday() || $currentDate->isSunday()),
+                default => ($currentDate->isTuesday() || $currentDate->isFriday()),
             };
+
+            $isSunday = $currentDate->isSunday();
 
             // Dapatkan agenda pada tanggal ini
             $eventsOnDay = $agendas->filter(function ($item) use ($dateStr) {
@@ -284,8 +403,11 @@ class KalenderAgendaIndex extends Component
                 return ($dateStr >= $start && $dateStr <= $end);
             });
 
-            // Konversi Hijriah
-            $hijri = HijriHelper::convert($currentDate);
+            // Cek apakah ada agenda libur pada tanggal ini
+            $hasHolidayEvent = $eventsOnDay->where('is_libur', true)->isNotEmpty();
+
+            // Tanggal berstatus libur (merah): libur mingguan atau agenda bertanda is_libur
+            $isHoliday = ($isWeeklyHoliday || $hasHolidayEvent);
 
             $matrix[] = [
                 'carbon' => $currentDate->copy(),
@@ -294,11 +416,10 @@ class KalenderAgendaIndex extends Component
                 'is_current_month' => $isCurrentMonth,
                 'is_today' => $isToday,
                 'is_weekly_holiday' => $isWeeklyHoliday,
-                'hijri_day' => $hijri['day'],
-                'hijri_short' => $hijri['month_short'],
-                'hijri_formatted' => $hijri['formatted'],
+                'is_sunday' => $isSunday,
+                'is_holiday' => $isHoliday,
                 'events' => $eventsOnDay,
-                'has_holiday_event' => $eventsOnDay->where('is_libur', true)->isNotEmpty(),
+                'has_holiday_event' => $hasHolidayEvent,
             ];
 
             $currentDate->addDay();
@@ -316,10 +437,15 @@ class KalenderAgendaIndex extends Component
         $liburMingguan = strtolower($setting->hari_libur_mingguan ?? 'jumat');
         $now = Carbon::now();
 
-        // Ambil semua agenda untuk tahun ini
-        $allAgendasYear = AgendaKalender::whereYear('tanggal_mulai', $this->selectedYear)
-            ->orWhereYear('tanggal_selesai', $this->selectedYear)
-            ->get();
+        // Ambil semua agenda yang beririsan dengan tahun ini
+        $allAgendasYear = AgendaKalender::where(function ($q) {
+            $q->whereYear('tanggal_mulai', $this->selectedYear)
+              ->orWhereYear('tanggal_selesai', $this->selectedYear)
+              ->orWhere(function ($sub) {
+                  $sub->where('tanggal_mulai', '<=', $this->selectedYear . '-12-31')
+                      ->where('tanggal_selesai', '>=', $this->selectedYear . '-01-01');
+              });
+        })->get();
 
         $months = [];
         $indonesianMonthNames = [
@@ -336,7 +462,7 @@ class KalenderAgendaIndex extends Component
             $days = [];
             // Padding hari sebelum tanggal 1
             for ($p = 0; $p < $startDayOfWeek; $p++) {
-                $days[] = ['day' => null, 'is_holiday' => false, 'has_event' => false, 'is_today' => false];
+                $days[] = ['day' => null, 'date_string' => null, 'is_holiday' => false, 'has_event' => false, 'is_today' => false];
             }
 
             for ($d = 1; $d <= $totalDays; $d++) {
@@ -344,25 +470,29 @@ class KalenderAgendaIndex extends Component
                 $dStr = $dCarbon->toDateString();
 
                 $isWeekly = match ($liburMingguan) {
+                    'selasa_jumat', 'jumat_selasa', 'tue_fri', 'fri_tue' => ($dCarbon->isTuesday() || $dCarbon->isFriday()),
                     'jumat', 'fri', 'friday' => $dCarbon->isFriday(),
                     'ahad', 'minggu', 'sun', 'sunday' => $dCarbon->isSunday(),
-                    default => $dCarbon->isFriday(),
+                    'sabtu', 'sat', 'saturday' => $dCarbon->isSaturday(),
+                    'jumat_ahad', 'ahad_jumat' => ($dCarbon->isFriday() || $dCarbon->isSunday()),
+                    default => ($dCarbon->isTuesday() || $dCarbon->isFriday()),
                 };
 
-                $hasEvent = $allAgendasYear->first(function ($ev) use ($dStr) {
+                $eventsOnDay = $allAgendasYear->filter(function ($ev) use ($dStr) {
                     $start = $ev->tanggal_mulai ? $ev->tanggal_mulai->toDateString() : null;
                     $end = $ev->tanggal_selesai ? $ev->tanggal_selesai->toDateString() : $start;
                     return ($dStr >= $start && $dStr <= $end);
                 });
 
-                $isHolidayEvent = $hasEvent && $hasEvent->is_libur;
+                $hasHolidayEvent = $eventsOnDay->where('is_libur', true)->isNotEmpty();
+                $hasEvent = $eventsOnDay->isNotEmpty();
 
                 $days[] = [
                     'day' => $d,
-                    'is_holiday' => $isWeekly || $isHolidayEvent,
-                    'is_weekly' => $isWeekly,
-                    'has_event' => (bool) $hasEvent,
-                    'is_today' => ($this->selectedYear === (int)$now->year && $m === (int)$now->month && $d === (int)$now->day),
+                    'date_string' => $dStr,
+                    'is_holiday' => ($isWeekly || $hasHolidayEvent),
+                    'has_event' => $hasEvent,
+                    'is_today' => ($now->year === (int)$this->selectedYear && $now->month === $m && $now->day === $d),
                 ];
             }
 
@@ -396,9 +526,12 @@ class KalenderAgendaIndex extends Component
             $dateStr = $date->toDateString();
 
             $isWeekly = match ($liburMingguan) {
+                'selasa_jumat', 'jumat_selasa', 'tue_fri', 'fri_tue' => ($date->isTuesday() || $date->isFriday()),
                 'jumat', 'fri', 'friday' => $date->isFriday(),
                 'ahad', 'minggu', 'sun', 'sunday' => $date->isSunday(),
-                default => $date->isFriday(),
+                'sabtu', 'sat', 'saturday' => $date->isSaturday(),
+                'jumat_ahad', 'ahad_jumat' => ($date->isFriday() || $date->isSunday()),
+                default => ($date->isTuesday() || $date->isFriday()),
             };
 
             $isAgendaLibur = $agendas->first(function ($item) use ($dateStr) {
@@ -469,33 +602,39 @@ class KalenderAgendaIndex extends Component
 
             // 1. Cek Libur Rutin Mingguan
             $isWeekly = match ($liburMingguan) {
+                'selasa_jumat', 'jumat_selasa', 'tue_fri', 'fri_tue' => ($date->isTuesday() || $date->isFriday()),
                 'jumat', 'fri', 'friday' => $date->isFriday(),
                 'ahad', 'minggu', 'sun', 'sunday' => $date->isSunday(),
-                default => $date->isFriday(),
+                'sabtu', 'sat', 'saturday' => $date->isSaturday(),
+                'jumat_ahad', 'ahad_jumat' => ($date->isFriday() || $date->isSunday()),
+                default => ($date->isTuesday() || $date->isFriday()),
             };
 
-            if ($isWeekly && $this->showLiburPekan && ($this->selectedCategory === 'semua' || $this->selectedCategory === 'umum')) {
+            $namaHariLibur = $date->isTuesday() ? 'Selasa' : ($date->isFriday() ? "Jum'at" : ($date->isSunday() ? 'Ahad' : 'Sabtu'));
+
+            // 1. Agenda yang jatuh pada tanggal ini
+            $dayEvents = $agendas->filter(function ($ev) use ($dateStr) {
+                $start = $ev->tanggal_mulai ? $ev->tanggal_mulai->toDateString() : null;
+                $end = $ev->tanggal_selesai ? $ev->tanggal_selesai->toDateString() : $start;
+                return ($dateStr >= $start && $dateStr <= $end);
+            });
+
+            // 2. Cek Libur Rutin Mingguan (hanya tampil jika tidak ada agenda kegiatan)
+            if ($isWeekly && $this->showLiburPekan && ($this->selectedCategory === 'semua' || $this->selectedCategory === 'umum') && $dayEvents->isEmpty()) {
                 $timeline[] = [
                     'date_string' => $dateStr,
                     'day_num' => $d,
                     'day_name' => $dayNamesShort[$dayOfWeek],
-                    'judul' => "Libur Pekan (Hari {$namaLiburPekan})",
+                    'judul' => "Libur Rutin (Hari {$namaHariLibur})",
                     'deskripsi' => 'Libur rutin mingguan TPQ',
                     'kategori' => 'libur_pekan',
-                    'kategori_label' => "Libur {$namaLiburPekan}",
+                    'kategori_label' => "Libur {$namaHariLibur}",
                     'is_libur' => true,
                     'warna' => '#f43f5e',
                     'is_custom' => false,
                     'agenda_id' => null,
                 ];
             }
-
-            // 2. Agenda yang jatuh pada tanggal ini
-            $dayEvents = $agendas->filter(function ($ev) use ($dateStr) {
-                $start = $ev->tanggal_mulai ? $ev->tanggal_mulai->toDateString() : null;
-                $end = $ev->tanggal_selesai ? $ev->tanggal_selesai->toDateString() : $start;
-                return ($dateStr >= $start && $dateStr <= $end);
-            });
 
             foreach ($dayEvents as $ev) {
                 $timeline[] = [
@@ -532,6 +671,9 @@ class KalenderAgendaIndex extends Component
         ];
         $currentMonthName = $monthNames[$this->selectedMonth] ?? 'September';
 
+        $setting = GeneralSetting::first();
+        $liburMingguan = strtolower($setting->hari_libur_mingguan ?? 'jumat');
+
         // Tentukan layout berdasarkan rute/portal
         if (request()->routeIs('siswa.*') || session()->has('siswa_id')) {
             return view('livewire.admin.kalender-agenda-index', [
@@ -541,6 +683,7 @@ class KalenderAgendaIndex extends Component
                 'activePeriods' => $activePeriods,
                 'timelineEvents' => $timelineEvents,
                 'currentMonthName' => $currentMonthName,
+                'liburMingguan' => $liburMingguan,
             ])->layout('layouts.siswa', [
                 'title' => 'Kalender & Agenda Santri',
                 'context' => 'kalender',
@@ -554,6 +697,7 @@ class KalenderAgendaIndex extends Component
             'activePeriods' => $activePeriods,
             'timelineEvents' => $timelineEvents,
             'currentMonthName' => $currentMonthName,
+            'liburMingguan' => $liburMingguan,
         ])->layout('layouts.admin', [
             'title' => 'Kalender & Agenda Terpadu',
             'context' => 'kalender-agenda',

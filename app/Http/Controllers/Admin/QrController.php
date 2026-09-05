@@ -56,6 +56,27 @@ class QrController extends Controller
         return response()->download($zipPath)->deleteFileAfterSend(true);
     }
 
+    public function viewSingleSiswa($id)
+    {
+        $siswa = Siswa::findOrFail($id);
+        $qrCodeData = (string) ($siswa->unique_code ?: $siswa->rfid_code ?: $siswa->nis ?: 'Siswa-'.$siswa->id_siswa);
+        $cardPngData = $this->generateCardPng($siswa->nama_siswa, $siswa->nis, $qrCodeData, false);
+        
+        return response($cardPngData)->header('Content-Type', 'image/png');
+    }
+
+    public function downloadSingleSiswa($id)
+    {
+        $siswa = Siswa::findOrFail($id);
+        $qrCodeData = (string) ($siswa->unique_code ?: $siswa->rfid_code ?: $siswa->nis ?: 'Siswa-'.$siswa->id_siswa);
+        $cardPngData = $this->generateCardPng($siswa->nama_siswa, $siswa->nis, $qrCodeData, false);
+        $cleanName = preg_replace('/[^A-Za-z0-9_\-]/', '_', $siswa->nama_siswa);
+        
+        return response()->streamDownload(function () use ($cardPngData) {
+            echo $cardPngData;
+        }, 'Kartu_' . $cleanName . '_' . $siswa->nis . '.png');
+    }
+
     public function downloadGuru(Request $request)
     {
         $guru = Guru::orderBy('nama_guru')->get();

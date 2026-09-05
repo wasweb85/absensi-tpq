@@ -4,11 +4,13 @@
 <style>
     .dashboard-wrapper {
         padding: 10px 0;
+        min-height: 100vh;
+        background-color: #f1f5f9;
     }
 
     .chart-container {
         position: relative;
-        height: 280px;
+        height: 210px;
         width: 100%;
     }
 
@@ -19,7 +21,7 @@
         background: #ffffff !important;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
         transition: all 0.2s ease-in-out;
-        margin-bottom: 20px;
+        margin-bottom: 4px;
         overflow: hidden;
     }
 
@@ -95,38 +97,38 @@
     /* Section Cards */
     .section-card {
         border: none !important;
-        border-radius: 18px !important;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.04) !important;
+        border-radius: 14px !important;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05) !important;
         background: #ffffff !important;
-        margin-bottom: 24px;
+        margin-bottom: 0;
         overflow: hidden;
     }
 
     .section-card .card-header-primary {
         background: linear-gradient(135deg, #0284c7, #0369a1) !important;
-        border-radius: 18px 18px 0 0 !important;
-        padding: 18px 24px !important;
+        border-radius: 14px 14px 0 0 !important;
+        padding: 12px 16px !important;
         color: #ffffff;
     }
 
     .section-card .card-header-success {
         background: linear-gradient(135deg, #059669, #047857) !important;
-        border-radius: 18px 18px 0 0 !important;
-        padding: 18px 24px !important;
+        border-radius: 14px 14px 0 0 !important;
+        padding: 12px 16px !important;
         color: #ffffff;
     }
 
     .section-card .card-title {
-        font-weight: 800;
-        font-size: 1.15rem;
+        font-weight: 700;
+        font-size: 0.95rem;
         margin: 0;
         color: #ffffff;
     }
 
     .section-card .card-category {
-        font-size: 0.8rem;
-        opacity: 0.9;
-        margin: 2px 0 0 0;
+        font-size: 0.72rem;
+        opacity: 0.85;
+        margin: 1px 0 0 0;
         color: #e0f2fe;
     }
 
@@ -141,6 +143,105 @@
         outline: none !important;
         cursor: pointer;
     }
+
+    /* ══════════════════════════════════════
+       STAT CARDS — Proporsional & Kotak
+       Layout: Vertikal (ikon atas, data bawah)
+       ══════════════════════════════════════ */
+    .stat-kpi-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin-bottom: 20px;
+    }
+
+    .stat-kpi-col {
+        flex: 1 1 0;
+        min-width: 120px;
+    }
+
+    .stat-kpi-card {
+        border: none !important;
+        border-radius: 14px !important;
+        background: #ffffff !important;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07) !important;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        overflow: hidden;
+        text-decoration: none !important;
+        display: block;
+        cursor: pointer;
+    }
+
+    .stat-kpi-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.11) !important;
+    }
+
+    .stat-kpi-inner {
+        padding: 16px 14px 14px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .stat-kpi-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 11px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.20);
+    }
+
+    .stat-kpi-icon i {
+        color: #ffffff;
+        font-size: 20px;
+    }
+
+    .stat-kpi-text {
+        width: 100%;
+    }
+
+    .stat-kpi-label {
+        color: #94a3b8;
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        margin: 0 0 3px 0;
+        line-height: 1.2;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .stat-kpi-value {
+        color: #1e293b;
+        font-size: 1.5rem;
+        font-weight: 800;
+        margin: 0;
+        line-height: 1;
+        letter-spacing: -0.5px;
+    }
+
+    .stat-kpi-value.is-currency {
+        font-size: 1.0rem;
+        letter-spacing: -0.3px;
+    }
+
+    .stat-kpi-accent {
+        display: block;
+        height: 3px;
+        border-radius: 0 0 14px 14px;
+        margin-top: 2px;
+    }
+
+    a.stat-kpi-card:hover .stat-kpi-label {
+        color: #64748b;
+    }
 </style>
 @endsection
 
@@ -148,114 +249,116 @@
 <div class="content dashboard-wrapper">
     <div class="container-fluid">
 
-        <!-- 1. KPI SUMMARY CARDS -->
-        <div class="row">
-            <div class="col-lg-3 col-md-6 col-sm-6">
-                <div class="card stat-card card-purple">
-                    <div class="card-body">
-                        <div class="stat-flex">
-                            <div class="stat-icon-box">
-                                <a href="{{ url('admin/siswa') }}">
-                                    <i class="material-icons">person</i>
-                                </a>
-                            </div>
-                            <div class="stat-info">
-                                <p class="stat-category">Total Siswa</p>
-                                <h3 class="stat-title">{{ number_format($totalSiswa) }}</h3>
-                            </div>
+        <!-- 1. RINGKASAN INFO — 6 kartu KPI proporsional sejajar -->
+        <div class="stat-kpi-row">
+
+            {{-- Siswa --}}
+            <div class="stat-kpi-col">
+                <a href="{{ url('admin/siswa') }}" class="stat-kpi-card">
+                    <div class="stat-kpi-inner">
+                        <div class="stat-kpi-icon" style="background: linear-gradient(135deg, #a855f7, #7c3aed);">
+                            <i class="material-icons">person</i>
+                        </div>
+                        <div class="stat-kpi-text">
+                            <p class="stat-kpi-label">Siswa</p>
+                            <h4 class="stat-kpi-value">{{ number_format($totalSiswa) }}</h4>
                         </div>
                     </div>
-                    <div class="card-footer">
-                        <div class="stats">
-                            <i class="material-icons text-purple-600 mr-1" style="font-size: 16px; vertical-align: middle; color: #a855f7;">check_circle</i>
-                            Terdaftar di Sistem
+                    <span class="stat-kpi-accent" style="background: linear-gradient(90deg, #a855f7, #7c3aed);"></span>
+                </a>
+            </div>
+
+            {{-- Ustadzah --}}
+            <div class="stat-kpi-col">
+                <a href="{{ url('admin/guru') }}" class="stat-kpi-card">
+                    <div class="stat-kpi-inner">
+                        <div class="stat-kpi-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
+                            <i class="material-icons">person_4</i>
+                        </div>
+                        <div class="stat-kpi-text">
+                            <p class="stat-kpi-label">Ustadzah</p>
+                            <h4 class="stat-kpi-value">{{ number_format($totalGuru) }}</h4>
                         </div>
                     </div>
+                    <span class="stat-kpi-accent" style="background: linear-gradient(90deg, #10b981, #059669);"></span>
+                </a>
+            </div>
+
+            {{-- Kelas --}}
+            <div class="stat-kpi-col">
+                <a href="{{ url('admin/kelas') }}" class="stat-kpi-card">
+                    <div class="stat-kpi-inner">
+                        <div class="stat-kpi-icon" style="background: linear-gradient(135deg, #38bdf8, #0284c7);">
+                            <i class="material-icons">grade</i>
+                        </div>
+                        <div class="stat-kpi-text">
+                            <p class="stat-kpi-label">Kelas</p>
+                            <h4 class="stat-kpi-value">{{ number_format($totalKelas) }}</h4>
+                        </div>
+                    </div>
+                    <span class="stat-kpi-accent" style="background: linear-gradient(90deg, #38bdf8, #0284c7);"></span>
+                </a>
+            </div>
+
+            {{-- Petugas --}}
+            <div class="stat-kpi-col">
+                <a href="{{ url('admin/petugas') }}" class="stat-kpi-card">
+                    <div class="stat-kpi-inner">
+                        <div class="stat-kpi-icon" style="background: linear-gradient(135deg, #fb7185, #f43f5e);">
+                            <i class="material-icons">settings</i>
+                        </div>
+                        <div class="stat-kpi-text">
+                            <p class="stat-kpi-label">Petugas</p>
+                            <h4 class="stat-kpi-value">{{ number_format($totalPetugas) }}</h4>
+                        </div>
+                    </div>
+                    <span class="stat-kpi-accent" style="background: linear-gradient(90deg, #fb7185, #f43f5e);"></span>
+                </a>
+            </div>
+
+            {{-- Kas Tabungan --}}
+            <div class="stat-kpi-col">
+                <div class="stat-kpi-card" style="cursor: default;">
+                    <div class="stat-kpi-inner">
+                        <div class="stat-kpi-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
+                            <i class="material-icons">account_balance</i>
+                        </div>
+                        <div class="stat-kpi-text">
+                            <p class="stat-kpi-label">Kas Tabungan</p>
+                            <h4 class="stat-kpi-value is-currency">Rp {{ number_format($totalKasTabungan, 0, ',', '.') }}</h4>
+                        </div>
+                    </div>
+                    <span class="stat-kpi-accent" style="background: linear-gradient(90deg, #10b981, #059669);"></span>
                 </div>
             </div>
 
-            <div class="col-lg-3 col-md-6 col-sm-6">
-                <div class="card stat-card card-emerald">
-                    <div class="card-body">
-                        <div class="stat-flex">
-                            <div class="stat-icon-box">
-                                <a href="{{ url('admin/guru') }}">
-                                    <i class="material-icons">person_4</i>
-                                </a>
-                            </div>
-                            <div class="stat-info">
-                                <p class="stat-category">Total Guru / Ustadz</p>
-                                <h3 class="stat-title">{{ number_format($totalGuru) }}</h3>
-                            </div>
+            {{-- Dana di Guru --}}
+            <div class="stat-kpi-col">
+                <div class="stat-kpi-card" style="cursor: default;">
+                    <div class="stat-kpi-inner">
+                        <div class="stat-kpi-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                            <i class="material-icons">front_hand</i>
+                        </div>
+                        <div class="stat-kpi-text">
+                            <p class="stat-kpi-label">Dana di Guru</p>
+                            <h4 class="stat-kpi-value is-currency">Rp {{ number_format($totalBelumDisetor, 0, ',', '.') }}</h4>
                         </div>
                     </div>
-                    <div class="card-footer">
-                        <div class="stats">
-                            <i class="material-icons text-emerald-600 mr-1" style="font-size: 16px; vertical-align: middle; color: #10b981;">check_circle</i>
-                            Tenaga Pengajar
-                        </div>
-                    </div>
+                    <span class="stat-kpi-accent" style="background: linear-gradient(90deg, #f59e0b, #d97706);"></span>
                 </div>
             </div>
 
-            <div class="col-lg-3 col-md-6 col-sm-6">
-                <div class="card stat-card card-sky">
-                    <div class="card-body">
-                        <div class="stat-flex">
-                            <div class="stat-icon-box">
-                                <a href="{{ url('admin/kelas') }}">
-                                    <i class="material-icons">grade</i>
-                                </a>
-                            </div>
-                            <div class="stat-info">
-                                <p class="stat-category">Total Kelas</p>
-                                <h3 class="stat-title">{{ number_format($totalKelas) }}</h3>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-footer">
-                        <div class="stats">
-                            <i class="material-icons text-sky-600 mr-1" style="font-size: 16px; vertical-align: middle; color: #0284c7;">home</i>
-                            Kelas Belajar TPQ
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-3 col-md-6 col-sm-6">
-                <div class="card stat-card card-rose">
-                    <div class="card-body">
-                        <div class="stat-flex">
-                            <div class="stat-icon-box">
-                                <a href="{{ url('admin/petugas') }}">
-                                    <i class="material-icons">settings</i>
-                                </a>
-                            </div>
-                            <div class="stat-info">
-                                <p class="stat-category">Petugas / Admin</p>
-                                <h3 class="stat-title">{{ number_format($totalPetugas) }}</h3>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-footer">
-                        <div class="stats">
-                            <i class="material-icons text-rose-600 mr-1" style="font-size: 16px; vertical-align: middle; color: #f43f5e;">manage_accounts</i>
-                            Pengelola Sistem
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
 
         <!-- 2. TODAY ATTENDANCE SECTION -->
-        <div class="row">
+        <div class="row g-2 mb-2">
             <!-- ABSENSI SISWA HARI INI -->
-            <div class="col-lg-6 mb-4">
+            <div class="col-lg-6">
                 <div class="card section-card">
                     <div class="card-header card-header-primary">
-                        <div class="d-flex flex-wrap align-items-center justify-content-between" style="gap: 12px;">
+                        <div class="d-flex flex-wrap align-items-center justify-content-between" style="gap: 8px;">
                             <div>
-                                <h4 class="card-title"><b id="titleSiswaStats">Absensi Siswa Hari Ini</b></h4>
+                                <h4 class="card-title" id="titleSiswaStats">Absensi Siswa Hari Ini</h4>
                                 <p class="card-category">{{ \Carbon\Carbon::now()->locale('id')->translatedFormat('l, d F Y') }}</p>
                             </div>
                             <!-- FILTER KELAS -->
@@ -288,37 +391,45 @@
                 </div>
             </div>
 
-            <!-- ABSENSI GURU HARI INI -->
-            <div class="col-lg-6 mb-4">
+            <!-- ABSENSI USTADZAH HARI INI -->
+            <div class="col-lg-6">
                 <div class="card section-card">
                     <div class="card-header card-header-success">
-                        <h4 class="card-title"><b>Absensi Guru / Ustadz Hari Ini</b></h4>
+                        <h4 class="card-title">Absensi Ustadzah Hari Ini</h4>
                         <p class="card-category">{{ \Carbon\Carbon::now()->locale('id')->translatedFormat('l, d F Y') }}</p>
                     </div>
                     <div class="card-body p-0">
-                        <div class="px-3 pt-3 pb-2">
-                            <div class="row text-center m-0 flex-nowrap align-items-center">
+                        <div class="px-3 py-3">
+                            <div class="row text-center m-0 g-2">
                                 <div class="col-3 px-1">
-                                    <h5 class="text-nowrap m-0 pb-1" style="color: #16a34a; font-size: 10px; font-weight: 800; letter-spacing: 1px;">HADIR</h5>
-                                    <h4 class="text-dark font-weight-bold m-0" style="font-size: 20px; line-height: 1;">{{ $jumlahKehadiranGuru['hadir'] }}</h4>
+                                    <div style="background: rgba(22, 163, 74, 0.08); border-radius: 10px; padding: 10px 6px;">
+                                        <h5 class="text-nowrap m-0 pb-1" style="color: #16a34a; font-size: 10px; font-weight: 800; letter-spacing: 1px;">HADIR</h5>
+                                        <h4 class="text-dark font-weight-bold m-0" style="font-size: 22px; line-height: 1;">{{ $jumlahKehadiranGuru['hadir'] }}</h4>
+                                    </div>
                                 </div>
                                 <div class="col-3 px-1">
-                                    <h5 class="text-nowrap m-0 pb-1" style="color: #9333ea; font-size: 10px; font-weight: 800; letter-spacing: 1px;">SAKIT</h5>
-                                    <h4 class="text-dark font-weight-bold m-0" style="font-size: 20px; line-height: 1;">{{ $jumlahKehadiranGuru['sakit'] }}</h4>
+                                    <div style="background: rgba(147, 51, 234, 0.08); border-radius: 10px; padding: 10px 6px;">
+                                        <h5 class="text-nowrap m-0 pb-1" style="color: #9333ea; font-size: 10px; font-weight: 800; letter-spacing: 1px;">SAKIT</h5>
+                                        <h4 class="text-dark font-weight-bold m-0" style="font-size: 22px; line-height: 1;">{{ $jumlahKehadiranGuru['sakit'] }}</h4>
+                                    </div>
                                 </div>
                                 <div class="col-3 px-1">
-                                    <h5 class="text-nowrap m-0 pb-1" style="color: #2563eb; font-size: 10px; font-weight: 800; letter-spacing: 1px;">IZIN</h5>
-                                    <h4 class="text-dark font-weight-bold m-0" style="font-size: 20px; line-height: 1;">{{ $jumlahKehadiranGuru['izin'] }}</h4>
+                                    <div style="background: rgba(37, 99, 235, 0.08); border-radius: 10px; padding: 10px 6px;">
+                                        <h5 class="text-nowrap m-0 pb-1" style="color: #2563eb; font-size: 10px; font-weight: 800; letter-spacing: 1px;">IZIN</h5>
+                                        <h4 class="text-dark font-weight-bold m-0" style="font-size: 22px; line-height: 1;">{{ $jumlahKehadiranGuru['izin'] }}</h4>
+                                    </div>
                                 </div>
                                 <div class="col-3 px-1">
-                                    <h5 class="text-nowrap m-0 pb-1" style="color: #dc2626; font-size: 10px; font-weight: 800; letter-spacing: 1px;">ALFA</h5>
-                                    <h4 class="text-dark font-weight-bold m-0" style="font-size: 20px; line-height: 1;">{{ $jumlahKehadiranGuru['alfa'] }}</h4>
+                                    <div style="background: rgba(220, 38, 38, 0.08); border-radius: 10px; padding: 10px 6px;">
+                                        <h5 class="text-nowrap m-0 pb-1" style="color: #dc2626; font-size: 10px; font-weight: 800; letter-spacing: 1px;">ALFA</h5>
+                                        <h4 class="text-dark font-weight-bold m-0" style="font-size: 22px; line-height: 1;">{{ $jumlahKehadiranGuru['alfa'] }}</h4>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         <div class="bg-transparent py-2 px-3 d-flex justify-content-between align-items-center" style="border-top: 1px solid #f1f5f9 !important;">
-                            <span class="text-muted font-weight-bold m-0" style="font-size: 10px; letter-spacing: 1px; text-transform: uppercase;">TOTAL TENAGA PENGAJAR</span>
-                            <span class="text-dark font-weight-bold m-0" style="font-size: 12px; line-height: 1;">{{ $totalGuru }} Guru</span>
+                            <span class="text-muted font-weight-bold m-0" style="font-size: 10px; letter-spacing: 1px; text-transform: uppercase;">Total Pengajar</span>
+                            <span class="text-dark font-weight-bold m-0" style="font-size: 12px; line-height: 1;">{{ $totalGuru }} Ustadzah</span>
                         </div>
                     </div>
                 </div>
@@ -326,47 +437,59 @@
         </div>
 
         <!-- 3. ATTENDANCE TREND CHARTS -->
-        <div class="row">
+        <div class="row g-2 mb-2">
             <!-- CHART SISWA -->
-            <div class="col-lg-6 mb-4">
+            <div class="col-lg-6">
                 <div class="card section-card">
                     <div class="card-header card-header-primary">
-                        <h4 class="card-title" id="titleSiswaChart">Tingkat Kehadiran Siswa (7 Hari Terakhir)</h4>
+                        <h4 class="card-title" id="titleSiswaChart">Kehadiran Siswa — 7 Hari Terakhir</h4>
                         <p class="card-category">Grafik rekapitulasi presensi siswa</p>
                     </div>
-                    <div class="card-body p-3">
-                        <div class="chart-container">
+                    <div class="card-body p-2">
+                        <div class="chart-container" style="position: relative;">
+                            @if(empty($chartSiswa) || collect($chartSiswa)->flatten()->sum() === 0)
+                                <div class="d-flex flex-column align-items-center justify-content-center h-100 w-100 text-muted" style="position: absolute; top:0; left:0; z-index: 10;">
+                                    <i class="material-icons" style="font-size: 40px; color: #cbd5e1; margin-bottom: 6px;">bar_chart</i>
+                                    <p style="font-weight: 600; font-size: 13px; color: #94a3b8;">Belum ada data presensi siswa</p>
+                                </div>
+                            @endif
                             <canvas id="kehadiranSiswa"></canvas>
                         </div>
                     </div>
                     @if (auth()->user() && auth()->user()->is_superadmin != 1)
-                    <div class="card-footer bg-light px-3 py-2">
-                        <a class="text-primary font-weight-bold text-sm" href="{{ url('admin/absen-siswa') }}">
-                            <i class="material-icons text-primary mr-1" style="font-size: 16px; vertical-align: middle;">checklist</i>
-                            Lihat Data Detail Presensi Siswa &rarr;
+                    <div class="card-footer bg-light px-3 py-1" style="border-top: 1px solid #f1f5f9;">
+                        <a class="text-primary font-weight-bold" style="font-size: 12px;" href="{{ url('admin/absen-siswa') }}">
+                            <i class="material-icons text-primary mr-1" style="font-size: 14px; vertical-align: middle;">checklist</i>
+                            Detail Presensi Siswa &rarr;
                         </a>
                     </div>
                     @endif
                 </div>
             </div>
 
-            <!-- CHART GURU -->
-            <div class="col-lg-6 mb-4">
+            <!-- CHART USTADZAH -->
+            <div class="col-lg-6">
                 <div class="card section-card">
                     <div class="card-header card-header-success">
-                        <h4 class="card-title">Tingkat Kehadiran Guru (7 Hari Terakhir)</h4>
-                        <p class="card-category">Grafik rekapitulasi presensi guru & ustadz</p>
+                        <h4 class="card-title">Kehadiran Ustadzah — 7 Hari Terakhir</h4>
+                        <p class="card-category">Grafik rekapitulasi presensi ustadzah</p>
                     </div>
-                    <div class="card-body p-3">
-                        <div class="chart-container">
+                    <div class="card-body p-2">
+                        <div class="chart-container" style="position: relative;">
+                            @if(empty($chartGuru) || collect($chartGuru)->flatten()->sum() === 0)
+                                <div class="d-flex flex-column align-items-center justify-content-center h-100 w-100 text-muted" style="position: absolute; top:0; left:0; z-index: 10;">
+                                    <i class="material-icons" style="font-size: 40px; color: #cbd5e1; margin-bottom: 6px;">bar_chart</i>
+                                    <p style="font-weight: 600; font-size: 13px; color: #94a3b8;">Belum ada data presensi ustadzah</p>
+                                </div>
+                            @endif
                             <canvas id="kehadiranGuru"></canvas>
                         </div>
                     </div>
                     @if (auth()->user() && auth()->user()->is_superadmin != 1)
-                    <div class="card-footer bg-light px-3 py-2">
-                        <a class="text-emerald-700 font-weight-bold text-sm" style="color: #047857;" href="{{ url('admin/absen-guru') }}">
-                            <i class="material-icons text-success mr-1" style="font-size: 16px; vertical-align: middle;">checklist</i>
-                            Lihat Data Detail Presensi Guru &rarr;
+                    <div class="card-footer bg-light px-3 py-1" style="border-top: 1px solid #f1f5f9;">
+                        <a class="font-weight-bold" style="font-size: 12px; color: #047857;" href="{{ url('admin/absen-guru') }}">
+                            <i class="material-icons text-success mr-1" style="font-size: 14px; vertical-align: middle;">checklist</i>
+                            Detail Presensi Ustadzah &rarr;
                         </a>
                     </div>
                     @endif

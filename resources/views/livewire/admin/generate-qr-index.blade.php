@@ -1,4 +1,6 @@
 <div>
+    <div class="content">
+        <div class="container-fluid">
     @if (session()->has('msg'))
         <div class="mb-3 p-3 rounded-xl border flex items-center justify-between shadow-sm {{ session('error') ? 'bg-rose-50 border-rose-200 text-rose-800' : 'bg-emerald-50 border-emerald-200 text-emerald-800' }}">
             <div class="flex items-center space-x-2">
@@ -99,6 +101,8 @@
                 </div>
 
             </div>
+        </div>
+    </div>
         </div>
     </div>
 </div>

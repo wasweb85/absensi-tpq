@@ -36,9 +36,11 @@
                                 <div class="form-group">
                                     <label class="bmd-label-floating">Hari Libur Rutin Mingguan</label>
                                     <select wire:model="hari_libur_mingguan" class="form-control">
-                                        <option value="jumat">Hari Jumat (Sistem Pesantren/TPQ)</option>
+                                        <option value="selasa_jumat">Hari Selasa &amp; Jum'at (Rutin TPQ Nurul Mun'im)</option>
+                                        <option value="jumat">Hari Jum'at Saja</option>
                                         <option value="ahad">Hari Ahad / Minggu</option>
                                         <option value="sabtu">Hari Sabtu</option>
+                                        <option value="jumat_ahad">Hari Jum'at &amp; Ahad</option>
                                     </select>
                                     <small class="text-muted d-block">Menentukan hari libur mingguan pada kalender & mesin presensi</small>
                                 </div>

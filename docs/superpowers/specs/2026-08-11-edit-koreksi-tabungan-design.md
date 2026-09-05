@@ -22,11 +22,22 @@ Menambahkan fitur Edit & Hapus transaksi tabungan santri agar kesalahan input no
 
 ## Rincian Perubahan UI & Komponen
 
-### 1. Panel Tabungan Guru (`ManualAttendance.php` & `manual-attendance.blade.php`)
-- Tampilkan sub-panel "Riwayat Transaksi Santri Ini" (5 transaksi terakhir).
-- Setiap transaksi menampilkan tanggal, jenis (setor/tarik), nominal, keterangan, dan tombol **Edit** & **Hapus**.
-- Tombol Edit/Hapus disembunyikan jika `status_setoran == 'sudah'`.
-- Menambahkan method `editTabungan($id)`, `updateTabungan()`, dan `hapusTabungan($id)`.
+### 1. Menu Baru Guru: "Riwayat Tabungan" (`RiwayatTabunganGuru.php` & `riwayat-tabungan-guru.blade.php`)
+- **Lokasi**: Menu baru di Sidebar khusus Guru, diletakkan di bawah menu "Monitoring & Absensi".
+- **Tampilan Utama**: Halaman penuh berisi tabel riwayat transaksi (Setor & Tarik) khusus untuk santri-santri yang diajarkan oleh guru tersebut.
+- **Fitur Filter**:
+  - Filter Rentang Tanggal (Tanggal Awal - Akhir).
+  - Filter Santri (Pilih Santri).
+  - Filter Jenis Transaksi (Setor/Tarik).
+- **Aksi Koreksi**:
+  - Tabel menampilkan kolom Aksi dengan tombol **Edit** dan **Hapus**.
+  - Tombol disembunyikan jika transaksi sudah disetor (`status_setoran == 'sudah'`).
+- **Implementasi**: 
+  - Menggunakan Modal Bootstrap untuk form edit nominal dan catatan.
+  - Memindahkan metode `editTabungan()`, `updateTabungan()`, dan `hapusTabungan()` dari `ManualAttendance` ke komponen baru ini.
+
+### 2. Panel Tabungan Guru (`ManualAttendance.php` & `manual-attendance.blade.php`)
+- Hapus riwayat 5 transaksi terakhir beserta aksi Edit/Hapus dari slide-over panel ini, agar form input lebih bersih dan fokus pada pengisian transaksi baru saja.
 
 ### 2. Menu Laporan Tabungan Admin (`LaporanTabunganIndex.php` & `laporan-tabungan-index.blade.php`)
 - Pada tabel **Riwayat Transaksi Terbaru**, tambahkan kolom **Aksi** dengan tombol **Edit** dan **Hapus**.
@@ -34,6 +45,6 @@ Menambahkan fitur Edit & Hapus transaksi tabungan santri agar kesalahan input no
 - Menambahkan method `editTabungan($id)`, `updateTabungan()`, dan `hapusTabungan($id)` di `LaporanTabunganIndex.php`.
 
 ## Review Check
-- [x] Placeholder/ambiguity: Tidak ada. Logika adjustment saldo dan batasan role dijelaskan secara rinci.
-- [x] Internal Consistency: Sinkron antara backend `ManualAttendance` & `LaporanTabunganIndex`.
-- [x] Scope: Sangat jelas dan fokus pada pengelolaan transaksi tabungan.
+- [x] Placeholder/ambiguity: Tidak ada. Pemindahan fitur koreksi ke halaman khusus memperjelas fungsi (separation of concerns).
+- [x] Internal Consistency: Logika kalkulasi saldo tetap sama dan dipusatkan, UI lebih bersih.
+- [x] Scope: Terfokus pada pembuatan menu baru `RiwayatTabunganGuru` dan pembersihan `ManualAttendance`.

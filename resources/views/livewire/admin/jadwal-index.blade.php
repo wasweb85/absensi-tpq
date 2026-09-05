@@ -45,23 +45,23 @@
                         margin-top: 3px;
                         margin-bottom: 0;
                     }
-                    .modern-table-actions .btn {
-                        margin: 0 0 0 10px;
+                    .btn-add {
+                        background: #2563eb;
+                        color: #fff;
+                        border: none;
                         border-radius: 8px;
                         padding: 8px 16px;
                         font-weight: 600;
-                        text-transform: none;
+                        font-size: 0.85rem;
+                        cursor: pointer;
+                        box-shadow: 0 3px 10px rgba(37, 99, 235, 0.25);
+                        display: inline-flex;
+                        align-items: center;
+                        white-space: nowrap;
+                        transition: background 0.2s;
                     }
-                    .modern-table-actions .btn-refresh {
-                        background: #f1f5f9;
-                        color: #475569;
-                        border: 1px solid #e2e8f0;
-                        box-shadow: none;
-                    }
-                    .modern-table-actions .btn-add {
-                        background: #2563eb;
-                        color: #fff;
-                        box-shadow: none;
+                    .btn-add:hover {
+                        background: #1d4ed8;
                     }
                     .modern-table-toolbar {
                         display: flex;
@@ -137,13 +137,64 @@
                         background: #fcfcfc;
                     }
                     .badge-kelas {
-                        background: #eff6ff;
-                        color: #2563eb;
-                        padding: 5px 12px;
-                        border-radius: 6px;
-                        font-size: 0.75rem;
+                        background: transparent;
+                        color: #374151;
+                        padding: 0;
+                        border-radius: 0;
+                        font-size: 0.78rem;
                         font-weight: 700;
                         text-transform: uppercase;
+                        white-space: nowrap;
+                    }
+                    .mobile-only {
+                        display: none !important;
+                    }
+                    .desktop-only {
+                        display: flex !important;
+                    }
+
+                    /* ── MOBILE RESPONSIVE ── */
+                    @media (max-width: 640px) {
+                        .mobile-only {
+                            display: inline-flex !important;
+                        }
+                        .desktop-only {
+                            display: none !important;
+                        }
+                        .modern-table-card {
+                            padding: 14px;
+                        }
+                        .modern-table-header {
+                            flex-direction: column;
+                            align-items: flex-start;
+                            gap: 10px;
+                            margin-bottom: 14px;
+                        }
+                        .modern-table-toolbar {
+                            flex-direction: column;
+                            align-items: stretch;
+                            gap: 10px;
+                            margin-bottom: 12px;
+                        }
+                        .toolbar-left {
+                            flex-wrap: wrap;
+                            gap: 8px;
+                        }
+                        .toolbar-left select {
+                            width: 100%;
+                        }
+                        .modern-table th,
+                        .modern-table td {
+                            padding: 10px 10px;
+                            font-size: 0.85rem;
+                        }
+                        .btn-action {
+                            width: 30px;
+                            height: 30px;
+                        }
+                        .action-btns {
+                            gap: 5px;
+                        }
                     }
                     .action-btns {
                         display: flex;
@@ -175,17 +226,12 @@
                         <div class="modern-table-card">
                             <div class="modern-table-header">
                                 <div>
-                                    <h4 class="modern-table-title">Jadwal Pelajaran</h4>
-                                    <p class="modern-table-subtitle">Manajemen Jadwal Pelajaran TPQ</p>
+                                    <h4 class="modern-table-title">Jadwal KBM</h4>
+                                    <p class="modern-table-subtitle">Manajemen Jadwal Kegiatan Belajar Mengajar TPQ</p>
                                 </div>
-                                <div class="modern-table-actions">
-                                    <button wire:click="$refresh" class="btn btn-refresh">
-                                        <i class="material-icons" style="font-size: 18px; vertical-align: middle;">refresh</i>
-                                    </button>
-                                    <button wire:click="create" class="btn btn-add">
-                                        <i class="material-icons" style="font-size: 18px; vertical-align: middle; margin-right: 5px;">add</i> Tambah
-                                    </button>
-                                </div>
+                                <button wire:click="create" class="btn btn-add desktop-only">
+                                    <i class="material-icons" style="font-size: 18px; vertical-align: middle; margin-right: 5px;">add</i> Tambah
+                                </button>
                             </div>
 
                             <div class="modern-table-toolbar">
@@ -196,6 +242,9 @@
                                             <option value="{{ $k->id_kelas }}">{{ $k->tingkat }} {{ $k->index_kelas }}</option>
                                         @endforeach
                                     </select>
+                                    <button wire:click="create" class="btn btn-add mobile-only">
+                                        <i class="material-icons" style="font-size: 16px; vertical-align: middle; margin-right: 4px;">add</i> Tambah
+                                    </button>
                                 </div>
                             </div>
 
@@ -219,7 +268,7 @@
                                         <table class="modern-table">
                                             <thead>
                                                 <tr>
-                                                    <th>KELAS</th>
+                                                    <th>JILID</th>
                                                     <th>MATA PELAJARAN</th>
                                                     <th>GURU</th>
                                                     <th>KETERANGAN</th>

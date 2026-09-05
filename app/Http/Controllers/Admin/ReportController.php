@@ -22,13 +22,37 @@ class ReportController extends Controller
         $tanggalMulai = $request->query('tanggal_mulai');
         $tanggalAkhir = $request->query('tanggal_akhir');
 
+        // Fallback jika dikirim parameter 'tanggal' (format YYYY-MM) atau jika kosong
+        if (!$tanggalMulai && $request->has('tanggal')) {
+            $parsed = Carbon::parse($request->query('tanggal'));
+            $tanggalMulai = $parsed->copy()->startOfMonth()->toDateString();
+            $tanggalAkhir = $parsed->copy()->endOfMonth()->toDateString();
+        } elseif (!$tanggalMulai) {
+            $tanggalMulai = Carbon::now()->startOfMonth()->toDateString();
+            $tanggalAkhir = Carbon::now()->endOfMonth()->toDateString();
+        }
+
+        $kelas = Kelas::find($idKelas);
+        if (!$kelas) {
+            $kelas = Kelas::orderBy('tingkat')->first();
+            $idKelas = $kelas ? $kelas->id_kelas : null;
+        }
+
         $siswa = Siswa::where('id_kelas', $idKelas)->orderBy('nama_siswa')->get();
+
+        if ($siswa->isEmpty()) {
+            // Ambil kelas pertama yang memiliki santri jika kelas saat ini tidak ada siswanya
+            $firstKelasWithSiswa = Siswa::select('id_kelas')->distinct()->first();
+            if ($firstKelasWithSiswa) {
+                $idKelas = $firstKelasWithSiswa->id_kelas;
+                $kelas = Kelas::find($idKelas);
+                $siswa = Siswa::where('id_kelas', $idKelas)->orderBy('nama_siswa')->get();
+            }
+        }
 
         if ($siswa->isEmpty()) {
             return redirect()->route('admin.laporan.index')->with('msg', 'Data siswa kosong!')->with('error', true);
         }
-
-        $kelas = Kelas::find($idKelas);
 
         $begin = Carbon::parse($tanggalMulai);
         $end = Carbon::parse($tanggalAkhir);
@@ -36,10 +60,11 @@ class ReportController extends Controller
         $arrayTanggal = [];
         $dataAbsen = [];
 
-        // Loop per hari dalam bulan tersebut
+        // Loop per hari dalam periode tersebut
         for ($date = $begin->copy(); $date->lte($end); $date->addDay()) {
             // Cek status hari libur dinamis dari Kalender TPQ & Hari Libur Mingguan
             $isLibur = AgendaKalender::isTanggalLibur($date);
+            $keteranganLibur = AgendaKalender::getKeteranganLibur($date);
             $lewat = $date->isAfter(Carbon::today());
 
             // Left join with presensi_siswa for this specific date
@@ -52,15 +77,33 @@ class ReportController extends Controller
                 
             $absenByTanggal['lewat'] = $lewat;
             $absenByTanggal['status_libur'] = $isLibur;
+            $absenByTanggal['keterangan_libur'] = $keteranganLibur;
+
+            $itemTanggal = (object) [
+                'date' => $date->copy(),
+                'is_libur' => $isLibur,
+                'keterangan_libur' => $keteranganLibur
+            ];
 
             $dataAbsen[] = $absenByTanggal;
-            $arrayTanggal[] = $date->copy();
+            $arrayTanggal[] = $itemTanggal;
         }
 
         $laki = $siswa->where('jenis_kelamin', 'Laki-Laki')->count();
 
-        // General settings (for now mock or use config if available, wait, we don't have GeneralSettings model yet. Let's make a basic object)
-        // I will implement GeneralSettings model shortly. For now, use DB::table('general_settings')->first() or fallback
+        // Agenda libur TPQ selama periode ini
+        $agendaLiburBulanIni = AgendaKalender::where('is_libur', true)
+            ->where(function ($q) use ($tanggalMulai, $tanggalAkhir) {
+                $q->whereBetween('tanggal_mulai', [$tanggalMulai, $tanggalAkhir])
+                  ->orWhere(function ($sub) use ($tanggalMulai, $tanggalAkhir) {
+                      $sub->whereNotNull('tanggal_selesai')
+                          ->where('tanggal_mulai', '<=', $tanggalAkhir)
+                          ->where('tanggal_selesai', '>=', $tanggalMulai);
+                  });
+            })
+            ->orderBy('tanggal_mulai')
+            ->get();
+
         $generalSettings = DB::table('general_settings')->first() ?? (object) [
             'school_name' => 'TPQ Darul Huda',
             'school_year' => '2026/2027',
@@ -76,7 +119,8 @@ class ReportController extends Controller
                 'perempuan' => $siswa->count() - $laki
             ],
             'kelas' => $kelas,
-            'grup' => "kelas " . $kelas->tingkat . ' ' . $kelas->index_kelas,
+            'grup' => "kelas " . ($kelas ? ($kelas->tingkat . ' ' . $kelas->index_kelas) : ''),
+            'agendaLiburBulanIni' => $agendaLiburBulanIni,
             'generalSettings' => $generalSettings
         ];
 
@@ -100,6 +144,16 @@ class ReportController extends Controller
         $tanggalMulai = $request->query('tanggal_mulai');
         $tanggalAkhir = $request->query('tanggal_akhir');
 
+        // Fallback jika dikirim parameter 'tanggal' (format YYYY-MM) atau jika kosong
+        if (!$tanggalMulai && $request->has('tanggal')) {
+            $parsed = Carbon::parse($request->query('tanggal'));
+            $tanggalMulai = $parsed->copy()->startOfMonth()->toDateString();
+            $tanggalAkhir = $parsed->copy()->endOfMonth()->toDateString();
+        } elseif (!$tanggalMulai) {
+            $tanggalMulai = Carbon::now()->startOfMonth()->toDateString();
+            $tanggalAkhir = Carbon::now()->endOfMonth()->toDateString();
+        }
+
         $guru = Guru::orderBy('nama_guru')->get();
 
         if ($guru->isEmpty()) {
@@ -112,9 +166,10 @@ class ReportController extends Controller
         $arrayTanggal = [];
         $dataAbsen = [];
 
-        // Loop per hari dalam bulan tersebut
+        // Loop per hari dalam periode tersebut
         for ($date = $begin->copy(); $date->lte($end); $date->addDay()) {
             $isLibur = AgendaKalender::isTanggalLibur($date);
+            $keteranganLibur = AgendaKalender::getKeteranganLibur($date);
             $lewat = $date->isAfter(Carbon::today());
 
             // Left join with presensi_guru
@@ -126,12 +181,32 @@ class ReportController extends Controller
                 
             $absenByTanggal['lewat'] = $lewat;
             $absenByTanggal['status_libur'] = $isLibur;
+            $absenByTanggal['keterangan_libur'] = $keteranganLibur;
+
+            $itemTanggal = (object) [
+                'date' => $date->copy(),
+                'is_libur' => $isLibur,
+                'keterangan_libur' => $keteranganLibur
+            ];
 
             $dataAbsen[] = $absenByTanggal;
-            $arrayTanggal[] = $date->copy();
+            $arrayTanggal[] = $itemTanggal;
         }
 
         $laki = $guru->where('jenis_kelamin', 'Laki-Laki')->count();
+
+        // Agenda libur TPQ selama periode ini
+        $agendaLiburBulanIni = AgendaKalender::where('is_libur', true)
+            ->where(function ($q) use ($tanggalMulai, $tanggalAkhir) {
+                $q->whereBetween('tanggal_mulai', [$tanggalMulai, $tanggalAkhir])
+                  ->orWhere(function ($sub) use ($tanggalMulai, $tanggalAkhir) {
+                      $sub->whereNotNull('tanggal_selesai')
+                          ->where('tanggal_mulai', '<=', $tanggalAkhir)
+                          ->where('tanggal_selesai', '>=', $tanggalMulai);
+                  });
+            })
+            ->orderBy('tanggal_mulai')
+            ->get();
 
         $generalSettings = DB::table('general_settings')->first() ?? (object) [
             'school_name' => 'TPQ Darul Huda',
@@ -148,6 +223,7 @@ class ReportController extends Controller
                 'perempuan' => $guru->count() - $laki
             ],
             'grup' => "guru",
+            'agendaLiburBulanIni' => $agendaLiburBulanIni,
             'generalSettings' => $generalSettings
         ];
 

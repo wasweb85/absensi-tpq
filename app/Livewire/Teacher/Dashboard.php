@@ -69,6 +69,46 @@ class Dashboard extends Component
                 ->where('hari', $hariIni)
                 ->orderBy('id_jadwal', 'asc')
                 ->get();
+
+            $totalSaldo = Siswa::whereIn('id_kelas', $assignedKelasIds)->sum('saldo_tabungan');
+            
+            $siswaIds = Siswa::whereIn('id_kelas', $assignedKelasIds)->pluck('id_siswa')->toArray();
+
+            $unsettledSetor = \App\Models\Tabungan::whereIn('id_siswa', $siswaIds)
+                ->where('status_setoran', 'belum')
+                ->where('jenis_transaksi', 'setor')
+                ->sum('nominal');
+
+            $unsettledTarik = \App\Models\Tabungan::whereIn('id_siswa', $siswaIds)
+                ->where('status_setoran', 'belum')
+                ->where('jenis_transaksi', 'tarik')
+                ->sum('nominal');
+
+            $uangDiTangan = $unsettledSetor - $unsettledTarik;
+
+            $aktifitasTabungan = \App\Models\Tabungan::with('siswa')
+                ->whereIn('id_siswa', $siswaIds)
+                ->orderBy('created_at', 'desc')
+                ->take(4)
+                ->get();
+                
+            $aktifitasSetoran = \App\Models\SetoranBendahara::where('id_guru', $user->id_guru)
+                ->orderBy('created_at', 'desc')
+                ->take(3)
+                ->get();
+                
+            $aktifitasGabung = collect();
+            foreach ($aktifitasTabungan as $t) {
+                $t->activity_type = 'tabungan';
+                $aktifitasGabung->push($t);
+            }
+            foreach ($aktifitasSetoran as $s) {
+                $s->activity_type = 'setoran';
+                $s->created_at = $s->tanggal;
+                $aktifitasGabung->push($s);
+            }
+            
+            $aktifitasGabung = $aktifitasGabung->sortByDesc('created_at')->take(4);
         }
 
         return view('livewire.teacher.dashboard', [
@@ -78,6 +118,9 @@ class Dashboard extends Component
             'hariIni' => $hariIni,
             'summary' => $summary,
             'jadwalKelasHariIni' => $jadwalKelasHariIni,
+            'totalSaldo' => $totalSaldo ?? 0,
+            'uangDiTangan' => $uangDiTangan ?? 0,
+            'aktifitasGabung' => $aktifitasGabung ?? collect(),
             'dateNow' => Carbon::now()->translatedFormat('d F Y')
         ])->layout('layouts.admin', ['title' => 'Dashboard Wali Kelas', 'context' => 'dashboard']);
     }

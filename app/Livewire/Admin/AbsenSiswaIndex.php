@@ -85,10 +85,15 @@ class AbsenSiswaIndex extends Component
                     ]
                 );
                 $successCount++;
+            } elseif ($idKehadiran === '') {
+                PresensiSiswa::where('id_siswa', $idSiswa)
+                    ->whereDate('tanggal', $this->filter_tanggal)
+                    ->delete();
             }
         }
 
         session()->flash('success', "Berhasil menyimpan data absensi untuk $successCount siswa.");
+        $this->dispatch('attendance-saved');
     }
 
     public function render()

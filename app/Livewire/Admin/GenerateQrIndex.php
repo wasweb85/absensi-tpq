@@ -36,6 +36,6 @@ class GenerateQrIndex extends Component
             'kelasList' => $kelasList,
             'totalSiswa' => $totalSiswa,
             'totalGuru' => $totalGuru
-        ])->layout('layouts.admin', ['title' => 'Generate & Download Kartu QR Code', 'context' => 'qr']);
+        ])->layout('layouts.admin', ['title' => 'Generate & Download Kartu QR Code', 'nav_title' => 'Kartu QR', 'context' => 'qr']);
     }
 }

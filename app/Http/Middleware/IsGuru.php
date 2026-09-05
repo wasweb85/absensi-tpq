@@ -16,7 +16,7 @@ class IsGuru
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::check() && !empty(Auth::user()->id_guru)) {
+        if (Auth::check() && (!empty(Auth::user()->id_guru) || (int)(Auth::user()->is_superadmin ?? 0) === 1)) {
             return $next($request);
         }
 

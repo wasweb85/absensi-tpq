@@ -116,7 +116,7 @@ class GenerateLaporanIndex extends Component
             'kelasList' => $kelasList,
             'presensiSiswa' => $presensiSiswa,
             'presensiGuru' => $presensiGuru,
-        ])->layout('layouts.admin', ['title' => 'Generate Laporan', 'context' => 'laporan']);
+        ])->layout('layouts.admin', ['title' => 'Generate Laporan', 'nav_title' => 'Laporan', 'context' => 'laporan']);
     }
 }
 

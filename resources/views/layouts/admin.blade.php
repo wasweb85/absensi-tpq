@@ -108,10 +108,27 @@
    #spa-content {
        transition: opacity 0.15s ease-in-out;
    }
-   body.page-navigating #spa-content {
-       opacity: 0.5;
-       pointer-events: none;
-   }
+    body.page-navigating #spa-content {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+    
+    /* GLOBAL UI CONSISTENCY FIX */
+    /* Menyamakan jarak (padding) halaman Admin dengan halaman Guru (24px / 1.5rem) */
+    @media (min-width: 768px) {
+        .main-panel > #spa-content > div > .content,
+        .main-panel > #spa-content > .content {
+            padding: 1.5rem !important; 
+        }
+        .main-panel > #spa-content .content .card {
+            margin-top: 0 !important;
+        }
+        .main-panel > #spa-content > div > .content .container-fluid,
+        .main-panel > #spa-content > .content .container-fluid {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+    }
    </style>
 
    @yield('styles')
@@ -133,7 +150,7 @@
 
 
          <!-- SPA Content Area (injected by spa-nav.js on AJAX nav) -->
-         <div id="spa-content" class="pt-24">
+         <div id="spa-content" style="padding-top: 65px;">
             @yield('content')
             {{ $slot ?? '' }}
          </div>

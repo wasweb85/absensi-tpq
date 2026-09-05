@@ -413,30 +413,30 @@
                 </div>
             </div>
 
-            {{-- KPI 2: Kehadiran Ustadzah --}}
+            {{-- KPI 2: Kedisiplinan Ustadzah --}}
             <div class="kpi-col">
                 <div class="kpi-card">
                     <div class="kpi-header">
                         <div class="kpi-icon-wrap" style="background: linear-gradient(135deg, #10b981, #047857);">
                             <i class="material-icons">person_4</i>
                         </div>
-                        @if($guruHadir == $totalGuru && $totalGuru > 0)
-                            <span class="kpi-tag" style="background: #dcfce7; color: #15803d;">Lengkap</span>
+                        @if($guruIndisipliner->count() > 0)
+                            <span class="kpi-tag" style="background: #fee2e2; color: #b91c1c;">Perlu Tindak Lanjut</span>
                         @else
-                            <span class="kpi-tag" style="background: #fef3c7; color: #b45309;">Ada Izin/Absen</span>
+                            <span class="kpi-tag" style="background: #dcfce7; color: #15803d;">Disiplin</span>
                         @endif
                     </div>
                     <div>
-                        <p class="kpi-label">Kehadiran Ustadzah</p>
-                        <h3 class="kpi-value">{{ $guruHadir }} / {{ $totalGuru }}</h3>
+                        <p class="kpi-label">Kedisiplinan Ustadzah</p>
+                        <h3 class="kpi-value">{{ $guruHadir }} / {{ $totalGuru }} Hadir</h3>
                         <div class="kpi-subtext">
-                            @if($guruInval->count() > 0)
-                                <span class="text-warning font-weight-bold">
-                                    <i class="material-icons" style="font-size: 14px;">warning</i> {{ $guruInval->count() }} Guru Izin / Sakit
+                            @if($guruIndisipliner->count() > 0)
+                                <span class="text-danger font-weight-bold">
+                                    <i class="material-icons" style="font-size: 14px;">warning</i> {{ $guruIndisipliner->count() }} Guru 3x Alpa Berturut
                                 </span>
                             @else
                                 <span class="text-success font-weight-bold">
-                                    <i class="material-icons" style="font-size: 14px;">check</i> 100% Pengajar Hadir
+                                    <i class="material-icons" style="font-size: 14px;">verified</i> Semua Ustadzah Disiplin
                                 </span>
                             @endif
                         </div>
@@ -592,84 +592,93 @@
                 </div>
             </div>
 
-            <!-- WIDGET KESIAPAN USTADZAH & INVAL (30%) -->
+            <!-- WIDGET EVALUASI KEDISIPLINAN USTADZAH (30%) -->
             <div class="col-lg-4">
                 <div class="exec-card">
                     <div class="exec-card-header">
                         <div>
                             <h4 class="exec-card-title">
-                                <i class="material-icons" style="color: #ea580c;">support_agent</i>
-                                Kesiapan Ustadzah &amp; Inval
+                                <i class="material-icons" style="color: {{ $guruIndisipliner->count() > 0 ? '#dc2626' : '#16a34a' }};">
+                                    {{ $guruIndisipliner->count() > 0 ? 'notification_important' : 'verified_user' }}
+                                </i>
+                                Pemberitahuan Kehadiran Ustadzah
                             </h4>
                             <p class="text-muted m-0" style="font-size: 0.8rem;">
-                                Pengajar berhalangan hadir hari ini
+                                Evaluasi tidak hadir 3x berturut tanpa keterangan
                             </p>
                         </div>
+                        @if($guruIndisipliner->count() > 0)
+                            <span class="badge badge-pill badge-danger" style="background: #fee2e2; color: #b91c1c; font-weight: 700; padding: 5px 10px; font-size: 0.72rem;">
+                                {{ $guruIndisipliner->count() }} Peringatan
+                            </span>
+                        @endif
                     </div>
                     <div class="exec-card-body">
 
-                        @if($guruInval->count() > 0)
+                        @if($guruIndisipliner->count() > 0)
                             <div class="mb-3">
-                                <div class="alert alert-warning p-2 text-dark font-weight-bold" style="font-size: 0.78rem; border-radius: 10px; background: #fff7ed; border-color: #ffedd5;">
-                                    <i class="material-icons text-warning mr-1" style="font-size: 16px; vertical-align: middle;">announcement</i>
-                                    Perlu penugasan Ustadzah Pengganti (Inval):
+                                <div class="alert alert-danger p-2 text-dark font-weight-bold" style="font-size: 0.78rem; border-radius: 10px; background: #fef2f2; border-color: #fecaca; color: #991b1b;">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="material-icons text-danger" style="font-size: 18px;">warning</i>
+                                        <span><strong>Perhatian Kepala TPQ:</strong> Ustadzah di bawah ini tidak hadir 3x berturut-turut tanpa keterangan (Alpa).</span>
+                                    </div>
                                 </div>
                             </div>
 
-                            @foreach($guruInval as $inval)
-                                <div class="inval-item">
+                            @foreach($guruIndisipliner as $inval)
+                                <div class="inval-item" style="border-color: #fca5a5; background: linear-gradient(135deg, #fff5f5 0%, #ffffff 100%);">
                                     <div class="inval-item-header">
-                                        <div class="inval-name">{{ $inval->guru->nama_guru ?? 'Ustadzah' }}</div>
-                                        <span class="inval-badge">
-                                            {{ $inval->kehadiran->kehadiran ?? 'Tidak Hadir' }}
+                                        <div class="inval-name" style="color: #991b1b;">{{ $inval['nama_guru'] }}</div>
+                                        <span class="inval-badge" style="background: #fee2e2; color: #b91c1c;">
+                                            <i class="material-icons" style="font-size: 11px; vertical-align: middle;">event_busy</i>
+                                            {{ $inval['jumlah_alpa'] }}x Alpa Berturut
                                         </span>
                                     </div>
-                                    <div class="inval-reason">
-                                        <i class="material-icons" style="font-size: 13px; vertical-align: middle; color: #94a3b8;">chat</i>
-                                        <em>"{{ $inval->keterangan ?: 'Tidak ada keterangan' }}"</em>
+                                    <div class="inval-reason" style="margin-bottom: 6px;">
+                                        <span class="text-muted" style="font-size: 0.75rem; font-weight: 600;">Tanggal Alpa:</span>
+                                        <div class="d-flex flex-wrap gap-1 mt-1">
+                                            @foreach($inval['tanggal_alpa'] as $tglAlpa)
+                                                <span class="badge" style="background: #fee2e2; color: #991b1b; font-size: 0.7rem; font-weight: 600; padding: 2px 6px;">
+                                                    {{ $tglAlpa }}
+                                                </span>
+                                            @endforeach
+                                        </div>
                                     </div>
-                                    <div>
-                                        @if($inval->guru && $inval->guru->kelas->count() > 0)
-                                            <span class="inval-class-badge">
-                                                <i class="material-icons" style="font-size: 13px;">school</i>
-                                                Wali Kelas: {{ $inval->guru->kelas->pluck('tingkat')->join(', ') }}
-                                            </span>
-                                        @else
-                                            <span class="text-muted" style="font-size: 0.75rem;">Guru Pengajar</span>
+                                    <div class="d-flex align-items-center justify-content-between mt-2 pt-2" style="border-top: 1px dashed #fecaca;">
+                                        <div>
+                                            @if($inval['wali_kelas'])
+                                                <span class="inval-class-badge" style="border-color: #fca5a5; color: #b91c1c;">
+                                                    <i class="material-icons" style="font-size: 12px;">school</i>
+                                                    Wali: {{ $inval['wali_kelas'] }}
+                                                </span>
+                                            @else
+                                                <span class="text-muted" style="font-size: 0.75rem;">Guru Pengajar</span>
+                                            @endif
+                                        </div>
+                                        @if($inval['no_hp'])
+                                            <div class="d-flex gap-1">
+                                                <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $inval['no_hp']) }}" target="_blank" class="btn btn-sm" style="background: #25d366; color: #fff; border-radius: 6px; padding: 2px 8px; font-size: 0.72rem; font-weight: 600; display: inline-flex; align-items: center; gap: 3px;" title="Hubungi via WhatsApp">
+                                                    <i class="material-icons" style="font-size: 13px;">chat</i> WA
+                                                </a>
+                                                <a href="tel:{{ $inval['no_hp'] }}" class="btn btn-sm" style="background: #0284c7; color: #fff; border-radius: 6px; padding: 2px 8px; font-size: 0.72rem; font-weight: 600; display: inline-flex; align-items: center; gap: 3px;" title="Telepon">
+                                                    <i class="material-icons" style="font-size: 13px;">call</i> Telp
+                                                </a>
+                                            </div>
                                         @endif
                                     </div>
                                 </div>
                             @endforeach
 
                         @else
-                            {{-- State jika semua hadir --}}
+                            {{-- State jika seluruh ustadzah tertib / tidak ada 3x berturut tanpa keterangan --}}
                             <div class="text-center py-4 px-2" style="background: #f0fdf4; border-radius: 14px; border: 1px dashed #86efac;">
                                 <div style="width: 52px; height: 52px; background: #dcfce7; color: #16a34a; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 12px;">
-                                    <i class="material-icons" style="font-size: 28px;">sentiment_very_satisfied</i>
+                                    <i class="material-icons" style="font-size: 28px;">verified</i>
                                 </div>
-                                <h5 class="font-weight-bold text-success mb-1" style="font-size: 1rem;">Alhamdulillah, Pengajar Lengkap!</h5>
-                                <p class="text-muted m-0" style="font-size: 0.8rem;">
-                                    Seluruh ustadzah hadir untuk mendampingi pembelajaran hari ini.
+                                <h5 class="font-weight-bold text-success mb-1" style="font-size: 1rem;">Kedisiplinan Ustadzah Baik</h5>
+                                <p class="text-muted m-0" style="font-size: 0.8rem; line-height: 1.4;">
+                                    Tidak ada pengajar yang tidak hadir 3x berturut-turut tanpa keterangan. Seluruh ustadzah mematuhi komitmen kehadiran di TPQ.
                                 </p>
-                            </div>
-                        @endif
-
-                        @if($guruBelumPresensi->count() > 0)
-                            <div class="mt-3 pt-3" style="border-top: 1px dashed #e2e8f0;">
-                                <span class="text-muted font-weight-bold text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.5px;">
-                                    Belum Presensi ({{ $guruBelumPresensi->count() }} orang):
-                                </span>
-                                <ul class="list-unstyled mt-2 mb-0" style="font-size: 0.8rem; color: #64748b;">
-                                    @foreach($guruBelumPresensi->take(4) as $gb)
-                                        <li class="py-1 d-flex justify-content-between align-items-center">
-                                            <span>&bull; {{ $gb->nama_guru }}</span>
-                                            <span class="badge badge-light text-muted" style="font-size: 0.68rem;">Belum Hadir</span>
-                                        </li>
-                                    @endforeach
-                                    @if($guruBelumPresensi->count() > 4)
-                                        <li class="text-muted" style="font-size: 0.72rem;">+{{ $guruBelumPresensi->count() - 4 }} pengajar lainnya</li>
-                                    @endif
-                                </ul>
                             </div>
                         @endif
 
@@ -697,22 +706,8 @@
                     <div class="exec-card-body">
                         <div class="row g-3">
 
-                            {{-- Laporan Presensi Santri --}}
-                            <div class="col-md-4">
-                                <a href="{{ route('admin.laporan.siswa') }}" class="report-box" target="_blank">
-                                    <div class="report-icon" style="background: linear-gradient(135deg, #0284c7, #0369a1);">
-                                        <i class="material-icons">assignment_ind</i>
-                                    </div>
-                                    <div>
-                                        <h5 class="font-weight-bold m-0" style="font-size: 0.95rem; color: #0f172a;">Rekap Presensi Santri</h5>
-                                        <p class="text-muted m-0" style="font-size: 0.78rem;">Laporan rekapitulasi absensi santri bulanan/semester</p>
-                                        <span class="text-primary font-weight-bold" style="font-size: 0.75rem;">Buka &amp; Cetak PDF &rarr;</span>
-                                    </div>
-                                </a>
-                            </div>
-
                             {{-- Laporan Presensi Ustadzah --}}
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <a href="{{ route('admin.laporan.guru') }}" class="report-box" target="_blank">
                                     <div class="report-icon" style="background: linear-gradient(135deg, #10b981, #047857);">
                                         <i class="material-icons">badge</i>
@@ -726,7 +721,7 @@
                             </div>
 
                             {{-- Laporan Tabungan Global --}}
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <a href="{{ route('admin.laporan-tabungan') }}" class="report-box">
                                     <div class="report-icon" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9);">
                                         <i class="material-icons">savings</i>
