@@ -265,6 +265,22 @@ class KalenderAgendaIndex extends Component
             $eventsOnDay = $agendas->filter(function ($item) use ($dateStr) {
                 $start = $item->tanggal_mulai ? $item->tanggal_mulai->toDateString() : null;
                 $end = $item->tanggal_selesai ? $item->tanggal_selesai->toDateString() : $start;
+                
+                // Hari libur resmi selalu tampil di setiap tanggal liburnya
+                if ($item->is_libur) {
+                    return ($dateStr >= $start && $dateStr <= $end);
+                }
+
+                // Jika agenda berdurasi panjang (> 7 hari seperti 1 semester), tampilkan di tanggal mulainya saja
+                $diffDays = ($item->tanggal_mulai && $item->tanggal_selesai) 
+                    ? $item->tanggal_mulai->diffInDays($item->tanggal_selesai) + 1 
+                    : 1;
+
+                if ($diffDays > 7) {
+                    return ($dateStr === $start);
+                }
+
+                // Agenda singkat (1-7 hari) tampil pada seluruh rentang tanggalnya
                 return ($dateStr >= $start && $dateStr <= $end);
             });
 

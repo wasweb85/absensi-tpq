@@ -217,18 +217,20 @@
 
             /* --- 3. DUA KOLOM UTAMA --- */
             .un-layout {
-                display: grid;
-                grid-template-columns: minmax(0, 1fr) 340px;
-                gap: 24px;
-                align-items: start;
-                max-width: 100%;
+                display: grid !important;
+                grid-template-columns: minmax(0, 1fr) 300px !important;
+                gap: 16px !important;
+                align-items: start !important;
+                width: 100% !important;
+                max-width: 100% !important;
             }
-            .un-layout > div:first-child {
-                min-width: 0;
+            .un-layout > div {
+                min-width: 0 !important;
+                max-width: 100% !important;
             }
-            @media (max-width: 1024px) {
+            @media (max-width: 1100px) {
                 .un-layout {
-                    grid-template-columns: 1fr;
+                    grid-template-columns: 1fr !important;
                 }
             }
 
@@ -236,25 +238,25 @@
             .un-active-period {
                 background: #f0fdf4;
                 border: 1px solid #bbf7d0;
-                border-radius: 16px;
-                padding: 16px 20px;
-                margin-bottom: 20px;
+                border-radius: 14px;
+                padding: 10px 16px;
+                margin-bottom: 14px;
             }
             .un-period-header {
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
-                margin-bottom: 12px;
-                gap: 12px;
+                margin-bottom: 8px;
+                gap: 10px;
             }
             .un-period-title {
                 display: flex;
                 align-items: center;
                 gap: 8px;
-                font-size: 12px;
+                font-size: 11.5px;
                 font-weight: 800;
                 color: #047857;
-                letter-spacing: 0.6px;
+                letter-spacing: 0.5px;
                 text-transform: uppercase;
                 margin: 0;
             }
@@ -274,9 +276,9 @@
                 background: #ffffff;
                 border: 1px solid #a7f3d0;
                 color: #047857;
-                font-size: 11px;
+                font-size: 10.5px;
                 font-weight: 700;
-                padding: 4px 14px;
+                padding: 3px 12px;
                 border-radius: 20px;
                 cursor: pointer;
                 outline: none !important;
@@ -288,29 +290,29 @@
             .un-period-items {
                 display: flex;
                 align-items: center;
-                gap: 10px;
+                gap: 8px;
                 flex-wrap: wrap;
             }
             .un-period-chip {
                 background: #ffffff;
                 border: 1px solid #bbf7d0;
-                border-radius: 12px;
-                padding: 7px 14px;
+                border-radius: 10px;
+                padding: 5px 12px;
                 display: inline-flex;
                 align-items: center;
-                gap: 8px;
-                font-size: 12px;
+                gap: 6px;
+                font-size: 11.5px;
                 font-weight: 600;
                 color: #1e293b;
-                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
             }
             .un-period-date-badge {
                 background: #dcfce7;
                 color: #047857;
-                font-size: 11px;
+                font-size: 10.5px;
                 font-weight: 600;
-                padding: 2px 8px;
-                border-radius: 6px;
+                padding: 1.5px 6px;
+                border-radius: 5px;
             }
 
             /* --- 5. KALENDER BULANAN (GRID TERPADU) --- */
@@ -318,13 +320,13 @@
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                gap: 16px;
-                margin-bottom: 16px;
+                gap: 12px;
+                margin-bottom: 12px;
             }
             .un-nav-arrow {
-                width: 34px;
-                height: 34px;
-                border-radius: 10px;
+                width: 32px;
+                height: 32px;
+                border-radius: 8px;
                 border: 1px solid #e2e8f0;
                 background: #ffffff;
                 color: #64748b;
@@ -334,46 +336,49 @@
                 cursor: pointer;
                 outline: none !important;
                 transition: all 0.15s ease;
-                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
             }
             .un-nav-arrow:hover {
                 border-color: #7c3aed;
                 color: #7c3aed;
             }
             .un-month-title {
-                font-size: 22px;
+                font-size: 19px;
                 font-weight: 800;
                 color: #1e293b;
                 display: flex;
                 align-items: center;
-                gap: 10px;
+                gap: 8px;
             }
             .un-year-badge {
                 background: #ede9fe;
                 color: #6d28d9;
-                font-size: 13px;
+                font-size: 12.5px;
                 font-weight: 800;
-                padding: 2px 10px;
-                border-radius: 8px;
+                padding: 2px 8px;
+                border-radius: 6px;
             }
 
             .un-cal-card {
                 background: #ffffff;
                 border: 1px solid #eef2f6;
-                border-radius: 20px;
+                border-radius: 16px;
                 overflow: hidden;
                 box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+                width: 100% !important;
+                max-width: 100% !important;
             }
             .un-cal-header-row {
-                display: grid;
-                grid-template-columns: repeat(7, 1fr);
-                padding: 14px 0;
+                display: grid !important;
+                grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+                padding: 10px 0 !important;
                 border-bottom: 1px solid #eef2f6;
                 text-align: center;
                 background: #ffffff;
+                width: 100% !important;
             }
             .un-day-name {
-                font-size: 12px;
+                font-size: 11.5px;
                 font-weight: 700;
                 color: #64748b;
                 letter-spacing: 0.5px;
@@ -381,34 +386,36 @@
             .un-jum-badge {
                 background: #ffe4e6;
                 color: #e11d48;
-                border-radius: 6px;
-                padding: 2px 8px;
-                font-size: 11px;
+                border-radius: 5px;
+                padding: 2px 6px;
+                font-size: 10.5px;
                 font-weight: 800;
                 display: inline-flex;
                 align-items: center;
-                gap: 4px;
+                gap: 3px;
             }
             .un-jum-libur-tag {
                 background: #e11d48;
                 color: #ffffff;
                 border-radius: 3px;
-                font-size: 9px;
-                padding: 1px 4px;
+                font-size: 8.5px;
+                padding: 1px 3px;
                 line-height: 1;
                 font-weight: 700;
             }
 
             .un-cal-body {
-                display: grid;
-                grid-template-columns: repeat(7, 1fr);
+                display: grid !important;
+                grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
                 background: #ffffff;
+                width: 100% !important;
             }
             .un-cell {
                 border-right: 1px solid #f1f5f9;
                 border-bottom: 1px solid #f1f5f9;
-                min-height: 110px;
-                padding: 8px 10px;
+                min-height: 72px !important;
+                max-height: 86px !important;
+                padding: 4px 6px !important;
                 display: flex;
                 flex-direction: column;
                 justify-content: flex-start;
@@ -416,7 +423,10 @@
                 position: relative;
                 cursor: pointer;
                 transition: background 0.15s ease;
-                box-sizing: border-box;
+                box-sizing: border-box !important;
+                min-width: 0 !important;
+                width: 100% !important;
+                overflow: hidden !important;
             }
             .un-cell:nth-child(7n) {
                 border-right: none;
@@ -432,11 +442,11 @@
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
-                margin-bottom: 6px;
+                margin-bottom: 3px;
                 width: 100%;
             }
             .un-masehi-num {
-                font-size: 13px;
+                font-size: 12px;
                 font-weight: 700;
                 color: #1e293b;
             }
@@ -444,39 +454,49 @@
                 color: #e11d48;
             }
             .un-today-badge {
-                width: 26px;
-                height: 26px;
-                border-radius: 8px;
+                width: 20px;
+                height: 20px;
+                border-radius: 6px;
                 background: #5a20cb;
                 color: #ffffff;
-                font-size: 12px;
+                font-size: 11px;
                 font-weight: 800;
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
-                box-shadow: 0 2px 6px rgba(90, 32, 203, 0.3);
+                box-shadow: 0 2px 5px rgba(90, 32, 203, 0.3);
             }
             .un-hijri-text {
-                font-size: 10px;
+                font-size: 9px;
                 font-weight: 500;
                 color: #94a3b8;
             }
 
             /* Event Chips */
             .un-event-chip {
-                border-radius: 12px;
-                padding: 2px 8px;
-                font-size: 10px;
-                font-weight: 600;
-                margin-bottom: 3px;
-                display: flex;
-                align-items: center;
-                gap: 4px;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
+                border-radius: 5px !important;
+                padding: 1.5px 5px !important;
+                font-size: 9.5px !important;
+                line-height: 1.25 !important;
+                font-weight: 600 !important;
+                margin-bottom: 2px !important;
+                display: flex !important;
+                align-items: center !important;
+                gap: 3px !important;
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+                max-width: 100% !important;
+                min-width: 0 !important;
                 cursor: pointer;
                 transition: all 0.15s ease;
+            }
+            .un-event-chip span {
+                display: block !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+                white-space: nowrap !important;
+                min-width: 0 !important;
             }
             .un-event-chip:hover {
                 filter: brightness(0.95);
@@ -504,12 +524,13 @@
             .un-libur-jumat-pill {
                 background: #ffe4e6;
                 color: #e11d48;
-                border-radius: 6px;
-                padding: 2px 8px;
-                font-size: 10px;
+                border-radius: 4px;
+                padding: 1px 6px;
+                font-size: 9px;
                 font-weight: 700;
                 display: inline-block;
-                margin-bottom: 4px;
+                margin-bottom: 2px;
+                white-space: nowrap;
             }
 
             /* --- 6. KALENDER TAHUNAN (12 BULAN MINI) --- */
