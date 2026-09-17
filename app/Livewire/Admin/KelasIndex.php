@@ -6,6 +6,7 @@ use App\Models\Guru;
 use Livewire\Component;
 
 use Livewire\WithPagination;
+use Illuminate\Support\Facades\DB;
 
 class KelasIndex extends Component
 {
@@ -26,6 +27,7 @@ class KelasIndex extends Component
 
     protected $rules = [
         'tingkat' => 'required|string|max:50',
+        'index_kelas' => 'nullable|string|max:50',
         'id_wali_kelas' => 'nullable|integer',
     ];
 
@@ -71,11 +73,18 @@ class KelasIndex extends Component
     {
         $this->validate();
 
-        Kelas::create([
+        $kelas = Kelas::create([
             'tingkat' => $this->tingkat,
             'index_kelas' => $this->index_kelas ?? '',
-            'id_wali_kelas' => $this->id_wali_kelas,
+            'id_wali_kelas' => $this->id_wali_kelas ?: null,
         ]);
+
+        if ($this->id_wali_kelas) {
+            DB::table('guru_kelas')->updateOrInsert(
+                ['id_guru' => $this->id_wali_kelas, 'id_kelas' => $kelas->id_kelas],
+                ['created_at' => now(), 'updated_at' => now()]
+            );
+        }
 
         $this->showModal = false;
         session()->flash('success', 'Data berhasil ditambah');
@@ -99,12 +108,27 @@ class KelasIndex extends Component
         $this->validate();
         
         $kelas = Kelas::findOrFail($this->id_kelas);
+        $oldWaliKelas = $kelas->id_wali_kelas;
         
         $kelas->update([
             'tingkat' => $this->tingkat,
             'index_kelas' => $this->index_kelas ?? '',
-            'id_wali_kelas' => $this->id_wali_kelas,
+            'id_wali_kelas' => $this->id_wali_kelas ?: null,
         ]);
+
+        if ($oldWaliKelas && $oldWaliKelas != $this->id_wali_kelas) {
+            DB::table('guru_kelas')
+                ->where('id_guru', $oldWaliKelas)
+                ->where('id_kelas', $kelas->id_kelas)
+                ->delete();
+        }
+
+        if ($this->id_wali_kelas) {
+            DB::table('guru_kelas')->updateOrInsert(
+                ['id_guru' => $this->id_wali_kelas, 'id_kelas' => $kelas->id_kelas],
+                ['created_at' => now(), 'updated_at' => now()]
+            );
+        }
 
         $this->showModal = false;
         session()->flash('success', 'Data berhasil diubah');
@@ -125,6 +149,7 @@ class KelasIndex extends Component
             return;
         }
 
+        DB::table('guru_kelas')->where('id_kelas', $this->id_kelas)->delete();
         $kelas->delete();
         session()->flash('success', 'Data berhasil dihapus');
         $this->dispatch('hide-delete-modal');

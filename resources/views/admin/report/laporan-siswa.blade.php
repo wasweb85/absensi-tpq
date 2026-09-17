@@ -6,21 +6,21 @@
       ? asset('uploads/logo/' . $appSettings->logo) 
       : asset('assets/img/logo-sekolah.jpg');
 @endphp
-<table>
-   <tr>
-      <td><img src="{{ $logoImg }}" width="90px" height="90px" style="object-fit:contain;"></td>
-      <td width="100%">
-         <h2 align="center">DAFTAR HADIR SISWA</h2>
-         <h4 align="center">{{ $appSettings->school_name ?? ($generalSettings->school_name ?? 'TPQ Absensi') }}</h4>
-         <h4 align="center">TAHUN PELAJARAN {{ $appSettings->school_year ?? ($generalSettings->school_year ?? '2026/2027') }}</h4>
-      </td>
-      <td>
-         <div style="width:100px"></div>
-      </td>
-   </tr>
-</table>
-<span>Bulan : {{ $bulan }}</span>
-<span style="position: absolute;right: 0;">Kelas : {{ $kelas->tingkat ?? '' }} {{ $kelas->index_kelas ?? '' }}</span>
+<div style="position: relative; margin-bottom: 12px; min-height: 70px;">
+   <div style="position: absolute; left: 0; top: 0;">
+      <img src="{{ $logoImg }}" style="max-height: 65px; max-width: 85px; object-fit: contain;">
+   </div>
+   <div style="text-align: center; width: 100%;">
+      <h2 style="margin: 0; font-size: 16px; font-weight: 800; color: #0f172a; letter-spacing: 0.5px;">DAFTAR HADIR SANTRI / SISWA</h2>
+      <h4 style="margin: 3px 0 0 0; font-size: 13.5px; font-weight: 700; color: #1e3a8a;">{{ strtoupper($appSettings->school_name ?? ($generalSettings->school_name ?? 'TPQ Darul Huda')) }}</h4>
+      <h4 style="margin: 2px 0 0 0; font-size: 11.5px; font-weight: 600; color: #475569;">TAHUN PELAJARAN {{ strtoupper($appSettings->school_year ?? ($generalSettings->school_year ?? '2026/2027')) }}</h4>
+   </div>
+</div>
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 12px; font-weight: 700;">
+   <span>Bulan / Periode : {{ $bulan }}</span>
+   <span>Kelas : {{ $kelas->tingkat ?? '' }} {{ $kelas->index_kelas ?? '' }}</span>
+</div>
 <table align="center" border="1">
    <tr>
       <td></td>
@@ -161,22 +161,4 @@
       <td colspan="3">: Libur (Mengikuti Kalender & Agenda TPQ serta Hari Libur Mingguan, tidak dihitung Alpa)</td>
    </tr>
 </table>
-
-@if(!empty($agendaLiburBulanIni) && $agendaLiburBulanIni->count() > 0)
-   <div style="margin-top: 12px; padding: 8px 12px; border: 1px dashed #ef4444; background: #fff5f5; border-radius: 4px; font-size: 11px;">
-      <b style="color: #991b1b;">Rincian Agenda Libur Kalender Periode Ini:</b>
-      <ul style="margin: 4px 0 0 16px; padding: 0;">
-         @foreach($agendaLiburBulanIni as $agenda)
-            <li>
-               <b>{{ \Carbon\Carbon::parse($agenda->tanggal_mulai)->translatedFormat('d M Y') }}
-               @if($agenda->tanggal_selesai && $agenda->tanggal_selesai != $agenda->tanggal_mulai)
-                  s/d {{ \Carbon\Carbon::parse($agenda->tanggal_selesai)->translatedFormat('d M Y') }}
-               @endif:</b>
-               {{ $agenda->judul }}
-               @if($agenda->keterangan) - <span style="color: #475569;">{{ $agenda->keterangan }}</span> @endif
-            </li>
-         @endforeach
-      </ul>
-   </div>
-@endif
 @endsection

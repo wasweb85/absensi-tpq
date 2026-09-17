@@ -4,11 +4,16 @@ namespace App\Livewire\Admin;
 
 use Livewire\Component;
 use App\Models\Kelas;
+use App\Models\Siswa;
 use App\Models\Tabungan;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class LaporanTabunganIndex extends Component
 {
+    public $selectedMonth;
+    public $selectedYear;
+
     public $detailSiswa = [];
     public $namaKelasTerpilih = '';
     
@@ -32,27 +37,66 @@ class LaporanTabunganIndex extends Component
         if (!$canLaporan) {
             abort(403, 'Anda tidak memiliki hak akses untuk melihat Laporan Tabungan.');
         }
+
+        $this->selectedMonth = (int) date('n');
+        $this->selectedYear = (int) date('Y');
     }
 
     public function render()
     {
-        // Get all classes with their total tabungan
-        $kelases = Kelas::with(['guru'])->get();
+        $bulan = (int) ($this->selectedMonth ?: date('n'));
+        $tahun = (int) ($this->selectedYear ?: date('Y'));
+
+        $startDate = Carbon::createFromDate($tahun, $bulan, 1)->startOfMonth()->toDateString();
+        $endDate = Carbon::createFromDate($tahun, $bulan, 1)->endOfMonth()->toDateString();
+
+        // 1. Saldo Awal (sebelum awal bulan terpilih)
+        $totalSetorSebelum = (float) Tabungan::where('tanggal', '<', $startDate)->where('jenis_transaksi', 'setor')->sum('nominal');
+        $totalTarikSebelum = (float) Tabungan::where('tanggal', '<', $startDate)->where('jenis_transaksi', 'tarik')->sum('nominal');
+        $saldoAwal = $totalSetorSebelum - $totalTarikSebelum;
+
+        // 2. Mutasi Bulan Ini
+        $totalSetoranBulanIni = (float) Tabungan::whereBetween('tanggal', [$startDate, $endDate])->where('jenis_transaksi', 'setor')->sum('nominal');
+        $totalPenarikanBulanIni = (float) Tabungan::whereBetween('tanggal', [$startDate, $endDate])->where('jenis_transaksi', 'tarik')->sum('nominal');
+        $saldoAkhir = $saldoAwal + $totalSetoranBulanIni - $totalPenarikanBulanIni;
+
+        // 3. Akuntabilitas Kas Fisik & Dana Mengendap
+        $totalSetorSudah = (float) Tabungan::where('jenis_transaksi', 'setor')->where('status_setoran', 'sudah')->sum('nominal');
+        $totalTarikSemua = (float) Tabungan::where('jenis_transaksi', 'tarik')->sum('nominal');
+        $kasDiBendahara = max(0, $totalSetorSudah - $totalTarikSemua);
+        $totalDanaMengendap = (float) Tabungan::where('jenis_transaksi', 'setor')->where('status_setoran', 'belum')->sum('nominal');
+
+        // 4. Rekap Per Kelas
+        $kelases = Kelas::with(['guru'])->orderBy('tingkat')->get();
 
         $laporanKelas = [];
         $totalTabunganKeseluruhan = 0;
-        $totalDanaMengendap = 0;
 
         foreach ($kelases as $kelas) {
-            $siswaIds = \App\Models\Siswa::where('id_kelas', $kelas->id_kelas)->pluck('id_siswa');
+            $siswaIds = Siswa::where('id_kelas', $kelas->id_kelas)->pluck('id_siswa');
+            $santriCount = Siswa::where('id_kelas', $kelas->id_kelas)->where('saldo_tabungan', '>', 0)->count();
+            if ($santriCount === 0) {
+                $santriCount = count($siswaIds);
+            }
             
-            // Hitung total saldo (setor - tarik) untuk kelas ini
-            $totalSetor = Tabungan::whereIn('id_siswa', $siswaIds)->where('jenis_transaksi', 'setor')->sum('nominal');
-            $totalTarik = Tabungan::whereIn('id_siswa', $siswaIds)->where('jenis_transaksi', 'tarik')->sum('nominal');
-            $saldoKelas = $totalSetor - $totalTarik;
+            // Setor & Tarik bulan ini
+            $setorBulanIni = (float) Tabungan::whereIn('id_siswa', $siswaIds)
+                ->whereBetween('tanggal', [$startDate, $endDate])
+                ->where('jenis_transaksi', 'setor')
+                ->sum('nominal');
+            
+            $tarikBulanIni = (float) Tabungan::whereIn('id_siswa', $siswaIds)
+                ->whereBetween('tanggal', [$startDate, $endDate])
+                ->where('jenis_transaksi', 'tarik')
+                ->sum('nominal');
+
+            // Saldo akumulatif sampai akhir bulan ini
+            $totalSetorKelas = (float) Tabungan::whereIn('id_siswa', $siswaIds)->where('tanggal', '<=', $endDate)->where('jenis_transaksi', 'setor')->sum('nominal');
+            $totalTarikKelas = (float) Tabungan::whereIn('id_siswa', $siswaIds)->where('tanggal', '<=', $endDate)->where('jenis_transaksi', 'tarik')->sum('nominal');
+            $saldoKelas = $totalSetorKelas - $totalTarikKelas;
             
             // Hitung uang di tangan guru (belum disetor)
-            $danaMengendap = Tabungan::whereIn('id_siswa', $siswaIds)
+            $danaMengendap = (float) Tabungan::whereIn('id_siswa', $siswaIds)
                 ->where('jenis_transaksi', 'setor')
                 ->where('status_setoran', 'belum')
                 ->sum('nominal');
@@ -60,12 +104,14 @@ class LaporanTabunganIndex extends Component
             $laporanKelas[] = [
                 'kelas' => $kelas,
                 'guru' => $kelas->guru,
+                'santri_count' => $santriCount,
+                'setor_bulan_ini' => $setorBulanIni,
+                'tarik_bulan_ini' => $tarikBulanIni,
                 'saldo' => $saldoKelas,
                 'dana_mengendap' => $danaMengendap
             ];
 
             $totalTabunganKeseluruhan += $saldoKelas;
-            $totalDanaMengendap += $danaMengendap;
         }
 
         // Get 10 most recent activities across all classes
@@ -74,11 +120,22 @@ class LaporanTabunganIndex extends Component
             ->take(10)
             ->get();
 
+        $monthNames = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+        ];
+
         return view('livewire.admin.laporan-tabungan-index', [
             'laporanKelas' => collect($laporanKelas)->sortByDesc('saldo')->values(),
-            'totalTabunganKeseluruhan' => $totalTabunganKeseluruhan,
+            'saldoAwal' => $saldoAwal,
+            'totalSetoranBulanIni' => $totalSetoranBulanIni,
+            'totalPenarikanBulanIni' => $totalPenarikanBulanIni,
+            'saldoAkhir' => $saldoAkhir,
+            'kasDiBendahara' => $kasDiBendahara,
             'totalDanaMengendap' => $totalDanaMengendap,
-            'aktivitasTerbaru' => $aktivitasTerbaru
+            'aktivitasTerbaru' => $aktivitasTerbaru,
+            'monthNames' => $monthNames,
         ])->layout('layouts.admin', ['title' => 'Laporan Tabungan', 'context' => 'laporan-tabungan']);
     }
     public function bukaDetailKelas($id_kelas)

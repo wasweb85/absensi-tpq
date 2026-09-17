@@ -10,16 +10,16 @@
 
             /* --- 1. HERO BANNER --- */
             .un-hero {
-                background: linear-gradient(135deg, #4f14e2 0%, #6d28d9 45%, #7c3aed 100%);
-                border-radius: 20px;
-                padding: 24px 30px;
+                background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 50%, #0284c7 100%);
+                border-radius: 28px;
+                padding: 26px 28px;
                 color: #ffffff;
                 display: flex;
-                align-items: center;
-                justify-content: space-between;
+                flex-direction: column;
+                align-items: flex-start;
                 gap: 20px;
-                margin-bottom: 20px;
-                box-shadow: 0 10px 25px -5px rgba(109, 40, 217, 0.35);
+                margin-bottom: 22px;
+                box-shadow: 0 12px 30px -5px rgba(29, 78, 216, 0.38);
                 position: relative;
                 overflow: hidden;
             }
@@ -27,36 +27,38 @@
                 position: absolute;
                 right: -40px;
                 top: -40px;
-                width: 220px;
-                height: 220px;
-                background: rgba(255, 255, 255, 0.1);
+                width: 260px;
+                height: 260px;
+                background: rgba(255, 255, 255, 0.12);
                 border-radius: 50%;
-                filter: blur(40px);
+                filter: blur(45px);
                 pointer-events: none;
             }
-            .un-hero-left {
+            .un-hero-top {
                 display: flex;
-                align-items: center;
-                gap: 16px;
+                align-items: flex-start;
+                gap: 18px;
                 position: relative;
                 z-index: 2;
+                width: 100%;
             }
             .un-hero-icon {
-                width: 52px;
-                height: 52px;
-                border-radius: 14px;
+                width: 58px;
+                height: 58px;
+                border-radius: 20px;
                 background: rgba(255, 255, 255, 0.18);
+                backdrop-filter: blur(8px);
                 border: 1px solid rgba(255, 255, 255, 0.3);
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 flex-shrink: 0;
-                box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2);
+                box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.22);
             }
             .un-hero-title-wrap {
                 display: flex;
                 align-items: center;
-                gap: 10px;
+                gap: 12px;
                 flex-wrap: wrap;
             }
             .un-hero-title {
@@ -65,34 +67,36 @@
                 color: #ffffff;
                 margin: 0;
                 letter-spacing: -0.5px;
+                line-height: 1.25;
             }
             .un-hero-badge {
                 background: rgba(255, 255, 255, 0.22);
+                backdrop-filter: blur(6px);
                 border: 1px solid rgba(255, 255, 255, 0.35);
                 color: #ffffff;
                 font-size: 11px;
-                font-weight: 700;
-                padding: 2px 10px;
+                font-weight: 800;
+                padding: 3px 12px;
                 border-radius: 20px;
-                letter-spacing: 0.5px;
+                letter-spacing: 0.6px;
                 text-transform: uppercase;
             }
             .un-hero-desc {
-                font-size: 13px;
+                font-size: 13.5px;
                 color: rgba(255, 255, 255, 0.88);
-                margin: 4px 0 0 0;
+                margin: 6px 0 0 0;
                 font-weight: 400;
-                max-width: 650px;
-                line-height: 1.4;
+                max-width: 720px;
+                line-height: 1.55;
             }
 
             /* Toggle Switch Bulanan | Tahunan */
             .un-toggle-group {
-                background: rgba(0, 0, 0, 0.25);
+                background: rgba(0, 0, 0, 0.18);
                 backdrop-filter: blur(12px);
-                border: 1px solid rgba(255, 255, 255, 0.2);
-                border-radius: 30px;
-                padding: 4px;
+                border: 1px solid rgba(255, 255, 255, 0.18);
+                border-radius: 20px;
+                padding: 5px;
                 display: inline-flex;
                 align-items: center;
                 gap: 4px;
@@ -101,10 +105,10 @@
                 flex-shrink: 0;
             }
             .un-toggle-btn {
-                padding: 8px 24px;
-                border-radius: 24px;
+                padding: 10px 24px;
+                border-radius: 15px;
                 font-size: 12px;
-                font-weight: 700;
+                font-weight: 800;
                 letter-spacing: 0.6px;
                 border: none;
                 cursor: pointer;
@@ -113,12 +117,12 @@
             }
             .un-toggle-btn.active {
                 background: #ffffff !important;
-                color: #5a20cb !important;
-                box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15) !important;
+                color: #1d4ed8 !important;
+                box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15) !important;
             }
             .un-toggle-btn.inactive {
                 background: transparent !important;
-                color: rgba(255, 255, 255, 0.85) !important;
+                color: rgba(255, 255, 255, 0.82) !important;
             }
             .un-toggle-btn.inactive:hover {
                 color: #ffffff !important;
@@ -194,7 +198,7 @@
                 border-color: #0f172a !important;
             }
             .un-btn-add {
-                background: linear-gradient(135deg, #6d28d9 0%, #4f46e5 100%);
+                background: linear-gradient(135deg, #1d4ed8 0%, #0284c7 100%);
                 color: #ffffff !important;
                 border: none;
                 border-radius: 14px;
@@ -205,14 +209,14 @@
                 display: inline-flex;
                 align-items: center;
                 gap: 6px;
-                box-shadow: 0 4px 12px rgba(109, 40, 217, 0.25);
+                box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
                 transition: all 0.2s ease;
                 outline: none !important;
                 white-space: nowrap;
             }
             .un-btn-add:hover {
                 transform: translateY(-1px);
-                box-shadow: 0 6px 16px rgba(109, 40, 217, 0.35);
+                box-shadow: 0 6px 16px rgba(2, 132, 199, 0.35);
             }
 
             /* --- 3. DUA KOLOM UTAMA --- */
@@ -339,8 +343,8 @@
                 box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
             }
             .un-nav-arrow:hover {
-                border-color: #7c3aed;
-                color: #7c3aed;
+                border-color: #0284c7;
+                color: #0284c7;
             }
             .un-month-title {
                 font-size: 19px;
@@ -351,8 +355,8 @@
                 gap: 8px;
             }
             .un-year-badge {
-                background: #ede9fe;
-                color: #6d28d9;
+                background: #eff6ff;
+                color: #1d4ed8;
                 font-size: 12.5px;
                 font-weight: 800;
                 padding: 2px 8px;
@@ -467,14 +471,14 @@
                 width: 20px;
                 height: 20px;
                 border-radius: 6px;
-                background: #5a20cb;
+                background: #2563eb;
                 color: #ffffff;
                 font-size: 11px;
                 font-weight: 800;
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
-                box-shadow: 0 2px 5px rgba(90, 32, 203, 0.3);
+                box-shadow: 0 2px 5px rgba(37, 99, 235, 0.3);
             }
 
             /* Event Chips */
@@ -512,9 +516,9 @@
                 color: #047857;
             }
             .un-event-chip.penting {
-                background: #f5f3ff;
-                border: 1px solid #ddd6fe;
-                color: #6d28d9;
+                background: #f0f9ff;
+                border: 1px solid #bae6fd;
+                color: #0284c7;
             }
             .un-event-chip.umum {
                 background: #eff6ff;
@@ -569,8 +573,8 @@
                 transition: all 0.2s ease;
             }
             .un-mini-card:hover {
-                border-color: #7c3aed;
-                box-shadow: 0 4px 16px rgba(124, 58, 237, 0.08);
+                border-color: #0284c7;
+                box-shadow: 0 4px 16px rgba(2, 132, 199, 0.1);
             }
             .un-mini-card-header {
                 display: flex;
@@ -586,7 +590,7 @@
                 color: #1e293b;
             }
             .un-now-badge {
-                background: #5a20cb;
+                background: #2563eb;
                 color: #ffffff;
                 font-size: 9px;
                 font-weight: 800;
@@ -665,10 +669,10 @@
                 background: currentColor;
             }
             .un-mini-cell.today {
-                background: #5a20cb !important;
+                background: #2563eb !important;
                 color: #ffffff !important;
                 font-weight: 800;
-                box-shadow: 0 2px 6px rgba(90, 32, 203, 0.35);
+                box-shadow: 0 2px 6px rgba(37, 99, 235, 0.35);
             }
             .un-mini-cell.today::after {
                 background: #ffffff;
@@ -706,9 +710,9 @@
                 background: #ecfdf5;
                 color: #059669;
             }
-            .un-side-icon-box.purple {
-                background: #f5f3ff;
-                color: #7c3aed;
+            .un-side-icon-box.blue {
+                background: #eff6ff;
+                color: #0284c7;
             }
             .un-side-title {
                 font-size: 14px;
@@ -866,7 +870,7 @@
             }
             .un-icon-btn:hover {
                 background: #f1f5f9;
-                color: #6d28d9;
+                color: #0284c7;
             }
             .un-icon-btn.danger {
                 color: #f43f5e;
@@ -947,7 +951,7 @@
                 border: 1px solid #e2e8f0;
             }
             .un-modal-header {
-                background: linear-gradient(135deg, #6d28d9 0%, #4f46e5 100%);
+                background: linear-gradient(135deg, #1e40af 0%, #0284c7 100%);
                 padding: 18px 24px;
                 color: #ffffff;
                 display: flex;
@@ -979,7 +983,7 @@
                 box-sizing: border-box;
             }
             .un-form-control:focus {
-                border-color: #6d28d9 !important;
+                border-color: #2563eb !important;
                 background: #ffffff;
             }
         </style>
@@ -1010,14 +1014,14 @@
             {{-- 1. HERO HEADER BANNER --}}
             <div class="un-hero">
                 <div class="un-hero-bg-glow"></div>
-                <div class="un-hero-left">
+                <div class="un-hero-top">
                     <div class="un-hero-icon">
                         <i class="material-icons" style="font-size: 28px; color: #ffffff;">calendar_today</i>
                     </div>
-                    <div>
+                    <div style="flex: 1; min-width: 0;">
                         <div class="un-hero-title-wrap">
                             <h1 class="un-hero-title">Kalender &amp; Agenda</h1>
-                            <span class="un-hero-badge">TPQ SISTEM</span>
+                            <span class="un-hero-badge">SSO UNUJA</span>
                         </div>
                         <p class="un-hero-desc">
                             Kelola agenda belajar, pantau libur nasional, dan jadwalkan tugas secara terpadu di dalam kanvas kaca.
@@ -1073,7 +1077,7 @@
                         type="button" 
                         wire:click="setCategory('penting')" 
                         class="un-pill {{ $selectedCategory === 'penting' ? 'active' : '' }}">
-                        <span style="width: 7px; height: 7px; border-radius: 50%; background: #8b5cf6; display: inline-block;"></span>
+                        <span style="width: 7px; height: 7px; border-radius: 50%; background: #0284c7; display: inline-block;"></span>
                         Penting
                     </button>
 
@@ -1227,7 +1231,7 @@
                                         @endforeach
 
                                         @if ($cell['events']->count() > 2)
-                                            <div style="font-size: 9px; font-weight: 700; color: #6d28d9; padding-left: 2px;">
+                                            <div style="font-size: 9px; font-weight: 700; color: #2563eb; padding-left: 2px;">
                                                 +{{ $cell['events']->count() - 2 }} agenda
                                             </div>
                                         @endif
@@ -1348,14 +1352,14 @@
 
                             {{-- Agenda --}}
                             <div class="un-stat-box">
-                                <div class="un-stat-icon-circle" style="background: #f5f3ff; color: #7c3aed;">
+                                <div class="un-stat-icon-circle" style="background: #eff6ff; color: #0284c7;">
                                     <i class="material-icons" style="font-size: 17px;">description</i>
                                 </div>
-                                <div class="un-stat-val" style="color: #7c3aed;">
+                                <div class="un-stat-val" style="color: #0284c7;">
                                     {{ $stats['total_agenda'] }}
                                 </div>
                                 <div class="un-stat-lbl">Agenda</div>
-                                <div class="un-stat-bar" style="background: #7c3aed;"></div>
+                                <div class="un-stat-bar" style="background: #0284c7;"></div>
                             </div>
                         </div>
                     </div>
@@ -1364,7 +1368,7 @@
                     <div class="un-side-card">
                         <div class="un-side-header">
                             <div class="un-side-header-left">
-                                <div class="un-side-icon-box purple">
+                                <div class="un-side-icon-box blue">
                                     <i class="material-icons" style="font-size: 20px;">event_note</i>
                                 </div>
                                 <div>
@@ -1372,7 +1376,7 @@
                                     <p class="un-side-subtitle">Timeline bulan ini</p>
                                 </div>
                             </div>
-                            <span style="background: #f5f3ff; color: #7c3aed; font-size: 11px; font-weight: 700; padding: 2px 10px; border-radius: 8px;">
+                            <span style="background: #eff6ff; color: #0284c7; font-size: 11px; font-weight: 700; padding: 2px 10px; border-radius: 8px;">
                                 {{ $currentMonthName }}
                             </span>
                         </div>
@@ -1477,7 +1481,7 @@
                         <div>
                             <label class="un-form-label">Aksen Warna</label>
                             <div style="display: flex; align-items: center; gap: 8px; padding-top: 6px;">
-                                @foreach (['#10b981' => '#10b981', '#3b82f6' => '#3b82f6', '#8b5cf6' => '#8b5cf6', '#f59e0b' => '#f59e0b', '#f43f5e' => '#f43f5e'] as $hex => $c)
+                                @foreach (['#10b981' => '#10b981', '#3b82f6' => '#3b82f6', '#0284c7' => '#0284c7', '#f59e0b' => '#f59e0b', '#f43f5e' => '#f43f5e'] as $hex => $c)
                                     <button 
                                         type="button" 
                                         wire:click="$set('form_warna', '{{ $hex }}')" 
@@ -1535,7 +1539,7 @@
                             <button 
                                 type="submit" 
                                 wire:loading.attr="disabled"
-                                style="padding: 9px 24px; border-radius: 12px; border: none; background: linear-gradient(135deg, #6d28d9 0%, #4f46e5 100%); color: #ffffff; font-weight: 700; font-size: 13px; cursor: pointer; box-shadow: 0 4px 12px rgba(109,40,217,0.25); display: inline-flex; align-items: center; gap: 6px;">
+                                style="padding: 9px 24px; border-radius: 12px; border: none; background: linear-gradient(135deg, #1d4ed8 0%, #0284c7 100%); color: #ffffff; font-weight: 700; font-size: 13px; cursor: pointer; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25); display: inline-flex; align-items: center; gap: 6px;">
                                 <span wire:loading.remove>{{ $agendaId ? 'Simpan Perubahan' : 'Simpan Agenda' }}</span>
                                 <span wire:loading>Menyimpan...</span>
                             </button>
@@ -1552,7 +1556,7 @@
             <div class="un-modal-box" style="max-width: 520px; border-radius: 22px; overflow: hidden; padding: 0; box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25);">
                 
                 {{-- Modal Header --}}
-                <div style="background: linear-gradient(135deg, #4f14e2 0%, #6d28d9 60%, #7c3aed 100%); padding: 20px 24px; color: #ffffff; display: flex; align-items: center; justify-content: space-between; position: relative;">
+                <div style="background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 60%, #0284c7 100%); padding: 20px 24px; color: #ffffff; display: flex; align-items: center; justify-content: space-between; position: relative;">
                     <div style="display: flex; align-items: center; gap: 12px;">
                         <div style="width: 44px; height: 44px; border-radius: 14px; background: rgba(255, 255, 255, 0.18); border: 1px solid rgba(255, 255, 255, 0.3); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                             <i class="material-icons" style="font-size: 22px; color: #ffffff;">calendar_month</i>
@@ -1594,7 +1598,7 @@
                                 </div>
                             </div>
                             @if ($selectedDayData['is_today'])
-                                <span style="background: #5a20cb; color: #ffffff; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 6px;">HARI INI</span>
+                                <span style="background: #2563eb; color: #ffffff; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 6px;">HARI INI</span>
                             @endif
                         </div>
                     @else
@@ -1611,7 +1615,7 @@
                                 </div>
                             </div>
                             @if ($selectedDayData['is_today'])
-                                <span style="background: #5a20cb; color: #ffffff; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 6px;">HARI INI</span>
+                                <span style="background: #2563eb; color: #ffffff; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 6px;">HARI INI</span>
                             @endif
                         </div>
                     @endif
@@ -1626,7 +1630,7 @@
                                 <button 
                                     type="button" 
                                     wire:click="openCreateFromDayModal('{{ $selectedDayData['date_string'] }}')"
-                                    style="background: transparent; border: none; color: #6d28d9; font-size: 12px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; padding: 0;">
+                                    style="background: transparent; border: none; color: #0284c7; font-size: 12px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; padding: 0;">
                                     <i class="material-icons" style="font-size: 15px;">add_circle</i>
                                     <span>Tambah Agenda</span>
                                 </button>
@@ -1634,7 +1638,7 @@
                         </div>
 
                         @forelse ($selectedDayData['events'] as $ev)
-                            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-left: 4px solid {{ $ev->warna ?: ($ev->is_libur ? '#e11d48' : '#6d28d9') }}; border-radius: 12px; padding: 14px; margin-bottom: 10px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02); transition: all 0.15s ease;">
+                            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-left: 4px solid {{ $ev->warna ?: ($ev->is_libur ? '#e11d48' : '#2563eb') }}; border-radius: 12px; padding: 14px; margin-bottom: 10px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02); transition: all 0.15s ease;">
                                 <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 6px;">
                                     <h4 style="margin: 0; font-size: 14px; font-weight: 800; color: #0f172a; line-height: 1.35;">
                                         {{ $ev->judul }}
@@ -1645,7 +1649,7 @@
                                                 Libur
                                             </span>
                                         @endif
-                                        <span style="background: {{ $ev->kategori === 'penting' ? '#f5f3ff' : '#eff6ff' }}; color: {{ $ev->kategori === 'penting' ? '#6d28d9' : '#1d4ed8' }}; font-size: 9.5px; font-weight: 800; padding: 2px 7px; border-radius: 6px; text-transform: uppercase;">
+                                        <span style="background: {{ $ev->kategori === 'penting' ? '#e0f2fe' : '#eff6ff' }}; color: {{ $ev->kategori === 'penting' ? '#0284c7' : '#1d4ed8' }}; font-size: 9.5px; font-weight: 800; padding: 2px 7px; border-radius: 6px; text-transform: uppercase;">
                                             {{ ucfirst($ev->kategori) }}
                                         </span>
                                     </div>
@@ -1702,7 +1706,7 @@
                     <button 
                         type="button" 
                         wire:click="jumpToMonthFromModal({{ $selectedDayData['month'] }})"
-                        style="background: transparent; border: none; color: #5a20cb; font-size: 12.5px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
+                        style="background: transparent; border: none; color: #1d4ed8; font-size: 12.5px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
                         <span>Buka Kalender Bulan {{ \Carbon\Carbon::createFromDate($selectedDayData['year'], $selectedDayData['month'], 1)->translatedFormat('F') }}</span>
                         <i class="material-icons" style="font-size: 16px;">arrow_forward</i>
                     </button>
@@ -1735,7 +1739,7 @@
                 </h3>
 
                 <div style="font-size: 12px; color: #64748b; margin-bottom: 14px; display: flex; align-items: center; gap: 6px;">
-                    <i class="material-icons" style="font-size: 16px; color: #7c3aed;">event</i>
+                    <i class="material-icons" style="font-size: 16px; color: #0284c7;">event</i>
                     <span>
                         {{ $detailEvent->tanggal_mulai ? $detailEvent->tanggal_mulai->translatedFormat('d F Y') : '' }}
                         @if ($detailEvent->tanggal_selesai && $detailEvent->tanggal_selesai != $detailEvent->tanggal_mulai)
@@ -1768,7 +1772,7 @@
                             <button 
                                 type="button" 
                                 wire:click="editAgenda({{ $detailEvent->id }})" 
-                                style="padding: 7px 16px; border-radius: 10px; border: 1px solid #c7d2fe; background: #eef2ff; color: #4338ca; font-weight: 700; font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
+                                style="padding: 7px 16px; border-radius: 10px; border: 1px solid #bfdbfe; background: #eff6ff; color: #1d4ed8; font-weight: 700; font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
                                 <i class="material-icons" style="font-size: 14px;">edit</i>
                                 <span>Edit</span>
                             </button>

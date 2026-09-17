@@ -7,6 +7,7 @@ Route::get('/', function () {
     return redirect('/login');
 });
 
+
 Route::get('/scan', \App\Livewire\ScanIndex::class)->name('scan');
 
 // Siswa Portal Routes (Custom Session Auth)
@@ -46,6 +47,7 @@ Route::middleware([
         Route::get('laporan', \App\Livewire\Admin\GenerateLaporanIndex::class)->name('admin.laporan.index');
         Route::get('laporan/siswa', [\App\Http\Controllers\Admin\ReportController::class, 'generateLaporanSiswa'])->name('admin.laporan.siswa');
         Route::get('laporan/guru', [\App\Http\Controllers\Admin\ReportController::class, 'generateLaporanGuru'])->name('admin.laporan.guru');
+        Route::get('laporan/tabungan', [\App\Http\Controllers\Admin\ReportController::class, 'generateLaporanTabungan'])->name('admin.laporan.tabungan');
         Route::get('qr', \App\Livewire\Admin\GenerateQrIndex::class);
         Route::get('qr/siswa', [\App\Http\Controllers\Admin\QrController::class, 'downloadSiswa'])->name('admin.qr.siswa');
         Route::get('qr/siswa/{id}/view', [\App\Http\Controllers\Admin\QrController::class, 'viewSingleSiswa'])->name('admin.qr.siswa.view');

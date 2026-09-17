@@ -9,9 +9,13 @@ use App\Models\Kelas;
 use App\Models\PresensiGuru;
 use App\Models\PresensiSiswa;
 use App\Models\Siswa;
+use App\Models\Tabungan;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Services\LaporanPresensiExportService;
+use App\Services\LaporanTabunganExportService;
 
 class ReportController extends Controller
 {
@@ -128,10 +132,8 @@ class ReportController extends Controller
             return response(view('admin.report.laporan-siswa', $data))
                 ->header('Content-Type', 'application/vnd.ms-word')
                 ->header('Content-Disposition', 'attachment;Filename=Laporan_absen_siswa.doc');
-        } elseif ($type == 'xls') {
-            return response(view('admin.report.laporan-siswa', $data))
-                ->header('Content-Type', 'application/vnd.ms-excel')
-                ->header('Content-Disposition', 'attachment;Filename=Laporan_absen_siswa.xls');
+        } elseif ($type == 'xls' || $type == 'xlsx') {
+            return (new LaporanPresensiExportService())->exportSiswa($data);
         } else {
             // PDF -> Print HTML
             return view('admin.report.topdf', ['content' => view('admin.report.laporan-siswa', $data)->render()]);
@@ -231,13 +233,142 @@ class ReportController extends Controller
             return response(view('admin.report.laporan-guru', $data))
                 ->header('Content-Type', 'application/vnd.ms-word')
                 ->header('Content-Disposition', 'attachment;Filename=Laporan_absen_guru.doc');
-        } elseif ($type == 'xls') {
-            return response(view('admin.report.laporan-guru', $data))
-                ->header('Content-Type', 'application/vnd.ms-excel')
-                ->header('Content-Disposition', 'attachment;Filename=Laporan_absen_guru.xls');
+        } elseif ($type == 'xls' || $type == 'xlsx') {
+            return (new LaporanPresensiExportService())->exportGuru($data);
         } else {
             // PDF -> Print HTML
             return view('admin.report.topdf', ['content' => view('admin.report.laporan-guru', $data)->render()]);
         }
+    }
+
+    public function generateLaporanTabungan(Request $request)
+    {
+        $type = $request->query('type', 'pdf');
+        $bulan = (int) ($request->query('bulan') ?: Carbon::now()->month);
+        $tahun = (int) ($request->query('tahun') ?: Carbon::now()->year);
+
+        $startDate = Carbon::createFromDate($tahun, $bulan, 1)->startOfMonth()->toDateString();
+        $endDate = Carbon::createFromDate($tahun, $bulan, 1)->endOfMonth()->toDateString();
+
+        $monthNames = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+        ];
+        $namaBulan = $monthNames[$bulan] ?? 'Bulan';
+        $periodeLabel = $namaBulan . ' ' . $tahun;
+
+        // 1. Saldo Awal (sebelum awal bulan terpilih)
+        $totalSetorSebelum = Tabungan::where('tanggal', '<', $startDate)->where('jenis_transaksi', 'setor')->sum('nominal');
+        $totalTarikSebelum = Tabungan::where('tanggal', '<', $startDate)->where('jenis_transaksi', 'tarik')->sum('nominal');
+        $saldoAwal = (float) ($totalSetorSebelum - $totalTarikSebelum);
+
+        // 2. Mutasi Bulan Ini
+        $totalSetoran = (float) Tabungan::whereBetween('tanggal', [$startDate, $endDate])->where('jenis_transaksi', 'setor')->sum('nominal');
+        $totalPenarikan = (float) Tabungan::whereBetween('tanggal', [$startDate, $endDate])->where('jenis_transaksi', 'tarik')->sum('nominal');
+        $saldoAkhir = $saldoAwal + $totalSetoran - $totalPenarikan;
+
+        // 3. Posisi Fisik Dana (Akuntabilitas Kas)
+        $totalSetorSudah = (float) Tabungan::where('jenis_transaksi', 'setor')->where('status_setoran', 'sudah')->sum('nominal');
+        $totalTarikSemua = (float) Tabungan::where('jenis_transaksi', 'tarik')->sum('nominal');
+        $kasDiBendahara = max(0, $totalSetorSudah - $totalTarikSemua);
+        $danaMengendap = (float) Tabungan::where('jenis_transaksi', 'setor')->where('status_setoran', 'belum')->sum('nominal');
+
+        // 4. Rekap Per Kelas
+        $kelases = Kelas::with(['guru'])->orderBy('tingkat')->get();
+        $laporanKelas = [];
+        foreach ($kelases as $k) {
+            $siswaIds = Siswa::where('id_kelas', $k->id_kelas)->pluck('id_siswa');
+            $santriCount = Siswa::where('id_kelas', $k->id_kelas)->where('saldo_tabungan', '>', 0)->count();
+            if ($santriCount === 0) {
+                $santriCount = count($siswaIds);
+            }
+
+            $setorBulanIni = (float) Tabungan::whereIn('id_siswa', $siswaIds)
+                ->whereBetween('tanggal', [$startDate, $endDate])
+                ->where('jenis_transaksi', 'setor')
+                ->sum('nominal');
+
+            $tarikBulanIni = (float) Tabungan::whereIn('id_siswa', $siswaIds)
+                ->whereBetween('tanggal', [$startDate, $endDate])
+                ->where('jenis_transaksi', 'tarik')
+                ->sum('nominal');
+
+            $setorAll = (float) Tabungan::whereIn('id_siswa', $siswaIds)->where('tanggal', '<=', $endDate)->where('jenis_transaksi', 'setor')->sum('nominal');
+            $tarikAll = (float) Tabungan::whereIn('id_siswa', $siswaIds)->where('tanggal', '<=', $endDate)->where('jenis_transaksi', 'tarik')->sum('nominal');
+            $saldoKelas = $setorAll - $tarikAll;
+
+            $danaMengendapKelas = (float) Tabungan::whereIn('id_siswa', $siswaIds)
+                ->where('jenis_transaksi', 'setor')
+                ->where('status_setoran', 'belum')
+                ->sum('nominal');
+
+            $statusSetoran = $danaMengendapKelas > 0 
+                ? 'Mengendap Rp ' . number_format($danaMengendapKelas, 0, ',', '.') 
+                : 'Lunas Disetor';
+
+            $laporanKelas[] = [
+                'nama_kelas' => $k->tingkat . ' ' . $k->index_kelas,
+                'nama_guru' => $k->guru->nama_guru ?? '-',
+                'santri_count' => $santriCount,
+                'setor_bulan_ini' => $setorBulanIni,
+                'tarik_bulan_ini' => $tarikBulanIni,
+                'saldo_akhir' => $saldoKelas,
+                'status_setoran' => $statusSetoran,
+                'dana_mengendap' => $danaMengendapKelas,
+            ];
+        }
+
+        $generalSettings = DB::table('general_settings')->first() ?? (object) [
+            'school_name' => 'TPQ Darul Huda',
+            'school_year' => '2026/2027',
+        ];
+
+        // Nama penandatangan:
+        // Ambil Kepala Sekolah / Kepala TPQ dari Data Petugas dengan Role Kepala Sekolah (is_superadmin = 2)
+        $userKepala = User::with('guru')->where('is_superadmin', 2)->first();
+        if (!$userKepala) {
+            // Fallback jika belum diset role Kepala Sekolah, cari akun dengan username 'kepala' atau superadmin (1)
+            $userKepala = User::with('guru')->where('name', 'like', '%kepala%')->first()
+                ?? User::with('guru')->where('is_superadmin', 1)->first();
+        }
+
+        $namaKepala = $userKepala?->guru?->nama_guru ?? $userKepala?->name ?? 'Kepala TPQ';
+        $niupKepala = $userKepala?->guru?->niup ?? null;
+
+        // Bendahara TPQ: ambil dari user yang sedang login
+        $userBendahara = auth()->user();
+        if ($userBendahara && !$userBendahara->relationLoaded('guru')) {
+            $userBendahara->load('guru');
+        }
+        $namaBendahara = $userBendahara?->guru?->nama_guru ?? $userBendahara?->name ?? 'Bendahara TPQ';
+        $niupBendahara = $userBendahara?->guru?->niup ?? null;
+
+        $tanggalCetak = Carbon::now()->translatedFormat('d F Y');
+
+        $data = [
+            'bulan' => $namaBulan,
+            'tahun' => $tahun,
+            'periodeLabel' => $periodeLabel,
+            'saldoAwal' => $saldoAwal,
+            'totalSetoran' => $totalSetoran,
+            'totalPenarikan' => $totalPenarikan,
+            'saldoAkhir' => $saldoAkhir,
+            'kasDiBendahara' => $kasDiBendahara,
+            'danaMengendap' => $danaMengendap,
+            'laporanKelas' => $laporanKelas,
+            'generalSettings' => $generalSettings,
+            'namaKepala' => $namaKepala,
+            'niupKepala' => $niupKepala,
+            'namaBendahara' => $namaBendahara,
+            'niupBendahara' => $niupBendahara,
+            'tanggalCetak' => $tanggalCetak,
+        ];
+
+        if ($type === 'xls' || $type === 'xlsx') {
+            return (new LaporanTabunganExportService())->exportTabungan($data);
+        }
+
+        return view('admin.report.laporan-tabungan-pdf', $data);
     }
 }

@@ -134,7 +134,9 @@ class GuruIndex extends Component
         $this->no_hp = $guru->no_hp;
         $this->rfid = $guru->rfid_code;
         $this->can_crud_siswa = (bool) $guru->can_crud_siswa;
-        $this->selectedKelas = $guru->kelasBinaan->pluck('id_kelas')->toArray();
+        $binaanIds = $guru->kelasBinaan->pluck('id_kelas')->toArray();
+        $waliIds = Kelas::where('id_wali_kelas', $guru->id_guru)->pluck('id_kelas')->toArray();
+        $this->selectedKelas = array_values(array_unique(array_merge($binaanIds, $waliIds)));
 
         $this->isEdit = true;
         $this->showModal = true;
@@ -169,6 +171,11 @@ class GuruIndex extends Component
 
         // Sync kelas binaan (multi-kelas Putra/Putri)
         $guru->kelasBinaan()->sync($this->selectedKelas);
+
+        // If a class had this teacher as wali kelas but is no longer in selectedKelas, remove it
+        Kelas::where('id_wali_kelas', $guru->id_guru)
+            ->whereNotIn('id_kelas', $this->selectedKelas)
+            ->update(['id_wali_kelas' => null]);
 
         // Auto update username/email in User account
         $username = !empty($this->niup) ? $this->niup : 'guru_' . $guru->id_guru;
@@ -226,6 +233,7 @@ class GuruIndex extends Component
         $this->checkKepsekReadOnly();
         $guru = Guru::findOrFail($this->id_guru);
         User::where('id_guru', $guru->id_guru)->delete();
+        Kelas::where('id_wali_kelas', $guru->id_guru)->update(['id_wali_kelas' => null]);
         $guru->kelasBinaan()->detach();
         $guru->delete();
 

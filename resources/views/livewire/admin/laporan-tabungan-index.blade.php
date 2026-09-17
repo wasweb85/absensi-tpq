@@ -12,52 +12,124 @@
                                 .card { box-shadow: none !important; border: none !important; }
                             }
                         </style>
-                        <div class="card-header d-flex justify-content-between align-items-center" style="background: linear-gradient(135deg, #0284c7, #0369a1); border-radius: 12px 12px 0 0; padding: 20px;">
+                        <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-3" style="background: linear-gradient(135deg, #0284c7, #0369a1); border-radius: 12px 12px 0 0; padding: 20px;">
                             <div>
-                                <h4 class="card-title text-white m-0" style="font-weight: 700;">Laporan Keuangan TPQ</h4>
-                                <p class="category text-white-50 m-0 mt-1">Rekapitulasi tabungan seluruh kelas binaan</p>
+                                <h4 class="card-title text-white m-0" style="font-weight: 700;">Laporan Keuangan Tabungan Santri</h4>
+                                <p class="category text-white-50 m-0 mt-1">Rekapitulasi bulanan resmi & akuntabilitas kas santri per kelas</p>
                             </div>
-                            <button onclick="window.print()" class="btn btn-sm btn-light font-weight-bold d-inline-flex align-items-center gap-1 shadow-sm" style="border-radius: 8px; color: #0284c7;">
-                                <i class="material-icons" style="font-size: 18px;">print</i> Cetak Laporan
-                            </button>
+                            <div class="d-flex flex-wrap align-items-center gap-2">
+                                <div class="d-flex align-items-center bg-white rounded px-2 py-1 shadow-sm" style="height: 38px;">
+                                    <i class="material-icons text-muted mr-1" style="font-size: 18px;">calendar_today</i>
+                                    <select wire:model.live="selectedMonth" class="form-control border-0 p-0 text-dark font-weight-bold" style="height: auto; font-size: 0.85rem; width: 110px; box-shadow: none;">
+                                        @foreach($monthNames as $mNum => $mLabel)
+                                            <option value="{{ $mNum }}">{{ $mLabel }}</option>
+                                        @endforeach
+                                    </select>
+                                    <select wire:model.live="selectedYear" class="form-control border-0 p-0 text-dark font-weight-bold ml-1" style="height: auto; font-size: 0.85rem; width: 75px; box-shadow: none;">
+                                        @php $currY = (int) date('Y'); @endphp
+                                        @for($y = $currY - 2; $y <= $currY + 1; $y++)
+                                            <option value="{{ $y }}">{{ $y }}</option>
+                                        @endfor
+                                    </select>
+                                </div>
+                                <a href="{{ route('admin.laporan.tabungan', ['bulan' => $selectedMonth, 'tahun' => $selectedYear, 'type' => 'pdf']) }}" target="_blank" class="btn btn-sm btn-light font-weight-bold d-inline-flex align-items-center gap-1 shadow-sm m-0" style="border-radius: 8px; color: #0284c7; height: 38px;">
+                                    <i class="material-icons" style="font-size: 18px;">print</i> Cetak PDF
+                                </a>
+                                <a href="{{ route('admin.laporan.tabungan', ['bulan' => $selectedMonth, 'tahun' => $selectedYear, 'type' => 'xlsx']) }}" class="btn btn-sm btn-success font-weight-bold d-inline-flex align-items-center gap-1 shadow-sm m-0" style="border-radius: 8px; background: #16a34a; border-color: #16a34a; height: 38px;">
+                                    <i class="material-icons" style="font-size: 18px;">file_download</i> Ekspor Excel
+                                </a>
+                            </div>
                         </div>
                         <div class="card-body" style="padding: 24px;">
                             
-                            {{-- GLOBAL STATS --}}
-                            <div class="row mb-5">
-                                <div class="col-md-6">
-                                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; display: flex; align-items: center;">
-                                        <div style="width: 50px; height: 50px; background: #dcfce7; color: #16a34a; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-right: 16px;">
-                                            <i class="material-icons" style="font-size: 28px;">account_balance_wallet</i>
-                                        </div>
-                                        <div>
-                                            <div style="font-size: 0.8rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Total Kas Tabungan</div>
-                                            <div style="font-size: 1.5rem; font-weight: 800; color: #0f172a;">Rp {{ number_format($totalTabunganKeseluruhan, 0, ',', '.') }}</div>
-                                        </div>
+                            {{-- 4 RINGKASAN EKSEKUTIF MUTASI --}}
+                            <div class="row mb-4">
+                                <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
+                                    <div style="background: #f0f9ff; border: 1px solid #bae6fd; border-left: 4px solid #0284c7; border-radius: 10px; padding: 16px;">
+                                        <div style="font-size: 0.75rem; font-weight: 700; color: #0369a1; text-transform: uppercase; letter-spacing: 0.5px;">Saldo Awal Periode</div>
+                                        <div style="font-size: 1.3rem; font-weight: 800; color: #0f172a; margin-top: 4px;">Rp {{ number_format($saldoAwal, 0, ',', '.') }}</div>
+                                        <small class="text-muted">Sebelum 1 {{ $monthNames[$selectedMonth] ?? 'Bulan' }}</small>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div style="background: #fefce8; border: 1px solid #fef08a; border-radius: 12px; padding: 20px; display: flex; align-items: center;">
-                                        <div style="width: 50px; height: 50px; background: #fef08a; color: #ca8a04; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-right: 16px;">
-                                            <i class="material-icons" style="font-size: 28px;">front_hand</i>
+                                <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
+                                    <div style="background: #ecfdf5; border: 1px solid #a7f3d0; border-left: 4px solid #059669; border-radius: 10px; padding: 16px;">
+                                        <div style="font-size: 0.75rem; font-weight: 700; color: #047857; text-transform: uppercase; letter-spacing: 0.5px;">Setoran Masuk (+)</div>
+                                        <div style="font-size: 1.3rem; font-weight: 800; color: #059669; margin-top: 4px;">Rp {{ number_format($totalSetoranBulanIni, 0, ',', '.') }}</div>
+                                        <small class="text-muted">Bulan {{ $monthNames[$selectedMonth] ?? 'Bulan' }} {{ $selectedYear }}</small>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
+                                    <div style="background: #fff1f2; border: 1px solid #fecdd3; border-left: 4px solid #e11d48; border-radius: 10px; padding: 16px;">
+                                        <div style="font-size: 0.75rem; font-weight: 700; color: #be123c; text-transform: uppercase; letter-spacing: 0.5px;">Penarikan (-)</div>
+                                        <div style="font-size: 1.3rem; font-weight: 800; color: #e11d48; margin-top: 4px;">Rp {{ number_format($totalPenarikanBulanIni, 0, ',', '.') }}</div>
+                                        <small class="text-muted">Bulan {{ $monthNames[$selectedMonth] ?? 'Bulan' }} {{ $selectedYear }}</small>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6">
+                                    <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-left: 4px solid #1e3a8a; border-radius: 10px; padding: 16px;">
+                                        <div style="font-size: 0.75rem; font-weight: 700; color: #1e3a8a; text-transform: uppercase; letter-spacing: 0.5px;">Total Saldo Akhir (=)</div>
+                                        <div style="font-size: 1.3rem; font-weight: 800; color: #1e3a8a; margin-top: 4px;">Rp {{ number_format($saldoAkhir, 0, ',', '.') }}</div>
+                                        <small class="text-muted">Per Akhir {{ $monthNames[$selectedMonth] ?? 'Bulan' }} {{ $selectedYear }}</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- AKUNTABILITAS KAS FISIK TPQ --}}
+                            <div class="card mb-4" style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 10px; box-shadow: none;">
+                                <div class="card-body p-3 d-flex flex-wrap justify-content-between align-items-center gap-3">
+                                    <div class="d-flex flex-wrap align-items-center gap-4">
+                                        <div class="d-flex align-items-center">
+                                            <div style="width: 38px; height: 38px; background: #dcfce7; color: #15803d; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 10px;">
+                                                <i class="material-icons" style="font-size: 22px;">savings</i>
+                                            </div>
+                                            <div>
+                                                <div style="font-size: 0.75rem; font-weight: 700; color: #64748b;">KAS FISIK DI BENDAHARA</div>
+                                                <div style="font-size: 1.1rem; font-weight: 800; color: #15803d;">Rp {{ number_format($kasDiBendahara, 0, ',', '.') }}</div>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <div style="font-size: 0.8rem; font-weight: 700; color: #a16207; text-transform: uppercase; letter-spacing: 0.5px;">Total Dana Mengendap (Di Guru)</div>
-                                            <div style="font-size: 1.5rem; font-weight: 800; color: #854d0e;">Rp {{ number_format($totalDanaMengendap, 0, ',', '.') }}</div>
+                                        <div class="d-flex align-items-center">
+                                            <div style="width: 38px; height: 38px; background: {{ $totalDanaMengendap > 0 ? '#fef3c7' : '#dcfce7' }}; color: {{ $totalDanaMengendap > 0 ? '#b45309' : '#15803d' }}; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 10px;">
+                                                <i class="material-icons" style="font-size: 22px;">pan_tool</i>
+                                            </div>
+                                            <div>
+                                                <div style="font-size: 0.75rem; font-weight: 700; color: #64748b;">DANA MENGENDAP DI GURU</div>
+                                                <div style="font-size: 1.1rem; font-weight: 800; color: {{ $totalDanaMengendap > 0 ? '#b45309' : '#15803d' }};">
+                                                    Rp {{ number_format($totalDanaMengendap, 0, ',', '.') }}
+                                                </div>
+                                            </div>
                                         </div>
+                                    </div>
+                                    <div>
+                                        @if($totalDanaMengendap > 0)
+                                            <span class="badge" style="background: #fef3c7; color: #b45309; font-size: 0.8rem; padding: 6px 12px; border-radius: 6px;">
+                                                ⚠️ Ada setoran guru belum disetor ke kas bendahara
+                                            </span>
+                                        @else
+                                            <span class="badge" style="background: #dcfce7; color: #15803d; font-size: 0.8rem; padding: 6px 12px; border-radius: 6px;">
+                                                ✓ Seluruh setoran guru telah tertib disetor ke bendahara
+                                            </span>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
 
                             {{-- TABEL KELAS --}}
-                            <h5 style="font-weight: 700; color: #1e293b; margin-bottom: 16px;"><i class="material-icons text-primary" style="vertical-align: middle; margin-top: -3px; margin-right: 5px;">assessment</i> Rincian Saldo per Kelas</h5>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 style="font-weight: 700; color: #1e293b; margin: 0;">
+                                    <i class="material-icons text-primary" style="vertical-align: middle; margin-top: -3px; margin-right: 5px;">assessment</i> 
+                                    Rincian Rekapitulasi per Kelas (Periode {{ $monthNames[$selectedMonth] ?? 'Bulan' }} {{ $selectedYear }})
+                                </h5>
+                            </div>
                             
                             <div class="table-responsive mb-5">
                                 <table class="table table-hover">
                                     <thead style="background: #f1f5f9;">
                                         <tr>
                                             <th style="font-weight: 700; color: #475569; border-top: none;">Kelas</th>
-                                            <th style="font-weight: 700; color: #475569; border-top: none;">Wali Jilid</th>
+                                            <th style="font-weight: 700; color: #475569; border-top: none;">Wali Jilid / Guru</th>
+                                            <th style="font-weight: 700; color: #475569; border-top: none; text-align: center;">Santri</th>
+                                            <th style="font-weight: 700; color: #475569; border-top: none; text-align: right;">Setoran (Bulan Ini)</th>
+                                            <th style="font-weight: 700; color: #475569; border-top: none; text-align: right;">Penarikan (Bulan Ini)</th>
                                             <th style="font-weight: 700; color: #475569; border-top: none; text-align: right;">Dana Mengendap</th>
                                             <th style="font-weight: 700; color: #475569; border-top: none; text-align: right;">Total Saldo Kelas</th>
                                             <th style="font-weight: 700; color: #475569; border-top: none; text-align: center;">Aksi</th>
@@ -74,16 +146,25 @@
                                                 <td style="vertical-align: middle; font-weight: 600; color: #0f172a;">
                                                     {{ $row['guru']->nama_guru ?? '-' }}
                                                 </td>
+                                                <td style="vertical-align: middle; text-align: center;">
+                                                    <span class="badge badge-light" style="font-size: 0.85rem; font-weight: 700;">{{ $row['santri_count'] }}</span>
+                                                </td>
+                                                <td style="vertical-align: middle; text-align: right; color: #059669; font-weight: 600;">
+                                                    Rp {{ number_format($row['setor_bulan_ini'], 0, ',', '.') }}
+                                                </td>
+                                                <td style="vertical-align: middle; text-align: right; color: #e11d48; font-weight: 600;">
+                                                    Rp {{ number_format($row['tarik_bulan_ini'], 0, ',', '.') }}
+                                                </td>
                                                 <td style="vertical-align: middle; text-align: right;">
                                                     @if($row['dana_mengendap'] > 0)
-                                                        <span style="color: #b45309; font-weight: 700; background: #fef3c7; padding: 4px 8px; border-radius: 6px; font-size: 0.9rem;">
+                                                        <span style="color: #b45309; font-weight: 700; background: #fef3c7; padding: 4px 8px; border-radius: 6px; font-size: 0.85rem;">
                                                             Rp {{ number_format($row['dana_mengendap'], 0, ',', '.') }}
                                                         </span>
                                                     @else
-                                                        <span style="color: #94a3b8; font-size: 0.9rem;">Rp 0</span>
+                                                        <span style="color: #94a3b8; font-size: 0.85rem;">Rp 0</span>
                                                     @endif
                                                 </td>
-                                                <td style="vertical-align: middle; text-align: right; font-weight: 800; color: #16a34a; font-size: 1.05rem;">
+                                                <td style="vertical-align: middle; text-align: right; font-weight: 800; color: #1e3a8a; font-size: 1.05rem;">
                                                     Rp {{ number_format($row['saldo'], 0, ',', '.') }}
                                                 </td>
                                                 <td style="vertical-align: middle; text-align: center;">
@@ -94,7 +175,7 @@
                                             </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="5" class="text-center py-4 text-muted">Belum ada data kelas atau tabungan.</td>
+                                                <td colspan="8" class="text-center py-4 text-muted">Belum ada data kelas atau tabungan.</td>
                                             </tr>
                                         @endforelse
                                     </tbody>

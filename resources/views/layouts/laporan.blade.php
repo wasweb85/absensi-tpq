@@ -8,8 +8,21 @@
    @endphp
    <link rel="icon" type="image/png" href="{{ $logoImg }}">
    <style>
+      @page {
+         size: A4 landscape;
+         margin: 8mm;
+      }
+      @media print {
+         body {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+         }
+      }
       body {
          font-family: Arial, Helvetica, sans-serif;
+         margin: 0;
+         padding: 0;
+         color: #1e293b;
       }
 
       table {
